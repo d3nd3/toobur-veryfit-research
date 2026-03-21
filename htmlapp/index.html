@@ -200,6 +200,15 @@
     <br>
     <input type="text" id="raw_hex_input" placeholder="03 45 aa 09 00 12 00 … or 03:45:aa:09:00:…" size="48" style="font-family:monospace;">
     <button type="button" onclick="sendRawHex()" title="Parse hex from input and send to 0x0AF6. Watch Events for ACK (0x03 len=2) or other replies.">Send raw hex</button>
+    <h3>VBUS mapped command test</h3>
+    <p style="font-size:0.9em; color:#666;">Load <code>vbus_mapping.json</code> and send selected cmd headers directly.</p>
+    <label for="vbus_mapping_select">VBUS command:</label>
+    <select id="vbus_mapping_select" title="Mapped VBUS command headers"></select>
+    <label>
+        <input type="text" id="vbus_payload_extra" size="36" placeholder="Optional extra payload hex (space/colon separated)">
+    </label>
+    <button type="button" onclick="sendVbusMappedCommand()" title="Send selected VBUS header and optional extra payload to 0x0AF6.">Send mapped command</button>
+    <div id="vbus_mapping_status" style="margin-top:8px; font-family:monospace; font-size:12px; white-space:pre-wrap; color:#444;"></div>
     <br>
     <strong>HEALTH_DATA (cmd 0x08) key probe:</strong> Request sync start with key
     <input type="text" id="health_key_hex" value="04" size="2" maxlength="2" placeholder="04" title="Hex key: 04=today sleep, 06=history sleep, A0=live (some firmware)."> (hex)
@@ -1297,6 +1306,115 @@
             return arr;
         }
 
+        function hexBytesToStr(bytes) {
+            if (!bytes || bytes.length === 0) return "";
+            return Array.from(bytes).map(function(b) { return ("0" + b.toString(16)).slice(-2).toUpperCase(); }).join(" ");
+        }
+
+        var vbusMappingData = [];
+
+        function fixVbusEventNameTypo(name) {
+            // Some decompiled / docs strings use SET_UINT, but this is meant to be SET_UNIT (unit fields).
+            // Keep the underlying cmd header bytes unchanged; only fix the display label.
+            if (!name) return name;
+            return name.replace(/VBUS_EVT_APP_SET_UINT/g, 'VBUS_EVT_APP_SET_UNIT');
+        }
+
+        function buildVbusMappingSelect() {
+            var statusEl = document.getElementById("vbus_mapping_status");
+            var selectEl = document.getElementById("vbus_mapping_select");
+            var payloadEl = document.getElementById("vbus_payload_extra");
+            if (!selectEl) return;
+            if (!window.fetch) {
+                if (statusEl) statusEl.textContent = "VBUS mapping unavailable (fetch not supported).";
+                return;
+            }
+
+            selectEl.innerHTML = "";
+            if (statusEl) statusEl.textContent = "Loading VBUS mapping…";
+
+            fetch("../vbus_mapping.json")
+                .then(function(resp) {
+                    if (!resp.ok) throw new Error("HTTP " + resp.status + " " + resp.statusText);
+                    return resp.json();
+                })
+                .then(function(entries) {
+                    if (!Array.isArray(entries)) {
+                        throw new Error("Expected JSON array from vbus_mapping.json");
+                    }
+                    vbusMappingData = entries.filter(function(entry) {
+                        return entry && Array.isArray(entry.cmdHeaderBytes) && entry.cmdHeaderBytes.length >= 2;
+                    }).sort(function(a, b) {
+                        if (a.eventId === b.eventId) return (a.occurrence || 0) - (b.occurrence || 0);
+                        return a.eventId - b.eventId;
+                    });
+                    if (vbusMappingData.length === 0) {
+                        selectEl.innerHTML = "<option value=\"\">No mapped VBUS commands found</option>";
+                        if (statusEl) statusEl.textContent = "No VBUS command headers found in vbus_mapping.json.";
+                        return;
+                    }
+                    for (var i = 0; i < vbusMappingData.length; i++) {
+                        var row = vbusMappingData[i];
+                        var label = fixVbusEventNameTypo(row.eventName || ("VBUS_EVT_" + row.eventId)) + " (id " + row.eventId + ")";
+                        if (row.occurrence) label += " # " + row.occurrence;
+                        label += " -> " + hexBytesToStr(row.cmdHeaderBytes.slice(0, 2));
+                        var option = document.createElement("option");
+                        option.value = String(i);
+                        option.textContent = label;
+                        selectEl.appendChild(option);
+                    }
+                    if (statusEl) statusEl.textContent = "Loaded " + vbusMappingData.length + " mapped VBUS command header(s).";
+                    if (payloadEl) payloadEl.addEventListener("input", updateVbusMappingPreview);
+                    selectEl.addEventListener("change", updateVbusMappingPreview);
+                    updateVbusMappingPreview();
+                })
+                .catch(function(err) {
+                    selectEl.innerHTML = "<option value=\"\">Failed to load mapping</option>";
+                    if (statusEl) statusEl.textContent = "Failed to load ../vbus_mapping.json: " + err.message;
+                });
+        }
+
+        function updateVbusMappingPreview() {
+            var statusEl = document.getElementById("vbus_mapping_status");
+            var selectEl = document.getElementById("vbus_mapping_select");
+            var extraEl = document.getElementById("vbus_payload_extra");
+            if (!statusEl || !selectEl) return;
+            var idx = parseInt(selectEl.value, 10);
+            if (isNaN(idx) || !vbusMappingData[idx]) return;
+            var entry = vbusMappingData[idx];
+            var base = hexBytesToStr(entry.cmdHeaderBytes.slice(0, 2));
+            var extra = parseHexString((extraEl || {}).value || "");
+            if (extra && extra.length) base += " " + hexBytesToStr(extra);
+            statusEl.textContent = fixVbusEventNameTypo(entry.eventName || ("VBUS_EVT_" + entry.eventId)) + " (id " + entry.eventId + ") -> " + base;
+        }
+
+        function sendVbusMappedCommand() {
+            if (!send_char) {
+                event_log("Not connected. Pair + Get Activity first.");
+                return;
+            }
+            var selectEl = document.getElementById("vbus_mapping_select");
+            var extraEl = document.getElementById("vbus_payload_extra");
+            if (!selectEl) {
+                event_log("VBUS mapping UI not loaded.");
+                return;
+            }
+            var idx = parseInt(selectEl.value, 10);
+            if (isNaN(idx) || !vbusMappingData[idx]) {
+                event_log("Select a VBUS mapped command first.");
+                return;
+            }
+            var entry = vbusMappingData[idx];
+            var payload = entry.cmdHeaderBytes.slice(0, 2);
+            var extra = parseHexString((extraEl || {}).value || "");
+            if (extra && extra.length) {
+                for (var i = 0; i < extra.length; i++) payload.push(extra[i] & 0xFF);
+            }
+            send_char.writeValue(new Uint8Array(payload));
+            event_log("Sent mapped VBUS command: " + hexBytesToStr(payload) + " (" + fixVbusEventNameTypo(entry.eventName || ("VBUS_EVT_" + entry.eventId)) + ")");
+            console.log("Sent to 0x0AF6:", hexBytesToStr(payload));
+        }
+
         function sendRawHex() {
             if (!send_char) { event_log("Not connected."); return; }
             var input = document.getElementById("raw_hex_input");
@@ -1462,6 +1580,8 @@
                 });
             }
         })();
+
+        buildVbusMappingSelect();
 
         function sendTestNotification() {
             if (!send_char) {

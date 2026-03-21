@@ -1,0 +1,581 @@
+[
+  {
+    "eventName": "VBUS_EVT_APP_SET_LONG_SIT",
+    "eventId": 101,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      32
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_LOST_FIND",
+    "eventId": 102,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      33
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_FIND_PHONE",
+    "eventId": 103,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      38
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_TIME",
+    "eventId": 104,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SPORT_GOAL",
+    "eventId": 105,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      3
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SLEEP_GOAL",
+    "eventId": 106,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      4
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_USER_INFO",
+    "eventId": 107,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      16
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_UINT",
+    "eventId": 108,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      17
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_HAND",
+    "eventId": 109,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      34
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_APP_OS",
+    "eventId": 110,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      35
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_HEART_RATE_INTERVAL",
+    "eventId": 112,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      36
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_HEART_RATE_MODE",
+    "eventId": 113,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      37
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_UP_HAND_GESTURE",
+    "eventId": 114,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      40
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_DEFAULT_CONFIG",
+    "eventId": 115,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      39
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_DO_NOT_DISTURB",
+    "eventId": 116,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      41
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_MUISC_ONOFF",
+    "eventId": 117,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      42
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_DISPLAY_MODE",
+    "eventId": 118,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      43
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_ONEKEY_SOS",
+    "eventId": 119,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      44
+    ]
+  },
+
+  {
+    "eventName": "VBUS_EVT_APP_SET_WATCH_DIAL",
+    "eventId": 124,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      18
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SHORTCUT",
+    "eventId": 125,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      19
+    ]
+  },
+
+  {
+    "eventName": "VBUS_EVT_APP_SET_WEATHER_SWITCH",
+    "eventId": 150,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      45
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SPORT_MODE_SELECT",
+    "eventId": 151,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      46
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SLEEP_PERIOD",
+    "eventId": 152,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      49
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_WEATCHER_DATA",
+    "eventId": 153,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      10,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SCREEN_BRIGHTNESS",
+    "eventId": 154,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      50
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_CONFIG_GPS",
+    "eventId": 155,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      51
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_CONN_PARAM",
+    "eventId": 157,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      53
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_MENSTRUATION",
+    "eventId": 159,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      65
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_MENSTRUATION_REMIND",
+    "eventId": 160,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      66
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_CALORIE_DISTANCE_GOAL",
+    "eventId": 161,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      67
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_SPO2",
+    "eventId": 162,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      68
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_PRESSURE",
+    "eventId": 163,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      69
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_WALK_REMINDER",
+    "eventId": 165,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      71
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_ACTIVITY_SWITCH",
+    "eventId": 167,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      73
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_DRINK_WATER_REMINDER",
+    "eventId": 168,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      96
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_BIND_START",
+    "eventId": 200,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      4,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_BIND_REMOVE",
+    "eventId": 201,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      4,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_AUTH",
+    "eventId": 202,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      4,
+      3
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_ENCRYPTED_AUTH",
+    "eventId": 204,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      4,
+      5
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_GET_MAC",
+    "eventId": 300,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      4
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_DEVICE_INFO",
+    "eventId": 301,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_FUNC_TABLE",
+    "eventId": 302,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_LIVE_DATA",
+    "eventId": 304,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      160
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_NOTICE_STATUS",
+    "eventId": 306,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      16
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_FUNC_TABLE_EX",
+    "eventId": 311,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      7
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_DO_NOT_DISTURB",
+    "eventId": 316,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      48
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_MTU_INFO",
+    "eventId": 317,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      240
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_BATT_INFO",
+    "eventId": 321,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      5
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_GET_FLASH_BIN_INFO",
+    "eventId": 322,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      2,
+      167
+    ]
+  },
+
+  {
+    "eventName": "VBUS_EVT_APP_OTA_START",
+    "eventId": 400,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      1,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_OTA_DIRECT_START",
+    "eventId": 401,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      1,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_REBOOT",
+    "eventId": 403,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      240,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_CLEAN_BOND_INFO",
+    "eventId": 405,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      3,
+      209
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SHUTDOWN",
+    "eventId": 406,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      240,
+      3
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_OTA_AUTH",
+    "eventId": 407,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      1,
+      3
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_NOTICE_STOP_CALL",
+    "eventId": 412,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      5,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_SET_NOTICE_MISSED_CALL",
+    "eventId": 420,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      5,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_MUSIC_START",
+    "eventId": 500,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_MUSIC_STOP",
+    "eventId": 501,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      1
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_PHOTO_START",
+    "eventId": 502,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_PHOTO_STOP",
+    "eventId": 503,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      2
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_START",
+    "eventId": 504,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      4
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_STOP",
+    "eventId": 505,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      4
+    ]
+  },
+  {
+    "eventName": "VBUS_EVT_APP_APP_TO_BLE_OPEN_ANCS",
+    "eventId": 506,
+    "occurrence": 1,
+    "cmdHeaderBytes": [
+      6,
+      48
+    ]
+  }
+]

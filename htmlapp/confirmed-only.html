@@ -5,67 +5,377 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOOBUR A200 – Logcat-confirmed only</title>
     <style>
+        :root {
+            --bg: #eff2f7;
+            --panel: #ffffff;
+            --text: #101828;
+            --muted: #5f6c84;
+            --line: #e2e8f0;
+            --accent: #4f46e5;
+            --accent-strong: #4338ca;
+        }
+
         * { box-sizing: border-box; }
+
         body {
-            font-family: system-ui, -apple-system, sans-serif;
-            max-width: 720px;
+            margin: 0;
+            background:
+                radial-gradient(1000px 200px at 20% 0%, #e4e8ff, transparent 70%),
+                radial-gradient(900px 180px at 85% 0%, #dbeafe, transparent 72%),
+                var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", "Noto Sans", -apple-system, sans-serif;
+            line-height: 1.35;
+        }
+
+        .page-shell {
+            max-width: 980px;
             margin: 0 auto;
             padding: 1rem;
-            background: #fafafa;
-            color: #1a1a1a;
         }
-        h1 { font-size: 1.25rem; margin: 0 0 0.5rem; }
-        p { margin: 0 0 1rem; font-size: 0.9rem; color: #444; }
-        .status { font-weight: 600; margin-bottom: 1rem; }
-        .status.connected { color: #0a0; }
+
+        h1 {
+            margin: 0;
+            letter-spacing: 0.01em;
+            line-height: 1.2;
+        }
+
+        .lead {
+            margin: 0.3rem 0 0.9rem;
+            color: var(--muted);
+            max-width: 760px;
+            font-size: 0.95rem;
+        }
+
+        .subtext {
+            margin: 0 0 1rem;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .status {
+            margin: 0.45rem 0 0.9rem;
+            font-weight: 700;
+            font-size: 0.92rem;
+        }
+
+        .status.connected { color: #047857; }
+        .status.offline { color: #b45309; }
+
         .section {
-            background: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 6px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.75rem;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-left: 3px solid var(--accent);
+            border-radius: 10px;
+            padding: 0.85rem 0.95rem;
+            margin-bottom: 0.85rem;
+            box-shadow: 0 8px 24px -20px rgba(15, 23, 42, 0.35);
         }
+
         .section h2 {
-            font-size: 0.85rem;
+            margin: 0 0 0.55rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
-            color: #666;
-            margin: 0 0 0.5rem;
+            letter-spacing: 0.04em;
+            font-size: 0.82rem;
+            color: #1f2937;
         }
-        .btns { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-        button {
-            padding: 0.4rem 0.65rem;
+
+        .section p {
+            margin: 0 0 0.85rem;
+            font-size: 0.85rem;
+            color: #27364d;
+        }
+
+        .subsection-title {
+            margin: 0.55rem 0 0.22rem;
+            font-size: 0.73rem;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .subsection-note {
+            margin: 0 0 0.4rem;
+            font-size: 0.78rem;
+            color: #475569;
+            line-height: 1.45;
+        }
+
+        .btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.38rem;
+            align-items: center;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem 0.9rem;
+            align-items: center;
+            margin-bottom: 0.45rem;
+        }
+
+        .form-row-tight {
+            gap: 0.38rem 0.7rem;
+            margin-bottom: 0.35rem;
+        }
+
+        button,
+        .btn {
+            border: 1px solid #c7d2fe;
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+            color: #111827;
+            border-radius: 7px;
+            padding: 0.42rem 0.72rem;
             font-size: 0.8rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            font-weight: 600;
+            letter-spacing: 0.01em;
+            cursor: pointer;
+            transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+        }
+
+        button:hover:not(:disabled),
+        .btn:hover:not(:disabled) {
+            border-color: var(--accent-strong);
+            box-shadow: 0 6px 18px -10px rgba(79, 70, 229, 0.9);
+            transform: translateY(-1px);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        select,
+        input,
+        textarea,
+        button[type="button"],
+        button[type="submit"] {
+            font: inherit;
+        }
+
+        label {
+            display: inline-flex;
+            gap: 0.3rem;
+            align-items: center;
+            font-size: 0.82rem;
+            color: #1f2937;
+        }
+
+        input,
+        select,
+        textarea {
+            border: 1px solid #d0d7e6;
+            border-radius: 6px;
+            padding: 0.32rem 0.42rem;
+            background: #ffffff;
+            color: #111827;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+
+        textarea {
+            width: 100%;
+            max-width: 24rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.8rem;
+            resize: vertical;
+        }
+
+        #vbus_mapping_status {
+            margin-top: 0.5rem;
+            background: #f8fafc;
+            border: 1px dashed #dbeafe;
+            color: #1e293b;
+            border-radius: 7px;
+            padding: 0.5rem 0.55rem;
+        }
+
+        #vbus_mapping_grid {
+            margin-top: 0.55rem;
+        }
+
+        .vbus-mapped-btn {
+            white-space: nowrap;
+        }
+
+        .vbus-mapped-btn.vbus-map-btn--listed-only {
+            background: linear-gradient(180deg, #e0f2fe, #dbeafe);
+            border-color: #93c5fd;
+        }
+
+        .vbus-mapped-btn.vbus-map-btn--mapped-only {
+            background: linear-gradient(180deg, #fee2e2, #fecdd3);
+            border-color: #fda4af;
+        }
+
+        .vbus-legend {
+            margin-top: 0.25rem;
+            color: #334155;
+            font-size: 0.77rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .vbus-legend-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .vbus-legend-swatch {
+            width: 0.72rem;
+            height: 0.72rem;
+            border: 1px solid #94a3b8;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #ffffff, #f8fafc);
+        }
+
+        .vbus-legend-swatch.vbus-legend-listed-only {
+            border-color: #93c5fd;
+            background: linear-gradient(180deg, #e0f2fe, #dbeafe);
+        }
+
+        .vbus-legend-swatch.vbus-legend-mapped-only {
+            border-color: #fda4af;
+            background: linear-gradient(180deg, #fee2e2, #fecdd3);
+        }
+
+        #alarm_list_display {
+            margin: 0.2rem 0 0.35rem;
+            padding: 0.5rem;
+            background: #f8fafc;
+            border: 1px solid #dbeafe;
+            border-radius: 6px;
+            font-size: 11px;
+            max-height: 110px;
+            overflow: auto;
+        }
+
+        .subsection-title.warning {
+            color: #991b1b;
+        }
+
+        .input-xxs {
+            width: 2.2rem;
+        }
+
+        .input-xs {
+            width: 2.5rem;
+        }
+
+        .input-s {
+            width: 3rem;
+        }
+
+        .input-m {
+            width: 8rem;
+        }
+
+        .input-l {
+            width: 9rem;
+        }
+
+        .input-xl {
+            width: 10rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #sport_sort_json {
+            max-width: 32rem;
+            min-height: 5.9rem;
+            border-radius: 8px;
+            border: 1px solid #d9e2f0;
+            background: #f8fbff;
+            line-height: 1.4;
+            resize: vertical;
+        }
+
+        #notice_5b_hex,
+        #alarm_list_count {
+            color: #334155;
+            font-size: 0.75rem;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        }
+
+        .bruteforce-log {
+            margin-top: 0.5rem;
+            max-height: 16rem;
+            overflow: auto;
+            background: #f8fafc;
+            border: 1px solid #dbeafe;
+            border-radius: 7px;
+            padding: 0.55rem;
+        }
+
+        .bruteforce-log code {
+            display: block;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.78rem;
+            line-height: 1.35;
+            white-space: pre-wrap;
+            color: #334155;
+        }
+
+        .bruteforce-valid {
+            color: #166534;
+        }
+
+        .bruteforce-invalid {
+            color: #b91c1c;
+        }
+
+        .bruteforce-ignore-list {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 7px;
+            background: #f8fafc;
+            max-height: 8rem;
+            overflow: auto;
+        }
+
+        .bruteforce-ignore-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin: 0.2rem 0.25rem 0.2rem 0;
+            padding: 0.15rem 0.45rem;
+            border: 1px solid #dbeafe;
+            border-radius: 999px;
             background: #fff;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.78rem;
+        }
+
+        .bruteforce-ignore-pill button {
+            border: 0;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: #0f172a;
+            padding: 0 0.3rem;
+            line-height: 1;
             cursor: pointer;
         }
-        button:hover { background: #f0f0f0; border-color: #999; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        #log {
-            margin-top: 1rem;
-            padding: 0.75rem;
-            background: #1a1a1a;
-            color: #e0e0e0;
-            font-family: ui-monospace, monospace;
-            font-size: 11px;
-            line-height: 1.4;
-            max-height: 280px;
-            overflow-y: auto;
-            border-radius: 4px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        #log .rx { color: #8af; }
-        #log .tx { color: #fa8; }
     </style>
 </head>
 <body>
+    <main class="page-shell">
     <h1>TOOBUR A200 – Confirmed features only</h1>
-    <p>All buttons send exact TX from <code>logcat_dumps/*.txt</code>. Categories: <strong>GET</strong> (0x02), <strong>SET</strong> (0x03), <strong>BIND</strong> (0x04), <strong>MSG</strong> (0x05), <strong>Control</strong> (0x06), <strong>V3</strong> (0x33…, health sync, activity). Weather is SET 0x2D.</p>
-    <p style="font-size:0.85em; color:#666;">Open DevTools (F12) → Console to see <strong>parsed interpretations</strong> of each RX packet. Confirm or correct the guesses there.</p>
-    <p class="status" id="status">Disconnected</p>
+    <p class="lead">All buttons send exact TX from <code>logcat_dumps/*.txt</code>. Categories: <strong>GET</strong> (0x02), <strong>SET</strong> (0x03), <strong>BIND</strong> (0x04), <strong>MSG</strong> (0x05), <strong>Control</strong> (0x06), <strong>V3</strong> (0x33…, health sync, activity). Weather is SET 0x2D.</p>
+    <p class="subtext">Open DevTools (F12) → Console to see <strong>parsed interpretations</strong> of each RX packet. Confirm or correct the guesses there.</p>
+    <p class="status offline" id="status">Disconnected</p>
 
     <div class="section">
         <h2>Connect</h2>
@@ -75,246 +385,280 @@
     </div>
 
     <div class="section">
+        <h2>Mapped VBUS commands</h2>
+        <p class="subsection-note">Compare confirmed buttons against <code>vbus_mapping_check.json</code>, grouped by first byte.</p>
+        <p class="vbus-legend">
+            <span class="vbus-legend-chip"><span class="vbus-legend-swatch vbus-legend-listed-only"></span>Blue: confirmed only</span>
+            <span class="vbus-legend-chip"><span class="vbus-legend-swatch vbus-legend-mapped-only"></span>Red: mapping only</span>
+            <span class="vbus-legend-chip">White: in both</span>
+        </p>
+        <div class="form-row form-row-tight">
+            <label for="vbus_mapping_payload_extra">Extra payload (optional):</label>
+            <input type="text" id="vbus_mapping_payload_extra" size="34" placeholder="space/colon-separated hex">
+        </div>
+        <div id="vbus_mapping_grid"></div>
+        <div id="vbus_mapping_status">Waiting for mapping...</div>
+    </div>
+
+    <div class="section">
+        <h2>Bruteforce 2-byte VBUS headers</h2>
+        <p class="subsection-note" id="bruteforce_mode_note">Starts from one 2-byte header and scans to FF FF; after each first-byte rollover, the second byte starts at 00 (e.g. 02 7F → 03 00).</p>
+        <div class="form-row form-row-tight">
+            <label for="bruteforce_mode">Mode
+                <select id="bruteforce_mode">
+                    <option value="headers" selected>2-byte header scan</option>
+                    <option value="pattern">Pattern with LE trailer counter</option>
+                </select>
+            </label>
+            <label for="bruteforce_pattern_template">Pattern template (only last 2 bytes are incremented, little-endian)
+                <input type="text" id="bruteforce_pattern_template" value="33 DA AD DA AD 01 61 01 0F 00" size="42" placeholder="33 DA AD DA AD 01 61 01 0F 00">
+            </label>
+            <label for="bruteforce_auto_crc">
+                <input type="checkbox" id="bruteforce_auto_crc" checked> Auto-update V3 CRC
+            </label>
+            <label for="bruteforce_start_pair">Start 2-byte header <input type="text" id="bruteforce_start_pair" value="00 00" size="7" placeholder="00 00"></label>
+            <label for="bruteforce_delay">Delay ms <input type="number" id="bruteforce_delay" min="0" max="5000" value="50" class="input-s"></label>
+            <label for="bruteforce_timeout">Response timeout ms <input type="number" id="bruteforce_timeout" min="0" max="10000" value="250" class="input-s"></label>
+            <button type="button" id="btnStartBruteforce" data-label="start_vbus_bruteforce">Start bruteforce</button>
+            <button type="button" id="btnStopBruteforce" data-label="stop_vbus_bruteforce">Stop</button>
+        </div>
+        <div class="form-row form-row-tight">
+            <label for="bruteforce_ignore_combo">Ignore single pair <input type="text" id="bruteforce_ignore_combo" value="02 02" size="7" placeholder="02 01"></label>
+            <button type="button" id="btnAddBruteforceIgnore" data-label="add_bruteforce_ignore_single">Add ignore</button>
+            <button type="button" id="btnAddCurrentBruteforceIgnore" data-label="add_current_bruteforce_ignore">Add current</button>
+            <button type="button" id="btnClearBruteforceIgnore" data-label="clear_bruteforce_ignore">Clear ignore list</button>
+        </div>
+        <div class="form-row form-row-tight">
+            <label for="bruteforce_ignore_multi">Add multiple (one pair per line: 02 01)</label>
+            <textarea id="bruteforce_ignore_multi" rows="3" cols="24" placeholder="02 01&#10;03 01"></textarea>
+            <button type="button" id="btnAddBruteforceIgnoreMulti" data-label="add_bruteforce_ignore_multi">Add all</button>
+        </div>
+        <p class="subsection-note" id="bruteforce_status">Bruteforce stopped.</p>
+        <div class="bruteforce-log">
+            <code id="bruteforce_output">No scan run yet.</code>
+        </div>
+        <p class="subsection-note" id="bruteforce_ignore_count">Ignored combos: 0</p>
+        <div class="bruteforce-ignore-list" id="bruteforce_ignore_list"></div>
+    </div>
+
+    <div class="section">
         <h2>GET (cmd 0x02)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">Read state / info. First byte 0x02; second byte is the key. Keys in ascending order.</p>
+        <p class="subsection-note">Read state / info. First byte 0x02; second byte is the key. Keys in ascending order.</p>
         <div class="btns">
             <button data-tx="02 01" data-label="get_device_info">Device info (02 01)</button>
+            <button data-tx="02 03" data-label="get_time">Time (02 03)</button>
             <button data-tx="02 02" data-label="get_func_table">Func table (02 02)</button>
             <button data-tx="02 04" data-label="get_mac">MAC (02 04)</button>
-            <button data-tx="02 05" data-label="get_battery" title="VBUS_EVT_APP_GET_BATT_INFO evt 321. app_fresh_launch.txt.">Battery (02 05)</button>
+            <button data-tx="02 05" data-label="get_battery">Battery (02 05)</button>
             <button data-tx="02 07" data-label="get_func_table_ex">Func table ex (02 07)</button>
-            <button data-tx="02 08" data-label="get_hr_state" title="GET 0x02 0x08 — evt 422, base VBUS_EVT_BASE_APP_GET. Sent 4× after HR toggles.">HR state (02 08)</button>
-            <button data-tx="02 28" data-label="get_hand_up_gesture" title="IDOGetHandUpGestureFunction. Reads raise-to-wake (isOpen, time range, showSecond).">Hand-up gesture (02 28)</button>
-            <button data-tx="02 30" data-label="get_dnd" title="VBUS_EVT_APP_GET_DO_NOT_DISTURB / Get DND Mode (see IDOGetNotDisturbFunction). Also fills DND model in parser.">DND (02 30)</button>
-            <button data-tx="02 32" data-label="get_screen_brightness" title="IDOGetScreenBrightnessFunction. Fills Set Brightness form when reply is parsed.">Screen brightness (02 32)</button>
+            <button data-tx="02 30" data-label="get_dnd">DND (02 30)</button>
             <button data-tx="02 A7" data-label="get_flashbin_info">Flashbin info (02 A7)</button>
-            <button data-tx="02 B1" data-label="get_weather_switch" title="GET_WEATHER_SWITCH (evt 316). Reply byte 2 = weather on/off (0x55=off, 0xAA=on).">Weather switch (02 B1)</button>
-            <button data-tx="02 F0" data-label="get_mtu" title="VBUS_EVT_APP_GET_MTU_INFO evt 317. app_fresh_launch.txt, ui_watch_face_write_json.txt.">MTU info (02 F0)</button>
+            <button data-tx="02 B0" data-label="get_02_b0">GET 02 B0</button>
+            <button data-tx="02 B1" data-label="get_weather_switch">Weather switch (02 B1)</button>
+            <button data-tx="02 F0" data-label="get_mtu">MTU info (02 F0)</button>
         </div>
     </div>
 
     <div class="section">
         <h2>SET (cmd 0x03)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">Write config. First byte 0x03; second byte is the key. Keys in ascending order (0x01 → 0x60).</p>
+        <p class="subsection-note">Write actions for cmd 0x03, sorted by second byte.</p>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x01 Set time</p>
+        <p class="subsection-title">0x01 Time</p>
         <div class="btns">
-            <button data-tx="03 01 EA 07 03 08 01 11 18 06 00 00 00 00 00 00" data-label="set_time" title="VBUS_EVT_APP_SET_TIME evt 104. set_time.txt (fixed time from dump; use index.html for «Set time to now»).">Set time (03 01)</button>
+            <button type="button" id="btnSetTime" data-label="set_time">Set time (03 01)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x22 Hand (wrist)</p>
-        <div class="btns">
-            <button data-tx="03 22 00" data-label="set_hand_left">Left (03 22 00)</button>
-            <button data-tx="03 22 01" data-label="set_hand_right">Right (03 22 01)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x28 Hand gesture (raise to wake)</p>
-        <div class="btns">
-            <button data-tx="03 28 55 05 01 00 00 17 3B" data-label="set_hand_gesture_off">Off (03 28 55)</button>
-            <button data-tx="03 28 AA 05 01 00 00 17 3B" data-label="set_hand_gesture_on">On (03 28 AA)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x29 DND</p>
-        <div class="btns">
-            <button data-tx="03 29 AA 17 00 07 00 02 FE 55 17 00 07 00 00 00" data-label="set_dnd_on">DND on (03 29 AA)</button>
-            <button data-tx="03 29 55 17 00 07 00 02 FE 55 17 00 07 00 00 00" data-label="set_dnd_off">DND off (03 29 55)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x26 Find phone (VBUS_EVT_APP_SET_FIND_PHONE evt 103)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Watch triggers phone to ring. app_fresh_launch.txt: 03 26 AA 00 00 00 = on, 03 26 55 00 00 00 = off.</p>
-        <div class="btns">
-            <button data-tx="03 26 AA 00 00 00" data-label="set_find_phone_on" title="Evt 103. app_fresh_launch.txt.">On (03 26 AA)</button>
-            <button data-tx="03 26 55 00 00 00" data-label="set_find_phone_off">Off (03 26 55)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x2A Music</p>
-        <div class="btns">
-            <button data-tx="03 2A 55 55" data-label="set_music_off">Off (03 2A 55)</button>
-            <button data-tx="03 2A AA 55" data-label="set_music_on">On (03 2A AA)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x2C One-key SOS (VBUS_EVT_APP_SET_ONEKEY_SOS)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Emergency / SOS. 0xAA = on, 0x55 = off. index.html convention; no dedicated dump.</p>
-        <div class="btns">
-            <button data-tx="03 2C 55" data-label="set_onekey_sos_off">Off (03 2C 55)</button>
-            <button data-tx="03 2C AA" data-label="set_onekey_sos_on">On (03 2C AA)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x2D Weather push</p>
-        <div class="btns">
-            <button data-tx="03 2D 55 00 00 00" data-label="set_weather_off">Off (03 2D 55)</button>
-            <button data-tx="03 2D AA 00 00 00" data-label="set_weather_on">On (03 2D AA)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x0A WEATCHER (weather data / city) — evt 153, 6500</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">VBUS_EVT_APP_WEATCHER_DATA (153) = <strong>0A 01</strong> + payload; VBUS_EVT_APP_WEATCHER_CITY_NAME (6500) = <strong>0A 02</strong> + len + city UTF-8. Sent after weather switch on. See <code>set_push_weather_on.txt</code>.</p>
-        <div class="btns">
-            <button data-tx="0A 01 02 08 09 07 5B 00 00 02 0E 08 02 10 09 02 0F 09" data-label="weatcher_data" title="VBUS_EVT_APP_WEATCHER_DATA evt 153. 18 B from set_push_weather_on.txt.">Weather data (0A 01)</button>
-            <button data-tx="0A 02 06 4C 6F 6E 64 6F 6E 00 00 00 00 00 00 00 00 00 00 00" data-label="weatcher_city" title="VBUS_EVT_APP_WEATCHER_CITY_NAME evt 6500. City 'London' (len 6). set_push_weather_on.txt.">Weather city London (0A 02)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x32 Brightness / screen</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Model: <code>IDOSetScreenBrightnessInfoBluetoothModel</code>. Packet: <code>03 32 [levelValue] [isManual] [mode] [autoAdjustNight] [startHour] [startMinute] [endHour] [endMinute] [nightLevel] [showInterval]</code> (bytes 2–11). Same as <code>MainSetActivity.setScreenBrightness(level)</code> / <code>BLEManager.setScreenBrightness(int)</code>: Day level = level (1–100). See <code>Set screen brightness</code> in IDOGitBook and <code>GET 0x02 0x32</code> parser below.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem 1rem; align-items:center; margin-bottom:0.35rem;">
-            <label title="Screen brightness level (1–100)">Day level: <input type="number" id="brightness_level" min="1" max="100" value="40" style="width:3rem;"></label>
-            <label>Manual: 
-                <select id="brightness_is_manual" aria-label="User adjusted">
-                    <option value="1" selected>Yes</option>
-                    <option value="0">No</option>
-                </select>
-            </label>
-            <label>Mode: 
-                <select id="brightness_mode" aria-label="Brightness mode">
-                    <option value="0">0x00 Manual only</option>
-                    <option value="1">0x01 Ambient sensor</option>
-                    <option value="2">0x02 Auto night</option>
-                    <option value="3" selected>0x03 Scheduled night dim</option>
-                </select>
-            </label>
-            <label>Night auto: 
-                <select id="brightness_auto_night" aria-label="Auto adjust at night">
-                    <option value="0" selected>0x00 FW default</option>
-                    <option value="1">0x01 Off</option>
-                    <option value="2">0x02 Auto night</option>
-                    <option value="3">0x03 Scheduled</option>
-                </select>
-            </label>
-            <label>Start: <input type="number" id="brightness_start_h" min="0" max="23" value="19" style="width:2.5rem;">:<input type="number" id="brightness_start_m" min="0" max="59" value="0" style="width:2.5rem;"></label>
-            <label>End: <input type="number" id="brightness_end_h" min="0" max="23" value="6" style="width:2.5rem;">:<input type="number" id="brightness_end_m" min="0" max="59" value="0" style="width:2.5rem;"></label>
-            <label title="Brightness at night (1–100)">Night level: <input type="number" id="brightness_night_level" min="1" max="100" value="20" style="width:3rem;"></label>
-            <label title="Display interval / screen timeout (seconds)">Timeout: <input type="number" id="screen_timeout_sec" min="0" max="255" value="5" style="width:3rem;"></label>
-        </div>
-        <div class="btns">
-            <button data-brightness-send="1" data-label="set_brightness_03_32" title="Same as MainSetActivity.setScreenBrightness(level). Sends SET 03 32 with form values.">Set screen brightness (03 32)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x42 Woman health remind</p>
-        <div class="btns">
-            <button data-tx="03 42 03 03 08 00 03 03 03" data-label="set_woman_health_off">Off (03 42)</button>
-            <button data-tx="03 42 03 03 08 00 03 03 03" data-label="set_woman_health_on">On (03 42)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x45 Stress continuous</p>
-        <div class="btns">
-            <button data-tx="03 45 55 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" data-label="set_stress_off">Off (03 45)</button>
-            <button data-tx="03 45 AA 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" data-label="set_stress_on">On (03 45)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x47 Walk reminder</p>
-        <div class="btns">
-            <button data-tx="03 47 00 64 00 09 00 15 00 FE 00 00 73 00 00 00 01" data-label="set_walk_off">Off (03 47)</button>
-            <button data-tx="03 47 01 64 00 09 00 15 00 FE 00 00 73 00 00 00 01" data-label="set_walk_on">On (03 47)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x49 Auto sport detect</p>
-        <div class="btns">
-            <button data-tx="03 49 00 00 00 00 00 00 00 00 00" data-label="set_auto_sport_off">Off (03 49)</button>
-            <button data-tx="03 49 01 01 00 00 00 00 00 00 00" data-label="set_auto_sport_on">On (03 49)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x60 Drinking reminder</p>
-        <div class="btns">
-            <button data-tx="03 60 00 09 00 12 00 3E 1E 00 01 00 00 00 00 00" data-label="set_drinking_off">Off (03 60)</button>
-            <button data-tx="03 60 01 09 00 12 00 3F 1E 00 01 00 00 00 00 00" data-label="set_drinking_on">On (03 60)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x35 Connection parameters (VBUS_EVT_APP_SET_CONN_PARAM)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">
-            VeryFit uses a two-step <code>SET 0x35</code> handshake around heavy operations like v3 health sync and watch-face writes.
-            The SDK’s <code>IDOSetConnectParam</code> describes a JSON model (<code>mode</code>, <code>max_interval</code>, etc.), but on this firmware
-            the wire-level packets are simple 12-byte frames where <strong>byte2 is the conn-param step</strong>:
-            <code>03 35 00...</code>, <code>03 35 01...</code>, <code>03 35 02...</code>. The UI below replays the exact TX from
-            <code>set_conn_param.txt</code> and <code>ui_watch_face_write_json.txt</code>; replies are parsed as generic SET ACKs.
-        </p>
-        <div class="btns">
-            <button data-tx="03 35 00 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_00" title="Step 0 (seen before MTU query in ui_watch_face_write_json.txt).">Step 0 (03 35 00…)</button>
-            <button data-tx="03 35 01 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_01" title="Step 1 (prepares conn params before user/config in get_sync_health_v3.txt).">Step 1 (03 35 01…)</button>
-            <button data-tx="03 35 02 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_02" title="Step 2 (finalize conn params; set_conn_param.txt).">Step 2 (03 35 02…)</button>
-        </div>
-
-        <p style="margin:0.75rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x02 Alarms (legacy) + V3 alarms</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">
-            Legacy SET 0x03 0x02 per-alarm payload is: <code>[alarm_id][status][type][hour][minute][repeat][snooze_min]</code>.
-            V3 alarms (cmd 0x0E / <code>VBUS_EVT_FUNC_V3_SPORT_SORT</code>) send a single frame for all 10 slots; the wire payload in
-            <code>set_alarms_and_sports.txt</code> is:
-            <code>[maxAlarms=0x0A][AlarmIndex][on/off][hour][minute][enabled+repeat bits][snoozeMinutes_L][snoozeMinutes_H][snoozeFreq_L][snoozeFreq_H][24B alarmName]…</code>
-            repeated for each alarm index. The UI below manages a 10-slot list and maps the form into that richer V3 structure while
-            keeping the simpler legacy 0x02 helper available.
-        </p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem 0.8rem; align-items:center; margin-bottom:0.4rem;">
-            <label>Slot <input type="number" id="alarm_slot" min="0" max="9" value="0" style="width:2.2rem;" title="Alarm slot 0..9 (v3 has 10 slots)."></label>
+        <p class="subsection-title">0x0E Alarms (legacy + V3)</p>
+        <p class="subsection-note">Legacy one-shot alarms + V3 packed-alarm payload generator.</p>
+        <div class="form-row form-row-tight">
+            <label>Slot <input type="number" id="alarm_slot" min="0" max="9" value="0" class="input-xxs" title="Alarm slot 0..9 (v3 has 10 slots)."></label>
             <label>Enable <select id="alarm_enable" aria-label="On/off"><option value="on" selected>On</option><option value="off">Off</option></select></label>
             <label>Type <select id="alarm_type" aria-label="Alarm type" title="Alarm category: 0=Wake up, 1=Sleep, 2=Sport, 3=Medicine, 4=Dating, 5=Party, 6=Meeting, 7=Custom (legacy + v3).">
                 <option value="0">Wake up</option><option value="1">Sleep</option><option value="2">Sport</option><option value="3">Medicine</option>
                 <option value="4">Dating</option><option value="5">Party</option><option value="6">Meeting</option><option value="7">Custom</option>
             </select></label>
-            <label>Hour <input type="number" id="alarm_hour" min="0" max="23" value="7" style="width:2.2rem;"></label>
-            <label>Minute <input type="number" id="alarm_minute" min="0" max="59" value="0" style="width:2.2rem;"></label>
+            <label>Hour <input type="number" id="alarm_hour" min="0" max="23" value="7" class="input-xxs"></label>
+            <label>Minute <input type="number" id="alarm_minute" min="0" max="59" value="0" class="input-xxs"></label>
             <label>Repeat <select id="alarm_repeat" aria-label="Days repeat (0=no repeat)">
                 <option value="0">Once (0)</option><option value="255" selected>Every day (0xFF)</option>
                 <option value="31">Weekdays (0x1F)</option><option value="96">Weekend (0x60)</option>
                 <option value="custom">Custom hex</option>
             </select></label>
-            <span id="alarm_repeat_hex_span" style="display:none;"><input type="text" id="alarm_repeat_hex" value="FF" size="2" maxlength="2" placeholder="FF" style="width:2.2rem;"></span>
-            <label>Remind interval (snooze) <input type="number" id="alarm_snooze" min="0" max="120" value="10" style="width:2.2rem;" title="Snooze / remind-me-later interval (minutes)."> min</label>
-            <label>Repeats of reminder <input type="number" id="alarm_repeat_times" min="1" max="10" value="1" style="width:2.2rem;" title="How many times to remind after first (V3 only, maps to snooze frequency)."> time(s)</label>
-            <label>Name <input type="text" id="alarm_name" maxlength="24" placeholder="Optional name (24 ASCII bytes max)" style="width:9rem;"></label>
+            <span id="alarm_repeat_hex_span" class="hidden"><input type="text" id="alarm_repeat_hex" value="FF" size="2" maxlength="2" placeholder="FF" class="input-xxs"></span>
+            <label>Remind (min) <input type="number" id="alarm_snooze" min="0" max="120" value="10" class="input-xxs" title="Snooze / remind-me-later interval (minutes)."></label>
+            <label>Repeat count <input type="number" id="alarm_repeat_times" min="1" max="10" value="1" class="input-xxs" title="How many times to remind after first (V3 only, maps to snooze frequency)."></label>
+            <label>Name <input type="text" id="alarm_name" maxlength="24" placeholder="Optional name (24 ASCII bytes max)" class="input-l"></label>
         </div>
         <div class="btns">
             <button type="button" id="btnAddAlarmToList" title="Add current form to sync list.">Add to list</button>
-            <button type="button" id="btnSyncAlarmsToWatch" title="Send all 10 alarm slots in one v3 cmd 0x0E packet (set_alarms_and_sports.txt).">Sync all to watch (v3 0x0E)</button>
+            <button type="button" id="btnSyncAlarmsToWatch">Sync all to watch (v3 0x0E)</button>
             <button type="button" id="btnClearAlarmList" title="Clear the alarm list.">Clear list</button>
         </div>
-        <p style="margin:0.25rem 0 0; font-size:0.8rem; color:#666;"><span id="alarm_list_count">0 alarms in list</span></p>
-        <div id="alarm_list_display" style="margin:4px 0; padding:6px; background:#f5f5f5; border:1px solid #e0e0e0; border-radius:4px; font-size:11px; max-height:100px; overflow:auto;"></div>
+        <p class="subsection-note"><span id="alarm_list_count">0 alarms in list</span></p>
+        <div id="alarm_list_display"></div>
 
-        <p style="margin:0.75rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:red;">0x30 Notice / call alert (VBUS_EVT_APP_SET_NOTICE) — not fully understood</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">20-byte payload. app_fresh_launch.txt: 03 30 88 00 00 AA 00… = enable; 03 30 88 00 00 55 00… = disable (0x55=off, same as Music/DND).</p>
+        <p class="subsection-title">0x22 Wrist</p>
+        <div class="btns">
+            <button data-tx="03 22 00" data-label="set_hand_left">Left (03 22 00)</button>
+            <button data-tx="03 22 01" data-label="set_hand_right">Right (03 22 01)</button>
+        </div>
+
+        <p class="subsection-title">0x26 Find phone</p>
+        <div class="btns">
+            <button data-tx="03 26 AA 00 00 00" data-label="set_find_phone_on">On (03 26 AA)</button>
+            <button data-tx="03 26 55 00 00 00" data-label="set_find_phone_off">Off (03 26 55)</button>
+        </div>
+
+        <p class="subsection-title">0x28 Hand gesture</p>
+        <div class="btns">
+            <button data-tx="03 28 55 05 01 00 00 17 3B" data-label="set_hand_gesture_off">Off (03 28 55)</button>
+            <button data-tx="03 28 AA 05 01 00 00 17 3B" data-label="set_hand_gesture_on">On (03 28 AA)</button>
+        </div>
+
+        <p class="subsection-title">0x29 DND</p>
+        <div class="btns">
+            <button data-tx="03 29 AA 17 00 07 00 02 FE 55 17 00 07 00 00 00" data-label="set_dnd_on">DND on (03 29 AA)</button>
+            <button data-tx="03 29 55 17 00 07 00 02 FE 55 17 00 07 00 00 00" data-label="set_dnd_off">DND off (03 29 55)</button>
+        </div>
+
+        <p class="subsection-title">0x2A Music</p>
+        <div class="btns">
+            <button data-tx="03 2A 55 55" data-label="set_music_off">Off (03 2A 55)</button>
+            <button data-tx="03 2A AA 55" data-label="set_music_on">On (03 2A AA)</button>
+        </div>
+        <p class="subsection-note">SET sub <code>0xE3</code> (evt 174 in app): after <strong>Music start</strong> (<code>06 01</code>) the phone sends <code>03 E3 10 02</code>; bind/config sometimes uses <code>03 E3 10 01</code>. See <code>packetdumps/logcat/set_music_on.txt</code> and <code>docs/packet_03_e3_10_02.md</code>.</p>
+        <div class="btns">
+            <button data-tx="03 E3 10 02" data-label="set_03_e3_10_02">03 E3 10 02 (evt 174)</button>
+            <button data-tx="03 E3 10 01" data-label="set_03_e3_10_01">03 E3 10 01 (variant)</button>
+        </div>
+
+        <p class="subsection-title">0x2C One-key SOS</p>
+        <div class="btns">
+            <button data-tx="03 2C 55" data-label="set_onekey_sos_off">Off (03 2C 55)</button>
+            <button data-tx="03 2C AA" data-label="set_onekey_sos_on">On (03 2C AA)</button>
+        </div>
+
+        <p class="subsection-title">0x2D Weather push</p>
+        <div class="btns">
+            <button data-tx="03 2D 55 00 00 00" data-label="set_weather_off">Off (03 2D 55)</button>
+            <button data-tx="03 2D AA 00 00 00" data-label="set_weather_on">On (03 2D AA)</button>
+        </div>
+
+        <p class="subsection-title warning">0x30 Notice / call alert</p>
+        <p class="subsection-note">Enable is <code>AA</code>, disable is <code>55</code>.</p>
         <div class="btns">
             <button data-tx="03 30 88 00 00 55 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_off">Off (03 30)</button>
             <button data-tx="03 30 88 00 00 AA 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_on">On (03 30)</button>
         </div>
-        <p style="margin:0.35rem 0 0.2rem; font-size:0.75rem; color:#666;">Angelfit 5-byte payload. notify_switch and call_switch: 0→0x55, 1→0x88. notify_itme1, notify_itme2, call_delay: raw 0–255.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.5rem 1rem; align-items:center; margin-bottom:0.35rem;">
-            <label title="notify_switch (angelfit). On some devices 0x55 here triggers a pairing request; may not control notifications.">notify_switch: <input type="number" id="notice_notify_switch" min="0" max="255" value="1" style="width:3rem;"></label>
-            <label title="notify_itme1">notify_itme1: <input type="number" id="notice_notify_itme1" min="0" max="255" value="0" style="width:3rem;"></label>
-            <label title="notify_itme2">notify_itme2: <input type="number" id="notice_notify_itme2" min="0" max="255" value="0" style="width:3rem;"></label>
-            <label title="call_switch">call_switch: <input type="number" id="notice_call_switch" min="0" max="255" value="1" style="width:3rem;"></label>
-            <label title="call_delay (e.g. seconds)">call_delay: <input type="number" id="notice_call_delay" min="0" max="255" value="3" style="width:3rem;"></label>
-            <span id="notice_5b_hex" style="font-family:monospace; font-size:0.8rem; color:#555;"></span>
+
+        <p class="subsection-title">0x32 Brightness / screen</p>
+        <div class="form-row">
+            <label>Day level <input type="number" id="brightness_level" min="1" max="100" value="40" class="input-s"></label>
+            <label>Manual
+                <select id="brightness_is_manual" aria-label="User adjusted">
+                    <option value="1" selected>Yes</option>
+                    <option value="0">No</option>
+                </select>
+            </label>
+            <label>Mode
+                <select id="brightness_mode" aria-label="Brightness mode">
+                    <option value="0">0x00</option>
+                    <option value="1">0x01</option>
+                    <option value="2">0x02</option>
+                    <option value="3" selected>0x03</option>
+                </select>
+            </label>
+            <label>Auto night
+                <select id="brightness_auto_night" aria-label="Auto adjust at night">
+                    <option value="0" selected>0x00</option>
+                    <option value="1">0x01</option>
+                    <option value="2">0x02</option>
+                    <option value="3">0x03</option>
+                </select>
+            </label>
+            <label>Start <input type="number" id="brightness_start_h" min="0" max="23" value="19" class="input-xs">:<input type="number" id="brightness_start_m" min="0" max="59" value="0" class="input-xs"></label>
+            <label>End <input type="number" id="brightness_end_h" min="0" max="23" value="6" class="input-xs">:<input type="number" id="brightness_end_m" min="0" max="59" value="0" class="input-xs"></label>
+            <label>Night <input type="number" id="brightness_night_level" min="1" max="100" value="20" class="input-s"></label>
+            <label>Timeout <input type="number" id="screen_timeout_sec" min="0" max="255" value="5" class="input-s"></label>
         </div>
         <div class="btns">
-            <button data-notice-5b="1" data-label="set_notice_5b">Send (5 B + 15 padding = 20 B)</button>
-            <button type="button" id="btnNotice5bPresetOn" data-label="set_notice_5b_preset">Preset: legacy on (01 00 00 01 03)</button>
-            <button type="button" id="btnNotice5bPresetOff" data-label="set_notice_5b_preset">Preset: legacy off (00 00 00 00 00)</button>
+            <button data-brightness-send="1" data-list-vbus-header="03 32" data-label="set_brightness_03_32">Set brightness (03 32)</button>
+        </div>
+
+        <p class="subsection-title">0x35 Connection params</p>
+        <p class="subsection-note">Used before heavy ops (v3 sync/watch-face write).</p>
+        <div class="btns">
+            <button data-tx="03 35 00 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_00">Step 0 (03 35 00)</button>
+            <button data-tx="03 35 01 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_01">Step 1 (03 35 01)</button>
+            <button data-tx="03 35 02 00 00 00 00 00 00 00 00 00" data-label="set_conn_param_02">Step 2 (03 35 02)</button>
+        </div>
+
+        <p class="subsection-title">0x42 Woman health remind</p>
+        <div class="btns">
+            <button data-tx="03 42 03 03 08 00 03 03 03" data-label="set_woman_health_off">Off (03 42)</button>
+            <button data-tx="03 42 03 03 08 00 03 03 03" data-label="set_woman_health_on">On (03 42)</button>
+        </div>
+
+        <p class="subsection-title">0x45 Stress continuous</p>
+        <div class="btns">
+            <button data-tx="03 45 55 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" data-label="set_stress_off">Off (03 45)</button>
+            <button data-tx="03 45 AA 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" data-label="set_stress_on">On (03 45)</button>
+        </div>
+
+        <p class="subsection-title">0x47 Walk reminder</p>
+        <div class="btns">
+            <button data-tx="03 47 00 64 00 09 00 15 00 FE 00 00 73 00 00 00 01" data-label="set_walk_off">Off (03 47)</button>
+            <button data-tx="03 47 01 64 00 09 00 15 00 FE 00 00 73 00 00 00 01" data-label="set_walk_on">On (03 47)</button>
+        </div>
+
+        <p class="subsection-title">0x49 Auto sport detect</p>
+        <div class="btns">
+            <button data-tx="03 49 00 00 00 00 00 00 00 00 00" data-label="set_auto_sport_off">Off (03 49)</button>
+            <button data-tx="03 49 01 01 00 00 00 00 00 00 00" data-label="set_auto_sport_on">On (03 49)</button>
+        </div>
+
+        <p class="subsection-title">0x60 Drinking reminder</p>
+        <div class="btns">
+            <button data-tx="03 60 00 09 00 12 00 3E 1E 00 01 00 00 00 00 00" data-label="set_drinking_off">Off (03 60)</button>
+            <button data-tx="03 60 01 09 00 12 00 3F 1E 00 01 00 00 00 00 00" data-label="set_drinking_on">On (03 60)</button>
+        </div>
+
+        <p class="subsection-title">Angelfit 5-byte payload</p>
+        <div class="form-row">
+            <label>notify_switch <input type="number" id="notice_notify_switch" min="0" max="255" value="1" class="input-s"></label>
+            <label>notify_itme1 <input type="number" id="notice_notify_itme1" min="0" max="255" value="0" class="input-s"></label>
+            <label>notify_itme2 <input type="number" id="notice_notify_itme2" min="0" max="255" value="0" class="input-s"></label>
+            <label>call_switch <input type="number" id="notice_call_switch" min="0" max="255" value="1" class="input-s"></label>
+            <label>call_delay <input type="number" id="notice_call_delay" min="0" max="255" value="3" class="input-s"></label>
+            <span id="notice_5b_hex"></span>
+        </div>
+        <div class="btns">
+            <button data-notice-5b="1" data-label="set_notice_5b">Send payload (20B)</button>
+            <button type="button" id="btnNotice5bPresetOn" data-label="set_notice_5b_preset">Preset on</button>
+            <button type="button" id="btnNotice5bPresetOff" data-label="set_notice_5b_preset">Preset off</button>
         </div>
     </div>
 
     <div class="section">
         <h2>BIND (cmd 0x04)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">VBUS_EVT_APP_BIND_START (evt 200). app_fresh_launch sends this after GET MTU; watch replies to confirm bind. First byte 0x04.</p>
+        <p class="subsection-note">VBUS_EVT_APP_BIND_START (evt 200). app_fresh_launch sends this after GET MTU; watch replies to confirm bind. First byte 0x04.</p>
         <div class="btns">
-            <button data-tx="04 01 F1 01 01 02 02 01 00" data-label="bind_start" title="From app_fresh_launch.txt after 02 F0. May set bind mode on watch.">Bind start (04 01)</button>
+            <button data-tx="04 01 F1 01 01 02 02 01 00" data-label="bind_start">Bind start (04 01)</button>
         </div>
     </div>
 
     <div class="section">
         <h2>MSG (cmd 0x05)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">Phone → watch notifications. <strong>0x05 0x01</strong> = call (KEY_MSG_CALL), <strong>0x05 0x02</strong> = call status (KEY_MSG_CALL_STATUS), <strong>0x05 0x03</strong> = MSG (KEY_MSG_MSG). Chunked in 16-byte payloads for firmware format. TOOBUR.md; angelfit protocol.h.</p>
+        <p class="subsection-note">Phone → watch notifications: call/message (chunked), or call status end.</p>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x05 0x02 Call status</p>
-        <div class="btns">
-            <button data-tx="05 02 01" data-label="msg_call_status_end" title="Status 1 = end/dismiss call (angelfit VBUS_EVT_APP_SET_NOTICE_STOP_CALL). KEY_MSG_CALL_STATUS.">End call (05 02 01)</button>
-        </div>
-
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">0x05 0x01 / 0x05 0x03 — send custom (form)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Sender = caller name (call) or message sender. Message = body. For <strong>Firmware MSG</strong> (0x05 0x03), first payload byte = source app type (0–255). 0=nothing (invalid, no notification sent), 1=SMS, 2=Mail, 3=WeChat, 4=Snapchat, 5=invalid, 6=Facebook, 7=Twitter, 8=WhatsApp, 9=Facebook Messenger, 10=Instagram, 11=LinkedIn, 12=Calendar, 13=Skype.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:0.4rem 0.8rem; align-items:center; margin-bottom:0.4rem;">
+        <p class="subsection-title">0x05 0x01 / 0x05 0x03 — send custom (form)</p>
+        <p class="subsection-note">Format 05 01 = firmware call, 05 03 = firmware message. First byte selects app type.</p>
+        <div class="form-row form-row-tight">
             <label>Format <select id="msg_format" aria-label="MSG format">
                 <option value="fwcall">Firmware call (05 01 chunked 16B)</option>
                 <option value="fwmsg">Firmware MSG (05 03 chunked 16B)</option>
             </select></label>
-            <label id="label_msg_type" style="display:none;">Source app (type) <select id="msg_msg_type" aria-label="MSG source app type byte" title="First payload byte for KEY_MSG_MSG">
+            <label id="label_msg_type" class="hidden">Source app (type) <select id="msg_msg_type" aria-label="MSG source app type byte" title="First payload byte for KEY_MSG_MSG">
                 <option value="1" selected>SMS (1)</option>
                 <option value="2">Mail (2)</option>
                 <option value="3">WeChat (3)</option>
@@ -328,90 +672,159 @@
                 <option value="12">Calendar (12)</option>
                 <option value="13">Skype (13)</option>
             </select></label>
-            <label>Sender <input type="text" id="msg_sender" value="Test" placeholder="Caller / sender" maxlength="20" style="width:8rem;"></label>
-            <label>Message <input type="text" id="msg_text" value="Hello" placeholder="Message body or call text" maxlength="60" style="width:10rem;"></label>
+            <label>Sender <input type="text" id="msg_sender" value="Test" placeholder="Caller / sender" maxlength="20" class="input-m"></label>
+            <label>Message <input type="text" id="msg_text" value="Hello" placeholder="Message body or call text" maxlength="60" class="input-xl"></label>
         </div>
         <div class="btns">
-            <button type="button" id="btnSendMsg" data-msg-send="1" data-label="msg_send_custom" title="Send notification using format above. Chunked with 150 ms between chunks if needed.">Send notification to watch</button>
+            <button type="button" id="btnSendMsg" data-msg-send="1" data-label="msg_send_custom">Send notification</button>
+        </div>
+
+        <p class="subsection-title">0x05 0x02 Call status</p>
+        <div class="btns">
+            <button data-tx="05 02 01" data-label="msg_call_status_end">End call (05 02 01)</button>
         </div>
     </div>
 
     <div class="section">
         <h2>Control (cmd 0x06)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">Control commands are <strong>watch → phone</strong> actions (the watch sends to the phone). VBUS_EVT_APP_APP_TO_BLE_*: Music (500/501), Photo (APP_TO_BLE_PHOTO_*), Find device (FIND_DEVICE_*), Single sport, ANCS. TOOBUR.md table; index.html.</p>
+        <p class="subsection-note">Watch-initiated controls, ordered by sub-command.</p>
         <div class="btns">
-            <button data-tx="06 01 00 00 00 00" data-label="control_music_start" title="VBUS_EVT_APP_APP_TO_BLE_MUSIC_START evt 500. Start/play music on watch.">Music start (06 01 00)</button>
-            <button data-tx="06 01 01 00 00 00" data-label="control_music_stop" title="VBUS_EVT_APP_APP_TO_BLE_MUSIC_STOP evt 501. Stop/pause music on watch.">Music stop (06 01 01)</button>
-            <button data-tx="06 02 00 00 00 00" data-label="control_photo_start" title="VBUS_EVT_APP_APP_TO_BLE_PHOTO_START. Remote camera trigger.">Photo start (06 02 00)</button>
-            <button data-tx="06 02 01 00 00 00" data-label="control_photo_stop" title="VBUS_EVT_APP_APP_TO_BLE_PHOTO_STOP.">Photo stop (06 02 01)</button>
-            <button data-tx="06 04 00 00 00 00" data-label="control_find_device_start" title="VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_START. Watch vibrates/rings.">Find device start (06 04 00)</button>
-            <button data-tx="06 04 01 00 00 00" data-label="control_find_device_stop" title="VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_STOP.">Find device stop (06 04 01)</button>
-            <button data-tx="06 03 00 00 00 00" data-label="control_single_sport_start" title="Single sport mode. Func table single_sport must be set.">Single sport start (06 03 00)</button>
-            <button data-tx="06 03 01 00 00 00" data-label="control_single_sport_stop">Single sport stop (06 03 01)</button>
-            <button data-tx="06 30 00 00 00 00" data-label="control_ancs_open" title="VBUS_EVT_APP_APP_TO_BLE_OPEN_ANCS. iOS notifications.">Open ANCS (06 30)</button>
-            <button data-tx="06 31 00 00 00 00" data-label="control_ancs_close" title="VBUS_EVT_APP_APP_TO_BLE_CLOSE_ANCS.">Close ANCS (06 31)</button>
+            <button data-tx="06 01 00 00 00 00" data-label="control_music_start">Music start (06 01 00)</button>
+            <button data-tx="06 01 01 00 00 00" data-label="control_music_stop">Music stop (06 01 01)</button>
+            <button data-tx="06 02 00 00 00 00" data-label="control_photo_start">Photo start (06 02 00)</button>
+            <button data-tx="06 02 01 00 00 00" data-label="control_photo_stop">Photo stop (06 02 01)</button>
+            <button data-tx="06 03 00 00 00 00" data-label="control_single_sport_start">Sport start (06 03 00)</button>
+            <button data-tx="06 03 01 00 00 00" data-label="control_single_sport_stop">Sport stop (06 03 01)</button>
+            <button data-tx="06 04 00 00 00 00" data-label="control_find_device_start">Find start (06 04 00)</button>
+            <button data-tx="06 04 01 00 00 00" data-label="control_find_device_stop">Find stop (06 04 01)</button>
+            <button data-tx="06 30 00 00 00 00" data-label="control_ancs_open">Open ANCS (06 30)</button>
+            <button data-tx="06 31 00 00 00 00" data-label="control_ancs_close">Close ANCS (06 31)</button>
         </div>
     </div>
 
     <div class="section">
-        <h2>Other (cmd 0xF0)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">RESET 0xF0 0x01 = Reboot. Watch reboots; connection drops. TOOBUR.md.</p>
+        <h2>WEATHER (cmd 0x0A)</h2>
+        <p class="subsection-note">Weather payload examples.</p>
         <div class="btns">
-            <button data-tx="F0 01" data-label="reboot" title="Reboot the watch. Connection will drop.">Reboot (F0 01)</button>
+            <button data-tx="0A 01 02 08 09 07 5B 00 00 02 0E 08 02 10 09 02 0F 09" data-label="weatcher_data">Weather data (0A 01)</button>
+            <button data-tx="0A 02 06 4C 6F 6E 64 6F 6E 00 00 00 00 00 00 00 00 00 00 00" data-label="weatcher_city">Weather city London (0A 02)</button>
         </div>
     </div>
 
     <div class="section">
         <h2>V3 (cmd 0x33 — 33 DA AD DA AD…)</h2>
-        <p style="margin:0 0 0.5rem; font-size:0.85rem; color:#555;">Extended protocol. Sub-command in bytes 4–5 (e.g. 0x0B 0x06 = watch face select). Ordered ascending by sub-cmd.</p>
+        <p class="subsection-note">Extended protocol. Sub-command in bytes 4–5 (e.g. 0x0B 0x06 = watch face select). Ordered ascending by sub-cmd.</p>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 0B 06 / 0B 07 — Watch face</p>
+        <p class="subsection-title">v3 0B 06 / 0B 07 — Watch face</p>
         <div class="btns">
             <button data-tx="33 DA AD DA AD 01 0B 00 06 00 4E 01 4A F5" data-label="ui_select_watch_face">Select dial (v3 0B 06)</button>
             <button data-tx="33 DA AD DA AD 01 0B 00 07 00 50 01 82 A3" data-label="ui_watch_face_write_json">Write JSON (v3 0B 07)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 0C 0F — GET alarm (VBUS_EVT_FUNC_V3_GET_ALARM evt 5018)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Request alarm list from watch. Reply is multi-packet (353+2 CRC bytes); parsed alarms are loaded into the alarm list below. See <code>logcat_dumps/get_alarm.txt</code>.</p>
+        <p class="subsection-title">v3 0C 0F — GET alarm (VBUS_EVT_FUNC_V3_GET_ALARM evt 5018)</p>
+        <p class="subsection-note">Request alarm list from watch. Reply is multi-packet (353+2 CRC bytes); parsed alarms are loaded into the alarm list below. See <code>logcat_dumps/get_alarm.txt</code>.</p>
         <div class="btns">
             <button data-tx="33 DA AD DA AD 01 0C 00 0F 00 24 01 00 28 18" data-label="get_alarm">Get alarm (v3 0C 0F)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 0x0E — Set sport type sort (setSportSortV3 / VBUS_EVT_FUNC_V3_SPORT_SORT)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">Function table: <code>getSportsTypeV3</code>. Event: <code>base_app_set</code> + <code>func_v3_sport_sort</code>. JSON: <code>num</code> (1–30), <code>item</code> array of <code>{ index, type }</code> — index from 1, type = sport type id. Same v3 cmd 0x0E as in <code>set_alarms_and_sports.txt</code> (evt 5017).</p>
-        <div style="margin-bottom:0.35rem;">
-            <label for="sport_sort_json" style="font-size:0.8rem;">JSON (num + item with index &amp; type):</label>
-            <textarea id="sport_sort_json" rows="8" style="width:100%; max-width:24rem; font-family:monospace; font-size:0.8rem;" placeholder='{"num":3,"item":[{"index":1,"type":2},{"index":2,"type":22},{"index":3,"type":33}]}'>{"num":3,"item":[{"index":1,"type":2},{"index":2,"type":22},{"index":3,"type":33}]}</textarea>
+        <p class="subsection-title">v3 0x0E — Set sport type sort (setSportSortV3 / VBUS_EVT_FUNC_V3_SPORT_SORT)</p>
+        <p class="subsection-note">Function table: <code>getSportsTypeV3</code>. Event: <code>base_app_set</code> + <code>func_v3_sport_sort</code>. JSON: <code>num</code> (1–30), <code>item</code> array of <code>{ index, type }</code> — index from 1, type = sport type id. Same v3 cmd 0x0E as in <code>set_alarms_and_sports.txt</code> (evt 5017).</p>
+        <div class="subsection-note">
+            <label for="sport_sort_json">JSON (num + item with index &amp; type):</label>
+            <textarea id="sport_sort_json" rows="8" placeholder='{"num":3,"item":[{"index":1,"type":2},{"index":2,"type":22},{"index":3,"type":33}]}'>{"num":3,"item":[{"index":1,"type":2},{"index":2,"type":22},{"index":3,"type":33}]}</textarea>
         </div>
         <div class="btns">
             <button type="button" id="btnSetSportSortV3" data-set-sport-sort-v3="1" data-label="set_sport_sort_v3">Set sport sort (v3 0x0E)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 health sync (get_sync_health_v3.txt)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;"><strong>Get sizes</strong> = v3 <strong>cmd 0x05</strong>: ask the watch how much health data exists. Then use <strong>cmd 0x04</strong> per data type: <strong>4 = workout/activity records</strong>, <strong>7 = sleep</strong>, <strong>8 = daily sport summary (steps / kcal / distance)</strong>. On this firmware, <strong>type 8</strong> is the useful path for day totals; <strong>type 7</strong> for sleep data.</p>
+        <p class="subsection-title">v3 health sizes (get_sync_health_v3.txt)</p>
+        <p class="subsection-note"><strong>Get sizes</strong> = v3 <strong>cmd 0x05</strong>: ask the watch how much health data exists. Then use <strong>cmd 0x04</strong> per data type: <strong>4 = workout/activity records</strong>, <strong>7 = sleep</strong>, <strong>8 = daily sport summary (steps / kcal / distance)</strong>. On this firmware, <strong>type 8</strong> is the useful path for day totals; <strong>type 7</strong> for sleep data.</p>
         <div class="btns">
-            <button data-sync-v3="1" data-label="get_sync_health_v3" title="Exact TX from get_sync_health_v3.txt line 42 (137 B).">Start sync V3 health (cmd 0x05) — get sizes</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 5B 01 00 04 00 00 00 35 D7" data-label="sync_activity_v3_health" title="Type 4 is workout/activity record sync. It can legitimately be empty if the watch has no stored workout record.">Sync workout record (cmd 0x04 type 4)</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 08 01 00 00 F4 05" data-label="sync_sport_v3_health" title="Type 8 is the daily sport summary path used by VeryFit for steps/kcal/distance.">Sync sport summary (cmd 0x04 type 8)</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 07 01 00 00 F5 05" data-label="sync_sleep_v3_health" title="Type 7 is sleep summary (total/light/deep/REM, fall asleep &amp; get up times).">Sync sleep (cmd 0x04 type 7)</button>
-            <button id="btnGetActivity" data-get-activity="1" data-label="get_activity" title="Legacy: 02 01 then v3 cmd 0x1a key 0x42. May return empty on some watches.">Get Activity (02 01 + v3) — deprecated</button>
+            <button data-sync-v3="1" data-label="get_sync_health_v3">Get health sizes</button>
+            <button data-tx="33 DA AD DA AD 01 10 00 04 00 5B 01 00 04 00 00 00 35 D7" data-label="sync_activity_v3_health">Sync workout record</button>
+            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 07 01 00 00 F5 05" data-label="sync_sleep_v3_health">Sync sleep</button>
+            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 08 01 00 00 F4 05" data-label="sync_sport_v3_health">Sync sport summary</button>
             <button id="btnSimulateActivity" data-simulate-activity="1" data-label="simulate_activity">Simulate activity (no device)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 1A xx — Function table (raw)</p>
-        <p style="margin:0 0 0.35rem; font-size:0.8rem; color:#555;">
+        <p class="subsection-title">v3 1A xx — Function table (raw)</p>
+        <p class="subsection-note">
             Sends the captured <code>0x33 0x1A</code> frame from <code>app_fresh_launch.txt</code> (cmd id 0x1A, seq 0x02) on devices where func table bit <code>v3_function_table_33_1a</code> is set. Reply will be tagged as a v3 function-table packet in the console.
         </p>
         <div class="btns">
             <button data-v3-func-table="1" data-tx="33 DA AD DA AD 01 0B 00 1A 00 02 00 5F F9" data-label="v3_function_table_33_1a">Send v3 func table (33 1A)</button>
         </div>
 
-        <p style="margin:0.5rem 0 0.2rem; font-size:0.75rem; font-weight:600; color:#666;">v3 17 09 — SET HR continuous</p>
+        <p class="subsection-title">v3 17 09 — SET HR continuous</p>
         <div class="btns">
             <button data-tx="33 DA AD DA AD 01 17 00 09 00 14 01 BA AD AC 69 99 00 00 00 00 00 2C 01 56 BE" data-label="set_hr_cont_off">Off (v3 17 09 14)</button>
             <button data-seq="33 DA AD DA AD 01 17 00 09 00 17 01 D8 AD AC 69 99 00 00 00 00 00 2C 01 56 08|33 DA AD DA AD 01 17 00 09 00 18 01 00 00 00 00 00 01 00 00 17 3B 00 00 E5 CD" data-label="set_hr_cont_on">On (v3 17 09, 2 pkts)</button>
         </div>
+
+        <p class="subsection-title">v3 09 — Set HR mode (func_v3_set_hr_mode)</p>
+        <p class="subsection-note">High-level V3 heart-rate mode from IDO docs (setHeartMode / VBUS_EVT_FUNC_V3_SET_HR_MODE). This UI maps a few common modes to the captured v3 17 09 frames; advanced options are logged as JSON only.</p>
+        <div class="form-row form-row-tight">
+            <label>Mode
+                <select id="v3_hr_mode">
+                    <option value="0">Off (0)</option>
+                    <option value="1">Auto 5min (1)</option>
+                    <option value="2" selected>Continuous 5s (2)</option>
+                    <option value="3">Manual (3)</option>
+                    <option value="4">Default type (4)</option>
+                    <option value="5">Custom interval (5)</option>
+                    <option value="6">Smart HR (6)</option>
+                </select>
+            </label>
+            <label>Has time range
+                <select id="v3_hr_has_range">
+                    <option value="0" selected>No (0)</option>
+                    <option value="1">Yes (1)</option>
+                </select>
+            </label>
+            <label>Start
+                <input id="v3_hr_start_h" type="number" min="0" max="23" value="0" class="input-xxs"> :
+                <input id="v3_hr_start_m" type="number" min="0" max="59" value="0" class="input-xxs">
+            </label>
+            <label>End
+                <input id="v3_hr_end_h" type="number" min="0" max="23" value="23" class="input-xxs"> :
+                <input id="v3_hr_end_m" type="number" min="0" max="59" value="59" class="input-xxs">
+            </label>
+            <label>Interval (s)
+                <input id="v3_hr_interval" type="number" min="5" max="3600" value="300" class="input-xs">
+            </label>
+            <label>Notify
+                <select id="v3_hr_notify_flag">
+                    <option value="0">Invalid (0)</option>
+                    <option value="1" selected>Allow (1)</option>
+                    <option value="2">Silent (2)</option>
+                    <option value="3">Off (3)</option>
+                </select>
+            </label>
+        </div>
+        <div class="form-row form-row-tight">
+            <label>High alert
+                <input id="v3_hr_high_mode" type="checkbox"> enable
+                <input id="v3_hr_high_value" type="number" min="60" max="220" value="180" class="input-xs">
+            </label>
+            <label>Low alert
+                <input id="v3_hr_low_mode" type="checkbox"> enable
+                <input id="v3_hr_low_value" type="number" min="30" max="120" value="40" class="input-xs">
+            </label>
+        </div>
+        <div class="btns">
+            <button type="button" id="btnV3SetHrMode" data-label="v3_set_hr_mode">Set HR mode (v3 09)</button>
+        </div>
     </div>
+
+    <div class="section">
+        <h2>Other (cmd 0xF0)</h2>
+        <p class="subsection-note">RESET command that reboots the watch.</p>
+        <div class="btns">
+            <button data-tx="F0 01" data-label="reboot">Reboot (F0 01)</button>
+        </div>
+    </div>
+
+    </main>
 
     <script>
         (function () {
@@ -427,6 +840,36 @@
             let rx_last_logged = -1; // throttle activity progress logs
             let rx_label = 'v3 packet';
             const statusEl = document.getElementById('status');
+            const bruteforceIgnoreStorageKey = 'confirmed_only_bruteforce_ignore_pairs';
+            var bruteForceState = {
+                scanId: 0,
+                startLocked: false,
+                running: false,
+                stopRequested: false,
+                startFirst: 0,
+                scanMode: 'headers',
+                patternBytes: [],
+                patternPrefix: [],
+                endFirst: 255,
+                startSecond: 0,
+                endSecond: 255,
+                delayMs: 50,
+                timeoutMs: 250,
+                position: 0,
+                total: 65536,
+                effectiveTotal: 65536,
+                validCount: 0,
+                invalidCount: 0,
+                skippedCount: 0,
+                hasResponse: false,
+                waitingForResponse: false,
+                ignoredList: [],
+                ignoredSet: {},
+                scanStartIndex: 0,
+                currentCandidate: null,
+                statusTimer: null,
+                recentOutput: ['No scan run yet.']
+            };
 
             function log(msg, type) {
                 console.log((type ? '[' + type + '] ' : '') + msg);
@@ -1269,6 +1712,42 @@
                 sendNextChunk();
             }
 
+            function sendV3PacketChunkedForBruteforce(packet) {
+                if (!sendChar) return Promise.reject(new Error('Not connected.'));
+                const MAX_CHUNK = 134;
+                const chunks = [];
+                let offset = 0;
+                const firstEnd = Math.min(packet.length, MAX_CHUNK);
+                chunks.push(packet.subarray(0, firstEnd));
+                offset = firstEnd;
+                while (offset < packet.length) {
+                    const dataSize = Math.min(packet.length - offset, MAX_CHUNK - 1);
+                    const chunk = new Uint8Array(1 + dataSize);
+                    chunk[0] = 0x33;
+                    chunk.set(packet.subarray(offset, offset + dataSize), 1);
+                    chunks.push(chunk);
+                    offset += dataSize;
+                }
+                let i = 0;
+                return new Promise(function (resolve, reject) {
+                    function sendNextChunk() {
+                        if (i >= chunks.length) {
+                            resolve();
+                            return;
+                        }
+                        sendChar.writeValue(chunks[i]).then(function () {
+                            i++;
+                            if (i < chunks.length) {
+                                setTimeout(sendNextChunk, 20);
+                                return;
+                            }
+                            resolve();
+                        }).catch(reject);
+                    }
+                    sendNextChunk();
+                });
+            }
+
             /** Build and send v3 cmd 0x0E (set alarms).
              *  Wire layout per set_alarms_and_sports.txt and logcat notes:
              *
@@ -1731,6 +2210,20 @@
                         parseFuncTableBase(arr.subarray(2));
                         return;
                     }
+                    if (h1 === 0x03 && arr.length >= 10) {
+                        const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+                        const year = view.getUint16(2, true);
+                        const month = arr[4];
+                        const day = arr[5];
+                        const hour = arr[6];
+                        const minute = arr[7];
+                        const second = arr[8];
+                        const weekday = arr[9];
+                        const pad = n => String(n).padStart(2, '0');
+                        const iso = year + '-' + pad(month) + '-' + pad(day) + ' ' + pad(hour) + ':' + pad(minute) + ':' + pad(second);
+                        console.log('[PARSE] GET time (0x02 0x03) | time=' + iso + ' | weekday=' + weekday + ' | raw=' + hex.slice(0, 80));
+                        return;
+                    }
                     if (h1 === 0x05 && arr.length >= 8) {
                         // GET battery (VBUS_EVT_APP_GET_BATT_INFO evt 321). Same layout as index.html.
                         const v = arr[3] | (arr[4] << 8);
@@ -2071,12 +2564,961 @@
                 return out;
             }
 
+            function hexBytesToStr(bytes) {
+                if (!bytes || bytes.length === 0) return '';
+                return Array.from(bytes).map(b => ('0' + b.toString(16)).slice(-2).toUpperCase()).join(' ');
+            }
+
+            function toHexByte(v) {
+                return ('0' + ((v & 0xff).toString(16).toUpperCase())).slice(-2);
+            }
+
+            function sleepMs(ms) {
+                return new Promise(function (resolve) {
+                    setTimeout(resolve, Math.max(0, ms || 0));
+                });
+            }
+
+            function formatMsForDisplay(ms) {
+                if (ms < 0 || !isFinite(ms)) return '0s';
+                var total = Math.round(Math.max(0, ms) / 1000);
+                var hours = Math.floor(total / 3600);
+                var mins = Math.floor((total % 3600) / 60);
+                var secs = total % 60;
+                if (hours > 0) return hours + 'h ' + mins + 'm ' + secs + 's';
+                if (mins > 0) return mins + 'm ' + secs + 's';
+                return secs + 's';
+            }
+
+            function bruteforcePairKey(b0, b1) {
+                return toHexByte(b0) + '_' + toHexByte(b1);
+            }
+
+            function bruteforcePairLabel(b0, b1) {
+                return toHexByte(b0) + ' ' + toHexByte(b1);
+            }
+
+            function bruteforceIndexFromPair(b0, b1) {
+                return (((b0 & 0xff) << 8) | (b1 & 0xff)) & 0xffff;
+            }
+
+            function bruteforcePairFromIndex(index) {
+                var normalized = index & 0xffff;
+                return [(normalized >>> 8) & 0xff, normalized & 0xff];
+            }
+
+            function bruteforcePairLabelFromKey(key) {
+                if (!key) return '';
+                var p = String(key).split('_');
+                if (p.length >= 2) {
+                    var b0 = parseInt(p[0], 16);
+                    var b1 = parseInt(p[1], 16);
+                    if (!isNaN(b0) && !isNaN(b1)) {
+                        return bruteforcePairLabel(b0, b1);
+                    }
+                }
+                return key;
+            }
+
+            function parseBruteforcePair(value) {
+                var bytes = parseHex(String(value || '').replace(/0x/gi, ''));
+                if (!Array.isArray(bytes) || bytes.length < 2) return null;
+                return [bytes[0] & 0xff, bytes[1] & 0xff];
+            }
+
+            function parseBruteforcePattern(value) {
+                return parseHex(String(value || '').replace(/0x/gi, ''));
+            }
+
+            function bruteforceAutoCrcEnabled() {
+                var cb = document.getElementById('bruteforce_auto_crc');
+                return cb ? cb.checked : false;
+            }
+
+            function bruteforceV3Length(bytes) {
+                if (!Array.isArray(bytes) || bytes.length < 8) return null;
+                return (bytes[6] | (bytes[7] << 8)) & 0xffff;
+            }
+
+            function looksLikeCompleteV3ForCrc(bytes) {
+                if (!Array.isArray(bytes) || bytes.length < 8) return false;
+                var declaredLen = bruteforceV3Length(bytes);
+                if (declaredLen == null || declaredLen <= 0) return false;
+                // Known v3 framing variants in these captures:
+                // - short:     total = len + 3
+                // - explicit crc-in-trailer variant: total = len + 2
+                // - payload-intrusive variant: total = len + 7
+                // - long header variant: total = len + 12
+                var total = bytes.length;
+                return total === declaredLen + 2 || total === declaredLen + 3 || total === declaredLen + 7 || total === declaredLen + 12;
+            }
+
+            function normalizeV3LengthFrame(bytes) {
+                if (!Array.isArray(bytes) || bytes.length < 8) return bytes;
+                var declaredLen = bruteforceV3Length(bytes);
+                if (declaredLen == null || declaredLen <= 0 || declaredLen > 4096) return bytes;
+                var targetLen = declaredLen + 2;
+                var out = bytes.slice(0);
+                if (out.length === targetLen) return out;
+                if (out.length > targetLen) return out.slice(0, targetLen);
+                while (out.length < targetLen) out.push(0x00);
+                return out;
+            }
+
+            function patchV3ChecksumForBruteforce(bytes) {
+                if (!Array.isArray(bytes) || bytes.length < 3) return bytes;
+                if (!bruteforceAutoCrcEnabled()) return bytes;
+                if (bytes[0] !== 0x33 || bytes[1] !== 0xDA || bytes[2] !== 0xAD || bytes[3] !== 0xDA || bytes[4] !== 0xAD) {
+                    return bytes;
+                }
+                var out = normalizeV3LengthFrame(bytes);
+                if (!looksLikeCompleteV3ForCrc(out)) return out;
+                // CRC input is bytes 1..len-3; output is LE at last two bytes.
+                var crc = crc16Ccitt(out, 1, out.length - 3);
+                out[out.length - 2] = crc & 0xff;
+                out[out.length - 1] = (crc >> 8) & 0xff;
+                return out;
+            }
+
+            function isBruteforcePairIgnored(b0, b1) {
+                return !!bruteForceState.ignoredSet[bruteforcePairKey(b0, b1)];
+            }
+
+            function sortBruteforceIgnoreList() {
+                bruteForceState.ignoredList.sort(function (a, b) {
+                    if (a.b0 === b.b0) return a.b1 - b.b1;
+                    return a.b0 - b.b0;
+                });
+            }
+
+            function renderBruteforceIgnoreList() {
+                var container = document.getElementById('bruteforce_ignore_list');
+                var countEl = document.getElementById('bruteforce_ignore_count');
+                if (!container) return;
+                if (!Array.isArray(bruteForceState.ignoredList)) bruteForceState.ignoredList = [];
+                sortBruteforceIgnoreList();
+                container.innerHTML = bruteForceState.ignoredList.map(function (entry) {
+                    var label = bruteforcePairLabel(entry.b0, entry.b1);
+                    var k = entry.key || bruteforcePairKey(entry.b0, entry.b1);
+                    return '<span class="bruteforce-ignore-pill"><span>' + label + '</span>' +
+                        '<button type="button" data-remove-bruteforce-ignore="' + k + '" title="remove ' + label + '">×</button></span>';
+                }).join('');
+                if (countEl) countEl.textContent = 'Ignored combos: ' + bruteForceState.ignoredList.length;
+            }
+
+            function saveBruteforceIgnoreList() {
+                try {
+                    var payload = (bruteForceState.ignoredList || []).map(function (entry) {
+                        return [entry.b0, entry.b1];
+                    });
+                    localStorage.setItem(bruteforceIgnoreStorageKey, JSON.stringify(payload));
+                } catch (e) {
+                    // ignore localStorage errors
+                }
+            }
+
+            function normalizeIgnoreListState(list) {
+                bruteForceState.ignoredList = [];
+                bruteForceState.ignoredSet = {};
+                if (!Array.isArray(list)) return;
+                list.forEach(function (entry) {
+                    if (!entry) return;
+                    var pair = Array.isArray(entry) ? entry : (Array.isArray(entry.pair) ? entry.pair : null);
+                    if (!pair || pair.length < 2) return;
+                    addBruteforceIgnorePair(pair[0], pair[1]);
+                });
+            }
+
+            function loadBruteforceIgnoreList() {
+                var saved = null;
+                try {
+                    saved = localStorage.getItem(bruteforceIgnoreStorageKey);
+                } catch (e) {
+                    saved = null;
+                }
+                if (!saved) {
+                    renderBruteforceIgnoreList();
+                    return;
+                }
+
+                try {
+                    var parsed = JSON.parse(saved);
+                    normalizeIgnoreListState(parsed);
+                } catch (e) {
+                    normalizeIgnoreListState([]);
+                }
+                renderBruteforceIgnoreList();
+            }
+
+            function addBruteforceIgnorePair(b0, b1) {
+                if (b0 == null || b1 == null) return { added: false, reason: 'invalid' };
+                var parsed0 = parseInt(b0, 10);
+                var parsed1 = parseInt(b1, 10);
+                if (isNaN(parsed0)) parsed0 = parseInt(String(b0), 16);
+                if (isNaN(parsed1)) parsed1 = parseInt(String(b1), 16);
+                if (isNaN(parsed0) || isNaN(parsed1)) return { added: false, reason: 'invalid' };
+                var bb0 = parsed0 & 0xff;
+                var bb1 = parsed1 & 0xff;
+                var key = bruteforcePairKey(bb0, bb1);
+                if (bruteForceState.ignoredSet[key]) return { added: false, reason: 'duplicate' };
+                bruteForceState.ignoredSet[key] = true;
+                bruteForceState.ignoredList.push({ b0: bb0, b1: bb1, key: key });
+                renderBruteforceIgnoreList();
+                saveBruteforceIgnoreList();
+                return { added: true, key: key, label: bruteforcePairLabel(bb0, bb1), reason: null };
+            }
+
+            function removeBruteforceIgnorePair(key) {
+                if (!key) return false;
+                if (!bruteForceState.ignoredSet[key]) return false;
+                delete bruteForceState.ignoredSet[key];
+                bruteForceState.ignoredList = (bruteForceState.ignoredList || []).filter(function (entry) {
+                    return entry.key !== key;
+                });
+                renderBruteforceIgnoreList();
+                saveBruteforceIgnoreList();
+                return true;
+            }
+
+            function countActiveBruteforcePairs(startFirst, startSecond) {
+                var count = 0;
+                var start = bruteforceIndexFromPair(startFirst, startSecond);
+                for (var i = start; i <= 0xffff; i++) {
+                    var pair = bruteforcePairFromIndex(i);
+                    if (!isBruteforcePairIgnored(pair[0], pair[1])) count++;
+                }
+                return count;
+            }
+
+            function refreshActiveBruteforceTotal() {
+                if (!bruteForceState.running) return;
+                if (
+                    bruteForceState.startFirst == null || bruteForceState.endFirst == null ||
+                    bruteForceState.startSecond == null || bruteForceState.endSecond == null
+                ) {
+                    return;
+                }
+                bruteForceState.effectiveTotal = countActiveBruteforcePairs(
+                    bruteForceState.startFirst,
+                    bruteForceState.startSecond
+                );
+            }
+
+            function setBruteforceStatus() {
+                var statusEl = document.getElementById('bruteforce_status');
+                if (!statusEl) return;
+
+                if (!bruteForceState.running) {
+                    statusEl.textContent = 'Bruteforce stopped.';
+                    return;
+                }
+
+                var processed = bruteForceState.position;
+                if (processed > bruteForceState.total) processed = bruteForceState.total;
+                var sendProcessed = bruteForceState.validCount + bruteForceState.invalidCount;
+                var remaining = Math.max(0, bruteForceState.effectiveTotal - sendProcessed);
+                var current = bruteForceState.currentCandidate || [0, 0];
+                var statusCurrent = (bruteForceState.scanMode === 'pattern' && Array.isArray(bruteForceState.patternPrefix))
+                    ? hexBytesToStr(bruteForceState.patternPrefix.concat([current[1], current[0]]))
+                    : (toHexByte(current[0]) + ' ' + toHexByte(current[1]));
+                var perCommandMs = Math.max(bruteForceState.delayMs, bruteForceState.timeoutMs);
+                var etaMs = remaining * perCommandMs;
+                statusEl.textContent = 'Scanning next ' +
+                    statusCurrent +
+                    ' (' + processed + '/' + bruteForceState.total + ' total, ' +
+                    sendProcessed + '/' + bruteForceState.effectiveTotal + ' sent) | ' +
+                    'valid: ' + bruteForceState.validCount + ' | ' +
+                    'invalid: ' + bruteForceState.invalidCount + ' | ' +
+                    'skipped: ' + bruteForceState.skippedCount + ' | ' +
+                    'session: #' + bruteForceState.scanId + ' | ' +
+                    'ETA: ' + formatMsForDisplay(etaMs);
+            }
+
+            function setBruteforceButtonState(running) {
+                var startBtn = document.getElementById('btnStartBruteforce');
+                var stopBtn = document.getElementById('btnStopBruteforce');
+                if (startBtn) startBtn.disabled = !!running;
+                if (stopBtn) stopBtn.disabled = !running;
+            }
+
+            function updateBruteforceModeNote() {
+                var modeEl = document.getElementById('bruteforce_mode');
+                var noteEl = document.getElementById('bruteforce_mode_note');
+                if (!modeEl || !noteEl) return;
+                if (modeEl.value === 'pattern') {
+                    noteEl.textContent = 'Pattern mode: keep the template fixed, then increment the last 2 bytes as a 16-bit little-endian counter from the template value through FF FF.';
+                    if (bruteforceAutoCrcEnabled()) {
+                        noteEl.textContent += ' Auto-checksum is on: V3 header length is used to normalize the frame before CRC refresh.';
+                    }
+                } else {
+                    noteEl.textContent = 'Starts from one 2-byte header and scans to FF FF; after each first-byte rollover, the second byte starts at 00 (e.g. 02 7F → 03 00).';
+                }
+            }
+
+            function updateBruteforceOutput(text, isImportant) {
+                if (!text) return;
+                var outputEl = document.getElementById('bruteforce_output');
+                if (!outputEl) return;
+
+                if (isImportant) bruteForceState.recentOutput.push(text);
+                if (bruteForceState.recentOutput.length > 300) {
+                    bruteForceState.recentOutput = bruteForceState.recentOutput.slice(-300);
+                }
+                outputEl.textContent = bruteForceState.recentOutput.join('\n');
+                outputEl.scrollTop = outputEl.scrollHeight;
+            }
+
+            function normalizeBruteforceNumeric(value, fallback, minValue, maxValue) {
+                var parsed = parseInt(value, 10);
+                if (isNaN(parsed)) return fallback;
+                if (parsed < minValue) return minValue;
+                if (parsed > maxValue) return maxValue;
+                return parsed;
+            }
+
+            function markBruteforceResponse() {
+                if (!bruteForceState.running || !bruteForceState.waitingForResponse) return;
+                bruteForceState.hasResponse = true;
+            }
+
+            function waitForBruteforceResponseWindow(timeoutMs) {
+                return new Promise(function (resolve) {
+                    if (timeoutMs <= 0) {
+                        resolve();
+                        return;
+                    }
+                    var start = Date.now();
+                    (function check() {
+                        if (!bruteForceState.waitingForResponse || !bruteForceState.running) {
+                            resolve();
+                            return;
+                        }
+                        if (bruteForceState.hasResponse) {
+                            resolve();
+                            return;
+                        }
+                        if (Date.now() - start >= timeoutMs) {
+                            resolve();
+                            return;
+                        }
+                        setTimeout(check, 10);
+                    })();
+                });
+            }
+
+            function isBruteforceBusyError(err) {
+                var message = String((err && (err.message || err)) || '').toLowerCase();
+                return message.indexOf('operation already in progress') !== -1 ||
+                    message.indexOf('already pending') !== -1 ||
+                    message.indexOf('gatt operation') !== -1;
+            }
+
+            function stopBruteforceScan() {
+                if (!bruteForceState.running) {
+                    setBruteforceButtonState(false);
+                    return;
+                }
+                bruteForceState.stopRequested = true;
+                updateBruteforceOutput('Stop requested by user.');
+            }
+
+            function endBruteforceScan(reason) {
+                bruteForceState.running = false;
+                bruteForceState.waitingForResponse = false;
+                bruteForceState.stopRequested = false;
+                bruteForceState.startLocked = false;
+                bruteForceState.currentCandidate = null;
+                if (bruteForceState.statusTimer) {
+                    clearInterval(bruteForceState.statusTimer);
+                    bruteForceState.statusTimer = null;
+                }
+                setBruteforceButtonState(false);
+                if (reason) {
+                    updateBruteforceOutput(reason, true);
+                }
+                setBruteforceStatus();
+            }
+
+            async function sendBruteforceCandidate(bytes) {
+                if (!sendChar) {
+                    throw new Error('Not connected.');
+                }
+                const packet = new Uint8Array(bytes);
+                const isV3 = packet.length >= 5 &&
+                    packet[0] === 0x33 &&
+                    packet[1] === 0xDA &&
+                    packet[2] === 0xAD &&
+                    packet[3] === 0xDA &&
+                    packet[4] === 0xAD;
+                var attempts = 3;
+                var attempt = 0;
+                while (attempt < attempts) {
+                    attempt++;
+                    try {
+                        var sendPacket = isV3 && bytes.length > 134
+                            ? sendV3PacketChunkedForBruteforce(packet)
+                            : sendChar.writeValue(packet);
+                        await sendPacket;
+                        return;
+                    } catch (e) {
+                        if (isBruteforceBusyError(e) && attempt < attempts && bruteForceState.running && !bruteForceState.stopRequested) {
+                            await sleepMs(30 * attempt);
+                            continue;
+                        }
+                        throw e;
+                    }
+                }
+            }
+
+            function startBruteforceScan() {
+                if (!sendChar) {
+                    updateBruteforceOutput('Cannot start bruteforce: not connected.');
+                    return;
+                }
+                if (bruteForceState.running || bruteForceState.startLocked) {
+                    updateBruteforceOutput('Bruteforce already running. Press Stop before starting again.');
+                    return;
+                }
+
+                const startPairEl = document.getElementById('bruteforce_start_pair');
+                const delayEl = document.getElementById('bruteforce_delay');
+                const timeoutEl = document.getElementById('bruteforce_timeout');
+                const modeEl = document.getElementById('bruteforce_mode');
+                const patternEl = document.getElementById('bruteforce_pattern_template');
+                var mode = modeEl && modeEl.value ? modeEl.value : 'headers';
+                var patternBytes = [];
+                var patternPrefix = [];
+
+                var startPair = null;
+                if (mode === 'pattern') {
+                    patternBytes = parseBruteforcePattern(patternEl && patternEl.value);
+                    if (!Array.isArray(patternBytes) || patternBytes.length < 2) {
+                        updateBruteforceOutput('Invalid pattern; provide at least 2 hex bytes like "33 DA AD DA AD 01 61 01 0F 00".');
+                        return;
+                    }
+                    patternPrefix = patternBytes.slice(0, -2);
+                    var trailerLow = patternBytes[patternBytes.length - 2] & 0xff;
+                    var trailerHigh = patternBytes[patternBytes.length - 1] & 0xff;
+                    startPair = [trailerHigh, trailerLow];
+                } else {
+                    startPair = parseBruteforcePair(startPairEl && startPairEl.value);
+                    if (!startPair) {
+                        updateBruteforceOutput('Invalid start pair; use two hex bytes like "01 02" or "0x01 0x02".');
+                        return;
+                    }
+                }
+                var startFirst = startPair[0];
+                var startSecond = startPair[1];
+                var endFirst = 0xff;
+                var endSecond = 0xff;
+                var delayMs = normalizeBruteforceNumeric(delayEl && delayEl.value, 50, 0, 5000);
+                var timeoutMs = normalizeBruteforceNumeric(timeoutEl && timeoutEl.value, 250, 0, 10000);
+                if (startPairEl) startPairEl.value = bruteforcePairLabel(startFirst, startSecond);
+                if (delayEl) delayEl.value = delayMs;
+                if (timeoutEl) timeoutEl.value = timeoutMs;
+                if (patternEl && patternBytes.length) patternEl.value = hexBytesToStr(patternBytes);
+                bruteForceState.startLocked = true;
+                bruteForceState.scanId = (bruteForceState.scanId || 0) + 1;
+                var scanId = bruteForceState.scanId;
+
+                bruteForceState.running = true;
+                bruteForceState.stopRequested = false;
+                bruteForceState.scanMode = mode;
+                bruteForceState.patternBytes = patternBytes;
+                bruteForceState.patternPrefix = patternPrefix;
+                bruteForceState.startFirst = startFirst;
+                bruteForceState.endFirst = endFirst;
+                bruteForceState.startSecond = startSecond;
+                bruteForceState.endSecond = endSecond;
+                bruteForceState.delayMs = delayMs;
+                bruteForceState.timeoutMs = timeoutMs;
+                bruteForceState.position = 0;
+                bruteForceState.scanStartIndex = bruteforceIndexFromPair(startFirst, startSecond);
+                bruteForceState.total = 0x10000 - bruteForceState.scanStartIndex;
+                bruteForceState.effectiveTotal = countActiveBruteforcePairs(startFirst, startSecond);
+                bruteForceState.validCount = 0;
+                bruteForceState.invalidCount = 0;
+                bruteForceState.skippedCount = 0;
+                bruteForceState.hasResponse = false;
+                bruteForceState.waitingForResponse = false;
+                bruteForceState.currentCandidate = null;
+                bruteForceState.recentOutput = [
+                    'Bruteforce started (mode=' + mode + ', start=0x' + toHexByte(startFirst) + ' 0x' + toHexByte(startSecond) +
+                    ' -> 0x' + toHexByte(endFirst) + ' 0x' + toHexByte(endSecond) +
+                    (mode === 'pattern' ? ', template ' + hexBytesToStr(patternBytes) : '') +
+                    ', delay ' + delayMs + 'ms, timeout ' + timeoutMs + 'ms, total ' + bruteForceState.total +
+                    ', active total ' + bruteForceState.effectiveTotal +
+                    ', est ' + formatMsForDisplay(bruteForceState.effectiveTotal * Math.max(delayMs, timeoutMs)) + ')'
+                ];
+                updateBruteforceOutput(bruteForceState.recentOutput[0], true);
+                setBruteforceButtonState(true);
+                if (bruteForceState.statusTimer) clearInterval(bruteForceState.statusTimer);
+                bruteForceState.statusTimer = setInterval(setBruteforceStatus, 1000);
+                setBruteforceStatus();
+
+                (async function runBruteforceLoop() {
+                    while (bruteForceState.running && !bruteForceState.stopRequested && bruteForceState.position < bruteForceState.total) {
+                        if (scanId !== bruteForceState.scanId) {
+                            endBruteforceScan('Bruteforce session replaced.');
+                            return;
+                        }
+                        var absIndex = bruteForceState.scanStartIndex + bruteForceState.position;
+                        var pair = bruteforcePairFromIndex(absIndex);
+                        var b0 = pair[0];
+                        var b1 = pair[1];
+                        bruteForceState.currentCandidate = [b0, b1];
+                        var candidateBytes = bruteForceState.scanMode === 'pattern'
+                            ? bruteForceState.patternPrefix.concat([b1, b0])
+                            : [b0, b1];
+                        if (bruteForceState.scanMode === 'pattern') {
+                            candidateBytes = normalizeV3LengthFrame(candidateBytes);
+                            candidateBytes = patchV3ChecksumForBruteforce(candidateBytes);
+                        }
+                        var candidateLabel = bruteForceState.scanMode === 'pattern'
+                            ? hexBytesToStr(candidateBytes)
+                            : bruteforcePairLabel(b0, b1);
+                        var validLabel = bruteforcePairLabel(b0, b1);
+                        if (isBruteforcePairIgnored(b0, b1)) {
+                            bruteForceState.skippedCount++;
+                            bruteForceState.position++;
+                            bruteForceState.waitingForResponse = false;
+                            if (bruteForceState.position % 256 === 0 || bruteForceState.position === bruteForceState.total) {
+                                var skipLine = '[SKIP] ' + candidateLabel + ' ignored';
+                                updateBruteforceOutput(skipLine, bruteForceState.position % 256 === 0);
+                                var progressLine = '[INFO] ' + bruteForceState.position + '/' + bruteForceState.total +
+                                    ' processed | valid=' + bruteForceState.validCount +
+                                    ' | invalid=' + bruteForceState.invalidCount +
+                                    ' | skipped=' + bruteForceState.skippedCount;
+                                updateBruteforceOutput(progressLine, true);
+                                setBruteforceStatus();
+                            }
+                            continue;
+                        }
+
+                        bruteForceState.hasResponse = false;
+                        bruteForceState.waitingForResponse = true;
+                        var commandStart = Date.now();
+
+                        try {
+                            await sendBruteforceCandidate(candidateBytes);
+                        } catch (e) {
+                            bruteForceState.startLocked = false;
+                            endBruteforceScan('Stopped: TX write failed at ' + candidateLabel + ' (' + e + ').');
+                            return;
+                        }
+
+                        await waitForBruteforceResponseWindow(bruteForceState.timeoutMs);
+                        if (bruteForceState.stopRequested) {
+                            bruteForceState.startLocked = false;
+                            endBruteforceScan('Stopped by user. valid=' + bruteForceState.validCount + ', invalid=' + bruteForceState.invalidCount + ', skipped=' + bruteForceState.skippedCount + '.');
+                            return;
+                        }
+                        var elapsed = Date.now() - commandStart;
+                        if (!bruteForceState.hasResponse) {
+                            bruteForceState.invalidCount++;
+                        }
+                        var remainingGap = bruteForceState.delayMs - elapsed;
+                        if (remainingGap > 0) {
+                            await sleepMs(remainingGap);
+                        }
+
+                        if (!bruteForceState.running) {
+                            bruteForceState.startLocked = false;
+                            return;
+                        }
+                        bruteForceState.waitingForResponse = false;
+                        if (scanId !== bruteForceState.scanId) {
+                            endBruteforceScan('Bruteforce session replaced.');
+                            return;
+                        }
+
+                        if (bruteForceState.hasResponse) {
+                            bruteForceState.validCount++;
+                            updateBruteforceOutput('[VALID] ' + validLabel, true);
+                        }
+
+                        bruteForceState.position++;
+                        if (bruteForceState.position % 256 === 0 || bruteForceState.position === bruteForceState.total) {
+                            var progressLine = '[INFO] ' + bruteForceState.position + '/' + bruteForceState.total +
+                                ' processed | valid=' + bruteForceState.validCount +
+                                ' | invalid=' + bruteForceState.invalidCount +
+                                ' | skipped=' + bruteForceState.skippedCount;
+                            updateBruteforceOutput(progressLine, true);
+                        }
+                        if (bruteForceState.position % 16 === 0 || bruteForceState.position === bruteForceState.total) {
+                            setBruteforceStatus();
+                        }
+                    }
+
+                    endBruteforceScan('Bruteforce complete. valid=' + bruteForceState.validCount + ', invalid=' + bruteForceState.invalidCount + ', skipped=' + bruteForceState.skippedCount + '.');
+                })().catch(function (err) {
+                    bruteForceState.startLocked = false;
+                    log('[Bruteforce] ' + err, 'error');
+                    endBruteforceScan('Bruteforce crashed: ' + err);
+                });
+            }
+
+            function formatVbusEntryName(entry) {
+                var raw = entry && entry.eventName ? entry.eventName : ('VBUS_EVT_' + (entry && entry.eventId != null ? entry.eventId : '?'));
+                if (raw.indexOf('VBUS_EVT_APP_') === 0) return raw.slice(12);
+                return raw;
+            }
+
+            function collectListedVbusRows() {
+                var rows = [];
+                var buttons = document.querySelectorAll('.section button');
+                for (var i = 0; i < buttons.length; i++) {
+                    var button = buttons[i];
+                    if (!button || button.classList.contains('vbus-mapped-btn')) continue;
+                    var tx = button.getAttribute('data-tx');
+                    var seq = button.getAttribute('data-seq');
+                    var listedHeader = button.getAttribute('data-list-vbus-header');
+                    var header = null;
+
+                    if (tx) {
+                        header = parseHex(tx);
+                    } else if (seq) {
+                        header = parseHex(String(seq).split('|')[0].trim());
+                    } else if (listedHeader) {
+                        header = parseHex(listedHeader);
+                    }
+                    if (!Array.isArray(header) || !header.length) continue;
+
+                    var label = button.getAttribute('data-label') || button.textContent || '';
+                    label = String(label).replace(/\s+/g, ' ').trim();
+
+                    rows.push({
+                        kind: 'listed',
+                        status: 'listed-only',
+                        cmdHeaderBytes: header,
+                        label: label,
+                        txBytes: header.slice(0),
+                        sourceButton: button
+                    });
+                }
+                return rows;
+            }
+
+            function hasBytePrefixMatch(a, b) {
+                var len = Math.min((a || []).length, (b || []).length);
+                if (len === 0) return false;
+                for (var i = 0; i < len; i++) {
+                    if (((a[i] & 0xff) !== (b[i] & 0xff))) return false;
+                }
+                return true;
+            }
+
+            function hasMatchInRows(targetBytes, rows) {
+                if (!Array.isArray(targetBytes) || targetBytes.length === 0) return false;
+                for (var i = 0; i < rows.length; i++) {
+                    var row = rows[i];
+                    if (hasBytePrefixMatch(targetBytes, row && row.cmdHeaderBytes)) return true;
+                }
+                return false;
+            }
+
+            function formatVbusCoverageLabel(row) {
+                if (!row) return '';
+                var header = hexBytesToStr(row.cmdHeaderBytes || []);
+                if (row.kind === 'mapped') {
+                    var mappedName = formatVbusEntryName(row);
+                    var mappedOccurrence = row.occurrence ? (' #' + row.occurrence) : '';
+                    return header + ' — ' + mappedName + mappedOccurrence;
+                }
+                return header + ' — ' + (row.label || 'confirmed command');
+            }
+
+            function formatVbusCoverageTooltip(row) {
+                if (!row) return '';
+                if (row.kind === 'mapped') {
+                    var idText = row.eventId != null ? (' id ' + row.eventId) : '';
+                    var occurrenceText = row.occurrence ? (' #' + row.occurrence) : '';
+                    return 'Mapped: ' + formatVbusEntryName(row) + (idText || '') + occurrenceText;
+                }
+                return row.label || 'Confirmed command';
+            }
+
+            var vbusMappingData = [];
+            var vbusCoverageRows = [];
+
+            function compareVbusRows(a, b) {
+                var aBytes = Array.isArray(a && a.cmdHeaderBytes) ? a.cmdHeaderBytes : [];
+                var bBytes = Array.isArray(b && b.cmdHeaderBytes) ? b.cmdHeaderBytes : [];
+                var maxLen = Math.min(aBytes.length, bBytes.length);
+                for (var i = 0; i < maxLen; i++) {
+                    var diff = (aBytes[i] & 0xff) - (bBytes[i] & 0xff);
+                    if (diff !== 0) return diff;
+                }
+                if (aBytes.length !== bBytes.length) return aBytes.length - bBytes.length;
+                if (a.eventId !== b.eventId) return (a.eventId || 0) - (b.eventId || 0);
+                return (a.occurrence || 0) - (b.occurrence || 0);
+            }
+
+            function compareVbusCoverageRows(a, b) {
+                var byBytes = compareVbusRows(a, b);
+                if (byBytes !== 0) return byBytes;
+
+                var statusRank = {
+                    shared: 0,
+                    'listed-only': 1,
+                    'mapped-only': 2
+                };
+                if (a.status !== b.status) return (statusRank[a.status] || 0) - (statusRank[b.status] || 0);
+
+                var aName = (a.kind === 'mapped') ? formatVbusEntryName(a) : (a.label || '');
+                var bName = (b.kind === 'mapped') ? formatVbusEntryName(b) : (b.label || '');
+                if (aName < bName) return -1;
+                if (aName > bName) return 1;
+                return 0;
+            }
+
+            function buildVbusMappingSelect() {
+                var statusEl = document.getElementById('vbus_mapping_status');
+                var gridEl = document.getElementById('vbus_mapping_grid');
+                if (!gridEl) return;
+                if (!window.fetch) {
+                    if (statusEl) statusEl.textContent = 'VBUS mapping unavailable (fetch not supported).';
+                    return;
+                }
+
+                gridEl.innerHTML = '';
+                if (statusEl) statusEl.textContent = 'Loading VBUS mapping...';
+
+                fetch('vbus_mapping_check.json')
+                    .then(function (resp) {
+                        if (!resp.ok) throw new Error('HTTP ' + resp.status + ' ' + resp.statusText);
+                        return resp.json();
+                    })
+                    .then(function (entries) {
+                        if (!Array.isArray(entries)) {
+                            throw new Error('Expected JSON array from vbus_mapping_check.json');
+                        }
+
+                        vbusMappingData = entries.filter(function (entry) {
+                            return entry && Array.isArray(entry.cmdHeaderBytes) && entry.cmdHeaderBytes.length > 0;
+                        });
+                        vbusMappingData.sort(function (a, b) {
+                            return compareVbusRows(a, b);
+                        });
+
+                        var listedRows = collectListedVbusRows();
+                        var nextRows = [];
+                        var sharedCount = 0;
+                        var mappedOnlyCount = 0;
+                        var listedOnlyCount = 0;
+
+                        for (var i = 0; i < vbusMappingData.length; i++) {
+                            var mappedEntry = vbusMappingData[i];
+                            var isShared = hasMatchInRows(mappedEntry.cmdHeaderBytes, listedRows);
+                            var rowStatus = isShared ? 'shared' : 'mapped-only';
+                            if (isShared) sharedCount++;
+                            else mappedOnlyCount++;
+                            nextRows.push({
+                                kind: 'mapped',
+                                status: rowStatus,
+                                cmdHeaderBytes: mappedEntry.cmdHeaderBytes.slice(0),
+                                eventName: mappedEntry.eventName || '',
+                                eventId: mappedEntry.eventId,
+                                occurrence: mappedEntry.occurrence
+                            });
+                        }
+
+                        for (var j = 0; j < listedRows.length; j++) {
+                            var listedRow = listedRows[j];
+                            if (hasMatchInRows(listedRow.cmdHeaderBytes, vbusMappingData)) continue;
+                            listedOnlyCount++;
+                            nextRows.push({
+                                kind: 'listed',
+                                status: 'listed-only',
+                                cmdHeaderBytes: listedRow.cmdHeaderBytes.slice(0),
+                                label: listedRow.label,
+                                txBytes: listedRow.txBytes.slice(0),
+                                sourceButton: listedRow.sourceButton
+                            });
+                        }
+
+                        nextRows.sort(function (a, b) {
+                            return compareVbusCoverageRows(a, b);
+                        });
+                        vbusCoverageRows = nextRows;
+
+                        var groups = {};
+                        for (var k = 0; k < vbusCoverageRows.length; k++) {
+                            var row = vbusCoverageRows[k];
+                            if (!Array.isArray(row.cmdHeaderBytes) || row.cmdHeaderBytes.length === 0) continue;
+                            var firstByte = row.cmdHeaderBytes[0] & 0xff;
+                            var key = ('0' + firstByte.toString(16).toUpperCase()).slice(-2);
+                            if (!groups[key]) groups[key] = [];
+                            groups[key].push({ index: k, row: row });
+                        }
+
+                        var groupKeys = Object.keys(groups).sort(function (a, b) {
+                            return parseInt(a, 16) - parseInt(b, 16);
+                        });
+
+                        gridEl.innerHTML = '';
+                        if (groupKeys.length === 0) {
+                            if (statusEl) statusEl.textContent = 'No VBUS commands available.';
+                            gridEl.innerHTML = '<p class="subsection-note">No VBUS commands found for coverage preview.</p>';
+                            return;
+                        }
+
+                        for (var g = 0; g < groupKeys.length; g++) {
+                            var key = groupKeys[g];
+                            var children = groups[key];
+                            children.sort(function (x, y) {
+                                return compareVbusCoverageRows(x.row, y.row);
+                            });
+                            var sectionEl = document.createElement('div');
+                            var titleEl = document.createElement('p');
+                            var btnsEl = document.createElement('div');
+
+                            titleEl.className = 'subsection-title';
+                            titleEl.textContent = '0x' + key;
+                            btnsEl.className = 'btns';
+
+                            for (var m = 0; m < children.length; m++) {
+                                var child = children[m];
+                                var childRow = child.row;
+                                var buttonEl = document.createElement('button');
+                                buttonEl.type = 'button';
+                                buttonEl.className = 'vbus-mapped-btn';
+                                if (childRow.status === 'listed-only') {
+                                    buttonEl.classList.add('vbus-map-btn--listed-only');
+                                } else if (childRow.status === 'mapped-only') {
+                                    buttonEl.classList.add('vbus-map-btn--mapped-only');
+                                }
+                                buttonEl.setAttribute('data-vbus-map-index', String(child.index));
+                                buttonEl.setAttribute('data-vbus-map-status', childRow.status);
+                                buttonEl.textContent = formatVbusCoverageLabel(childRow);
+                                buttonEl.title = formatVbusCoverageTooltip(childRow);
+                                buttonEl.disabled = !sendChar;
+                                btnsEl.appendChild(buttonEl);
+                            }
+
+                            sectionEl.appendChild(titleEl);
+                            sectionEl.appendChild(btnsEl);
+                            gridEl.appendChild(sectionEl);
+                        }
+
+                        if (statusEl) statusEl.textContent = 'Coverage: ' + sharedCount + ' shared, ' + listedOnlyCount + ' confirmed-only (blue), ' + mappedOnlyCount + ' mapping-only (red).';
+                    })
+                    .catch(function (err) {
+                        if (gridEl) gridEl.innerHTML = '<p class="subsection-note">Failed to load mapping.</p>';
+                        if (statusEl) statusEl.textContent = 'Failed to load vbus_mapping_check.json: ' + err.message;
+                    });
+            }
+
+            function sendMappedVbusCommand(index) {
+                if (!sendChar) {
+                    event_log('Not connected.');
+                    return;
+                }
+                var idx = parseInt(index, 10);
+                var extraEl = document.getElementById('vbus_mapping_payload_extra');
+                if (isNaN(idx) || !vbusCoverageRows[idx]) {
+                    event_log('Select a valid mapping row first.');
+                    return;
+                }
+
+                var row = vbusCoverageRows[idx];
+                var payload = [];
+                if (row.kind === 'mapped') {
+                    payload = row.cmdHeaderBytes.slice(0);
+                } else if (row.kind === 'listed' && Array.isArray(row.txBytes) && row.txBytes.length) {
+                    payload = row.txBytes.slice(0);
+                } else if (row.sourceButton) {
+                    row.sourceButton.click();
+                    return;
+                }
+
+                if (!payload.length) {
+                    event_log('Selected command has no bytes to send.');
+                    return;
+                }
+
+                var extraText = (extraEl || {}).value || '';
+                var extra = parseHex(extraText);
+                if (extraText.trim() && extra === null) {
+                    event_log('Invalid extra payload hex.');
+                    return;
+                }
+                if (extra && extra.length) {
+                    for (var j = 0; j < extra.length; j++) payload.push(extra[j] & 0xff);
+                }
+
+                sendChar.writeValue(new Uint8Array(payload));
+                log('[TX] MAPPED ' + formatVbusCoverageLabel(row) + ' (' + payload.length + ' B) ' + hexBytesToStr(payload), 'tx');
+                event_log('Sent mapped VBUS command: ' + formatVbusCoverageLabel(row));
+            }
+
             function sendTx(hexStr, label) {
                 if (!sendChar) { log('Not connected.'); return; }
                 const buf = parseHex(hexStr);
                 if (!buf || buf.length === 0) { log('Invalid hex: ' + label); return; }
                 sendChar.writeValue(new Uint8Array(buf));
                 log('[TX] ' + label + ' (' + buf.length + ' B) ' + buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+
+            function buildSetTimePayloadFromNow() {
+                const now = new Date();
+                const year = now.getFullYear(); // e.g. 2026
+                const month = now.getMonth() + 1; // 1–12
+                const day = now.getDate(); // 1–31
+                const hour = now.getHours(); // 0–23
+                const minute = now.getMinutes(); // 0–59
+                const second = now.getSeconds(); // 0–59
+                // In many firmwares Sunday=0..Saturday=6; Date.getDay() already matches.
+                const weekday = now.getDay() & 0xff;
+
+                const yearLo = year & 0xff;
+                const yearHi = (year >> 8) & 0xff;
+
+                const bytes = [
+                    0x03, 0x01, // cmd, key
+                    yearLo, yearHi,
+                    month & 0xff,
+                    day & 0xff,
+                    hour & 0xff,
+                    minute & 0xff,
+                    second & 0xff,
+                    weekday,
+                    0x00, 0x00, 0x00, 0x00, 0x00, 0x00 // trailing reserved bytes
+                ];
+
+                return bytes.map(b => ('0' + b.toString(16)).slice(-2)).join(' ');
+            }
+
+            function buildV3HeartModeJsonFromForm() {
+                const nowSec = Math.floor(Date.now() / 1000);
+                const mode = parseInt(document.getElementById('v3_hr_mode').value, 10) || 0;
+                const hasRange = parseInt(document.getElementById('v3_hr_has_range').value, 10) || 0;
+                const startH = parseInt(document.getElementById('v3_hr_start_h').value, 10) || 0;
+                const startM = parseInt(document.getElementById('v3_hr_start_m').value, 10) || 0;
+                const endH = parseInt(document.getElementById('v3_hr_end_h').value, 10) || 0;
+                const endM = parseInt(document.getElementById('v3_hr_end_m').value, 10) || 0;
+                const interval = parseInt(document.getElementById('v3_hr_interval').value, 10) || 0;
+                const notifyFlag = parseInt(document.getElementById('v3_hr_notify_flag').value, 10) || 0;
+                const highMode = document.getElementById('v3_hr_high_mode').checked ? 1 : 0;
+                const lowMode = document.getElementById('v3_hr_low_mode').checked ? 1 : 0;
+                const highValue = parseInt(document.getElementById('v3_hr_high_value').value, 10) || 0;
+                const lowValue = parseInt(document.getElementById('v3_hr_low_value').value, 10) || 0;
+
+                return {
+                    update_time: nowSec,
+                    mode: mode,
+                    has_time_range: hasRange,
+                    start_hour: startH,
+                    start_minute: startM,
+                    end_hour: endH,
+                    end_minute: endM,
+                    measurement_interval: interval,
+                    notify_flag: notifyFlag,
+                    high_heart_mode: highMode,
+                    low_heart_mode: lowMode,
+                    high_heart_value: highValue,
+                    low_heart_value: lowValue
+                };
             }
 
             const NOTICE_PAYLOAD_SIZE = 16;
@@ -2235,9 +3677,15 @@
             function setConnected(ok) {
                 statusEl.textContent = ok ? 'Connected' : 'Disconnected';
                 statusEl.classList.toggle('connected', ok);
-                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList').forEach(b => b.disabled = !ok);
+                statusEl.classList.toggle('offline', !ok);
+                if (!ok && bruteForceState.running) {
+                    endBruteforceScan('Connection lost; bruteforce stopped.');
+                }
+                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList, .section button.vbus-mapped-btn').forEach(b => b.disabled = !ok);
                 document.getElementById('btnConnect').textContent = ok ? 'Disconnect' : 'Connect (0x0AF0)';
+                setBruteforceButtonState(!!(ok && bruteForceState.running));
             }
+            loadBruteforceIgnoreList();
 
             document.getElementById('btnConnect').addEventListener('click', function () {
                 if (sendChar) {
@@ -2267,6 +3715,7 @@
                             const arr = new Uint8Array(e.target.value.buffer);
                             const hex = Array.from(arr).map(b => ('0' + b.toString(16)).slice(-2)).join(' ');
                             log('[RX] ' + arr.length + ' B ' + hex, 'rx');
+                            markBruteforceResponse();
                             if (handleV3ReplyReassembly(arr)) return;
                             if (arr.length >= 2 && arr[0] === 0x02 && arr[1] === 0x01 && getActivityPending) {
                                 getActivityPending = false;
@@ -2287,18 +3736,64 @@
                     });
             });
 
+            const btnSetTime = document.getElementById('btnSetTime');
+            if (btnSetTime) {
+                btnSetTime.addEventListener('click', function () {
+                    if (!sendChar) { log('Not connected.'); return; }
+                    const hexStr = buildSetTimePayloadFromNow();
+                    sendTx(hexStr, btnSetTime.getAttribute('data-label') || 'set_time');
+                    event_log('Sent current time to watch.');
+                });
+            }
+
+            const btnV3SetHrMode = document.getElementById('btnV3SetHrMode');
+            if (btnV3SetHrMode) {
+                btnV3SetHrMode.addEventListener('click', function () {
+                    if (!sendChar) { log('Not connected.'); return; }
+                    const json = buildV3HeartModeJsonFromForm();
+                    console.log('[V3 HR mode] JSON payload', json);
+
+                    // Map a couple of common modes to captured v3 17 09 packets for now.
+                    const mode = json.mode;
+                    if (mode === 0) {
+                        // Off: single captured frame
+                        const offHex = '33 DA AD DA AD 01 17 00 09 00 14 01 BA AD AC 69 99 00 00 00 00 00 2C 01 56 BE';
+                        sendTx(offHex, btnV3SetHrMode.getAttribute('data-label') || 'v3_set_hr_mode_off');
+                        event_log('Sent V3 HR mode OFF (mapped to set_hr_cont_off) with JSON: ' + JSON.stringify(json));
+                        return;
+                    }
+                    if (mode === 2) {
+                        // Continuous 5s: reuse captured "HR cont on" 2-packet sequence
+                        const seq = [
+                            '33 DA AD DA AD 01 17 00 09 00 17 01 D8 AD AC 69 99 00 00 00 00 00 2C 01 56 08',
+                            '33 DA AD DA AD 01 17 00 09 00 18 01 00 00 00 00 00 01 00 00 17 3B 00 00 E5 CD'
+                        ];
+                        sendSequence(seq, btnV3SetHrMode.getAttribute('data-label') || 'v3_set_hr_mode_cont');
+                        event_log('Sent V3 HR mode CONTINUOUS (mapped to set_hr_cont_on) with JSON: ' + JSON.stringify(json));
+                        return;
+                    }
+
+                    event_log('V3 HR mode JSON captured (no direct v3 0x09 mapping implemented for mode=' + mode + '). See console for details.');
+                });
+            }
+
             document.querySelectorAll('.section').forEach(section => {
                 section.addEventListener('click', function (e) {
                     const btn = e.target.closest('button');
                     if (!btn || btn.id === 'btnConnect') return;
                     const tx = btn.getAttribute('data-tx');
                     const seq = btn.getAttribute('data-seq');
+                    const mappedIndex = btn.getAttribute('data-vbus-map-index');
                     const syncV3 = btn.getAttribute('data-sync-v3');
                     const getActivity = btn.getAttribute('data-get-activity');
                     const simulateActivity = btn.getAttribute('data-simulate-activity');
                     const brightnessSend = btn.getAttribute('data-brightness-send');
                     const v3FuncTable = btn.getAttribute('data-v3-func-table');
                     const label = btn.getAttribute('data-label') || 'send';
+                    if (mappedIndex !== null && mappedIndex !== '') {
+                        sendMappedVbusCommand(mappedIndex);
+                        return;
+                    }
                     if (btn.getAttribute('data-set-sport-sort-v3')) {
                         sendSportSortV3();
                         return;
@@ -2345,6 +3840,122 @@
                         sendTx(tx, label);
                     }
                 });
+            });
+
+            document.getElementById('btnStartBruteforce') && document.getElementById('btnStartBruteforce').addEventListener('click', function () {
+                startBruteforceScan();
+            });
+            document.getElementById('btnStartBruteforce') && document.getElementById('btnStartBruteforce').addEventListener('pointerdown', function (e) {
+                if (bruteForceState.running || bruteForceState.startLocked) {
+                    e.preventDefault();
+                    return;
+                }
+            });
+            document.getElementById('bruteforce_mode') && document.getElementById('bruteforce_mode').addEventListener('change', function () {
+                updateBruteforceModeNote();
+            });
+            document.getElementById('bruteforce_auto_crc') && document.getElementById('bruteforce_auto_crc').addEventListener('change', function () {
+                updateBruteforceModeNote();
+            });
+            updateBruteforceModeNote();
+            document.getElementById('btnStopBruteforce') && document.getElementById('btnStopBruteforce').addEventListener('click', function () {
+                stopBruteforceScan();
+            });
+            document.getElementById('btnAddBruteforceIgnore') && document.getElementById('btnAddBruteforceIgnore').addEventListener('click', function () {
+                const input = document.getElementById('bruteforce_ignore_combo');
+                const pair = parseBruteforcePair(input && input.value);
+                if (!pair) {
+                    updateBruteforceOutput('Invalid pair for ignore list: ' + (input && input.value ? input.value : 'empty'), true);
+                    return;
+                }
+                var result = addBruteforceIgnorePair(pair[0], pair[1]);
+                if (result.added) {
+                    updateBruteforceOutput('[IGNORE] added ' + result.label, true);
+                    if (bruteForceState.running) {
+                        refreshActiveBruteforceTotal();
+                        setBruteforceStatus();
+                    }
+                    return;
+                }
+                if (result.reason === 'duplicate') {
+                    updateBruteforceOutput('[IGNORE] already exists: ' + bruteforcePairLabel(pair[0], pair[1]), true);
+                } else {
+                    updateBruteforceOutput('[IGNORE] failed to add: invalid pair.', true);
+                }
+            });
+            document.getElementById('btnAddCurrentBruteforceIgnore') && document.getElementById('btnAddCurrentBruteforceIgnore').addEventListener('click', function () {
+                var pair = bruteForceState.currentCandidate;
+                if (!pair || pair.length !== 2) {
+                    updateBruteforceOutput('[IGNORE] no current candidate to add.', true);
+                    return;
+                }
+                var result = addBruteforceIgnorePair(pair[0], pair[1]);
+                if (result.added) {
+                    updateBruteforceOutput('[IGNORE] added current ' + result.label, true);
+                    if (bruteForceState.running) {
+                        refreshActiveBruteforceTotal();
+                        setBruteforceStatus();
+                    }
+                    return;
+                }
+                if (result.reason === 'duplicate') {
+                    updateBruteforceOutput('[IGNORE] current already ignored: ' + bruteforcePairLabel(pair[0], pair[1]), true);
+                } else {
+                    updateBruteforceOutput('[IGNORE] failed to add current pair.', true);
+                }
+            });
+            document.getElementById('btnAddBruteforceIgnoreMulti') && document.getElementById('btnAddBruteforceIgnoreMulti').addEventListener('click', function () {
+                var textarea = document.getElementById('bruteforce_ignore_multi');
+                var raw = textarea && textarea.value;
+                if (!raw || !raw.trim()) {
+                    updateBruteforceOutput('[IGNORE] no pairs in bulk input.', true);
+                    return;
+                }
+                var lines = raw.split(/\r?\n/);
+                var addedCount = 0;
+                var dupCount = 0;
+                var badCount = 0;
+                for (var i = 0; i < lines.length; i++) {
+                    var line = String(lines[i]).trim();
+                    if (!line) continue;
+                    var pair = parseBruteforcePair(line);
+                    if (!pair) {
+                        badCount++;
+                        continue;
+                    }
+                    var result = addBruteforceIgnorePair(pair[0], pair[1]);
+                    if (result.added) addedCount++;
+                    else if (result.reason === 'duplicate') dupCount++;
+                    else badCount++;
+                }
+                updateBruteforceOutput('[IGNORE] added ' + addedCount + ', duplicates ' + dupCount + ', invalid ' + badCount, true);
+                if (addedCount > 0 && bruteForceState.running) {
+                    refreshActiveBruteforceTotal();
+                    setBruteforceStatus();
+                }
+                if (textarea) textarea.value = '';
+            });
+            document.getElementById('btnClearBruteforceIgnore') && document.getElementById('btnClearBruteforceIgnore').addEventListener('click', function () {
+                normalizeIgnoreListState([]);
+                renderBruteforceIgnoreList();
+                saveBruteforceIgnoreList();
+                updateBruteforceOutput('[IGNORE] cleared all ignore pairs.', true);
+                if (bruteForceState.running) {
+                    refreshActiveBruteforceTotal();
+                    setBruteforceStatus();
+                }
+            });
+            document.getElementById('bruteforce_ignore_list') && document.getElementById('bruteforce_ignore_list').addEventListener('click', function (e) {
+                const btn = e.target.closest('button[data-remove-bruteforce-ignore]');
+                if (!btn) return;
+                var key = btn.getAttribute('data-remove-bruteforce-ignore');
+                if (removeBruteforceIgnorePair(key)) {
+                    updateBruteforceOutput('[IGNORE] removed ' + bruteforcePairLabelFromKey(key), true);
+                    if (bruteForceState.running) {
+                        refreshActiveBruteforceTotal();
+                        setBruteforceStatus();
+                    }
+                }
             });
 
             document.getElementById('btnAddAlarmToList') && document.getElementById('btnAddAlarmToList').addEventListener('click', function () {
@@ -2444,6 +4055,8 @@
                 });
                 updateNotice5bHexPreview();
             })();
+            setBruteforceButtonState(false);
+            buildVbusMappingSelect();
         })();
     </script>
 </body>

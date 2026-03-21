@@ -1,0 +1,1991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOBUR — Heart rate CSV capture</title>
+    <style>
+        :root { --bg: #0f1419; --panel: #1a2332; --text: #e6edf3; --muted: #8b9cb3; --accent: #3fb950; --warn: #d29922; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1.25rem; line-height: 1.45; max-width: 52rem; }
+        h1 { font-size: 1.35rem; margin-top: 0; }
+        .panel { background: var(--panel); border-radius: 8px; padding: 1rem 1.1rem; margin: 0.75rem 0; border: 1px solid #30363d; }
+        .warn { color: var(--warn); }
+        .ok { color: var(--accent); }
+        button { margin: 0.25rem 0.35rem 0.25rem 0; padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #444; background: #21262d; color: var(--text); cursor: pointer; }
+        button:hover:not(:disabled) { background: #30363d; }
+        button:disabled { opacity: 0.45; cursor: not-allowed; }
+        #log { font-family: ui-monospace, monospace; font-size: 11px; white-space: pre-wrap; max-height: 220px; overflow: auto; background: #0d1117; padding: 0.6rem; border-radius: 6px; color: #7ee787; }
+        code { background: #21262d; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
+        ul { margin: 0.4rem 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.92rem; }
+        #status { font-weight: 600; }
+        .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+        .hr-form { display: flex; flex-wrap: wrap; gap: 0.65rem 1rem; align-items: flex-end; margin-top: 0.5rem; }
+        .hr-form label { display: flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: var(--muted); }
+        .hr-form input, .hr-form select { padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid #444; background: #0d1117; color: var(--text); max-width: 11rem; }
+        .hr-form .input-narrow { width: 5rem; max-width: 5rem; }
+        .hr-form .input-tiny { width: 3.2rem; max-width: 3.5rem; }
+        .hr-presets { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+        #hr24ExtHex { width: 100%; max-width: 36rem; font-family: ui-monospace, monospace; font-size: 11px; padding: 0.45rem; border-radius: 4px; border: 1px solid #444; background: #0d1117; color: var(--text); }
+    </style>
+</head>
+<body>
+    <h1>TOOBUR / IDO — Heart rate → CSV</h1>
+    <p class="warn"><strong>Requirements:</strong> Chrome (or Chromium) with Web Bluetooth. Serve this folder over HTTP — e.g. <code>cd htmlapp && python3 -m http.server 8000</code> — then open <code>http://localhost:8000/toobur-hr-csv.html</code>. Do not use <code>file://</code>.</p>
+    <ul>
+        <li>Many watches return <strong>no stored HR samples</strong> until you wear the band with HR logging on—use <strong>Heart rate mode &amp; interval</strong> below (v3 or legacy) or VeryFit / <code>confirmed-only.html</code>.</li>
+        <li>HR CSV follows the <strong>JNI callback 7003</strong> layout (<code>sub_16DE1C</code>): <code>year, month, day, startTime, dataType, silentHR</code>, five <code>hrInterval</code> slots (threshold u8 + minute u16 each), then <code>items</code> as <strong>minute-offset u8 + BPM u8</strong> when the data length matches <code>2 × itemCount</code>. Fallback heuristics if the header does not match.</li>
+    </ul>
+
+    <div class="panel">
+        <strong>Heart rate mode &amp; measurement interval</strong>
+        <p style="margin:0.35rem 0 0;font-size:0.88rem;color:var(--muted);">v3 cmd <code>0x09</code> / evt <code>5010</code> (**IDOSetV3HeartRateModeBluetoothModel**): this page now uses one unified TX shape:</p>
+        <ul style="margin:0.35rem 0 0.1rem;padding-left:1.2rem;font-size:0.86rem;color:var(--muted);">
+            <li><strong>Unified TX <code>0x09</code>:</strong> <code>UPDATE_TIMESTAMP(4)</code> + <code>ON_OFF(2)</code> + <code>START-END(4)</code> + <code>INTERVAL(2 LE)</code> + CRC. Two checkboxes can force timestamp/start-end bytes to all zero.</li>
+        </ul>
+        <p style="margin:0.1rem 0 0;font-size:0.86rem;color:var(--muted);">The matching <strong>RX replies</strong> always contain <code>NULL_COMMAND</code> + <code>ON_OFF</code> (state byte: <code>CC</code> = ON, <code>AA</code> = OFF, <code>99</code> = legacy ON, …) + <code>INTERVAL</code> (echoed, usually 300&nbsp;s) + <code>UNKNOWN</code> + <code>MODE?/reply</code> (<code>04 00 00 00</code>) + CRC. `toobur-hr-csv.html` logs this block as <code>state</code>, <code>interval</code> and <code>reply_code</code>.</p>
+        <p style="margin:0.25rem 0 0;font-size:0.86rem;color:var(--muted);">This page exposes one <strong>v3 HR mode</strong> path plus legacy <code>03 25</code>. For v3, <strong>HR on</strong> and <strong>HR off</strong> each can send either <strong>two</strong> <code>0x09</code> frames (2-stage) or a <strong>single</strong> <code>0x09</code> frame (manual single). Which one is sent is controlled by the checkboxes below. The SDK model fields such as <code>modeType</code> and notification flags are reference only and are <strong>not</strong> fully mapped onto the bytes we transmit here.</p>
+        <div class="hr-form">
+            <span style="font-size:0.85rem;color:var(--muted);">0x09 Apply: <strong>2-stage</strong> (step1+step2) OR <strong>manual single</strong> frame, depending on the checkboxes.</span>
+            <label>Action
+                <select id="hrModeAction">
+                    <option value="v3_off">v3 HR off</option>
+                    <option value="v3_on" selected>v3 HR on</option>
+                    <option value="legacy_88">Legacy 03 25 auto (0x88)</option>
+                    <option value="legacy_55">Legacy 03 25 off (0x55)</option>
+                    <option value="legacy_03">Legacy 03 25 continuous byte (0x03)</option>
+                </select>
+            </label>
+            <label id="hrIntervalLabel">Interval (seconds, LE — bytes 22–23)
+                <input type="number" id="hrIntervalSec" class="input-narrow" min="5" max="3600" value="300" title="LE bytes 22–23 of v3 0x09. In 2-stage mode it is used in step 1 only; step 2 uses interval 0. In manual single mode it is used in the one packet.">
+            </label>
+            <div class="hr-form" style="gap:0.25rem;margin:0.1rem 0 0;align-items:flex-start;">
+                <label style="font-size:0.83rem;color:var(--muted);margin:0;">
+                    <input type="checkbox" id="v3OnUseDualStage" checked> v3 HR on: send 2-stage (step1+step2)
+                </label>
+                <label style="font-size:0.83rem;color:var(--muted);margin:0;">
+                    <input type="checkbox" id="v3OffUseDualStage" checked> v3 HR off: send 2-stage (step1+step2)
+                </label>
+            </div>
+            <label style="font-size:0.8rem;color:var(--muted);max-width:15rem;">Hidden u16 before interval (experimental)
+                <input type="number" id="v3HiddenU16" class="input-narrow" min="0" max="65535" value="0" title="Legacy control; unified mode uses START-END bytes instead.">
+            </label>
+            <button type="button" id="btnApplyHrMode" disabled>Apply HR mode</button>
+            <button type="button" id="btnV3HrIntervalSwitch" disabled title="Send: var1 v3 HR off → var2 time-range → var1 v3 HR on → var2 time-range (uses hrIntervalSec + time-range fields)">Interval switch: off → range → on → range</button>
+        </div>
+        <div class="hr-form" style="margin-top:0.4rem;">
+            <span style="font-weight:600;color:var(--text);width:100%;">SDK JSON fields (IDOSetV3HeartRateModeBluetoothModel, <span style="color:var(--muted);font-weight:400;">reference only — not sent on wire</span>)</span>
+            <label style="opacity:0.6;">modeType (reference only)
+                <select id="v3ModeType" disabled>
+                    <option value="0">0 — disable HR</option>
+                    <option value="1">1 — manual (no auto)</option>
+                    <option value="2">2 — auto (5&nbsp;min)</option>
+                    <option value="3" selected>3 — continuous (5&nbsp;s)</option>
+                    <option value="4">4 — default (first bind)</option>
+                    <option value="5">5 — use measurementInterval</option>
+                    <option value="6">6 — smart HR (206 WAL)</option>
+                </select>
+            </label>
+            <label>Time range
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="v3StartHour" class="input-tiny" min="0" max="23" value="0" title="startHour">
+                    <input type="number" id="v3StartMinute" class="input-tiny" min="0" max="59" value="0" title="startMinute">
+                    <span style="align-self:center;">→</span>
+                    <input type="number" id="v3EndHour" class="input-tiny" min="0" max="23" value="23" title="endHour">
+                    <input type="number" id="v3EndMinute" class="input-tiny" min="0" max="59" value="59" title="endMinute">
+                </span>
+            </label>
+            <label><input type="checkbox" id="v3ZeroTimestamp"> Empty timestamp (4x00)</label>
+            <label><input type="checkbox" id="v3ZeroStartEnd"> Empty start-end (4x00)</label>
+            <label style="opacity:0.6;">notifyFlag (reference only)
+                <select id="v3NotifyFlag" disabled title="Documented in SDK, but not mapped to any known 0x09 bytes on this page">
+                    <option value="0" selected>0 — invalid (not sent)</option>
+                    <option value="1">1 — allow notifications</option>
+                    <option value="2">2 — silent notifications</option>
+                    <option value="3">3 — turn off notifications</option>
+                </select>
+            </label>
+        </div>
+        <div class="hr-form" style="margin-top:0.25rem;">
+            <label style="opacity:0.6;">High HR alert (reference only)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <select id="v3HighMode" disabled>
+                        <option value="0" selected>off (not sent)</option>
+                        <option value="1">on</option>
+                    </select>
+                    <input type="number" id="v3HighValue" class="input-narrow" min="60" max="240" value="150" title="highHeartValue (BPM, not sent)" disabled>
+                </span>
+            </label>
+            <label style="opacity:0.6;">Low HR alert (reference only)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <select id="v3LowMode" disabled>
+                        <option value="0" selected>off (not sent)</option>
+                        <option value="1">on</option>
+                    </select>
+                    <input type="number" id="v3LowValue" class="input-narrow" min="30" max="180" value="45" title="lowHeartValue (BPM, not sent)" disabled>
+                </span>
+            </label>
+        </div>
+        <div class="hr-presets">Presets: <button type="button" class="hr-preset" data-sec="60">60s</button> <button type="button" class="hr-preset" data-sec="300">5&nbsp;min</button> <button type="button" class="hr-preset" data-sec="600">10&nbsp;min</button> <button type="button" class="hr-preset" data-sec="900">15&nbsp;min</button> — fills interval; choose “custom interval” and Apply.</div>
+        <div class="hr-form" style="margin-top:0.55rem;align-items:flex-start;">
+            <span style="font-weight:600;color:var(--text);width:100%;">Extra <code>0x09</code> replay/test buttons</span>
+            <button type="button" id="btnV3HrFreshLaunch" disabled title="Replay TX variation 2 pair: NULL_COMMAND + UNKNOWN + START–END (00:00→23:59) + UNKNOWN, as seen in app_fresh_launch.">Apply time-range pair (pkt1+pkt2)</button>
+            <button type="button" id="btnV3HrFreshSync" disabled title="Replay a mostly-zero HR 0x09 payload seen during config sync; useful to restore default HR-mode table state.">Send single zeroed payload</button>
+            <button type="button" id="btnV3Hr09TwelveZeroPayload" disabled title="Build a v3 cmd 0x09 packet where the 12 bytes after nseq are all 00, then recompute CRC (payload size: 12x00 + CRC16).">Send 12x00 payload</button>
+            <button type="button" id="btnV3HrResetSequence" disabled title="HR reset sequence: NULL timestamp + 00 01 + time range + zero interval; repeat once; then full zero payload. Uses dynamic nseq + recomputed CRC.">Send HR reset sequence</button>
+            <label style="width:100%;">Custom full v3 <code>0x09</code> packet hex
+                <textarea id="v3Hr09Hex" rows="2" spellcheck="false">33daaddaad0117000900090000000000000000000000aff2</textarea>
+            </label>
+            <button type="button" id="btnV3Hr09Hex" disabled>Send custom full <code>0x09</code> packet</button>
+        </div>
+        <p style="margin:0.35rem 0 0;font-size:0.82rem;color:var(--muted);">All controls here are still <strong>v3 HR cmd <code>0x09</code></strong>. The custom box expects a <strong>full packet</strong> including <code>33 DA AD DA AD</code>; CRC is recomputed before send.</p>
+        <ul style="margin-top:0.35rem;">
+            <li><strong>Apply HR mode (v3 on/off):</strong> If the relevant “send 2-stage” checkbox is checked, sends <em>two</em> packets — (1) <code>TS + CC/AA + null range + INTERVAL</code>; (2) <code>null TS + 00 01 + START-END (form) + 0 interval</code>. If unchecked, sends a <em>single</em> unified <code>0x09</code> packet. “Empty timestamp” applies to step 1 only in 2-stage mode.</li>
+            <li><strong>Single zeroed payload:</strong> seen later in <code>app_fresh_launch.txt</code> during <code>protocol_sync_config</code> table sync for evt <code>5010</code>. It is almost all zeros and gets a normal <code>0x09</code> reply. Best guess: this is a <strong>default / HR-mode table refresh</strong>, not an explicit “turn continuous on/off” command.</li>
+            <li><strong>Low-level replay buttons:</strong> keep the older captured packet experiments for comparison against the unified builder.</li>
+        </ul>
+        <hr style="border:none;border-top:1px solid #30363d;margin:0.85rem 0;">
+        <strong>SET_HR_INTERVAL — <code>03 24</code></strong> <span style="font-size:0.8rem;color:var(--muted);">(evt <strong>112</strong> <code>set_hr_interval</code> / <code>VBUS_EVT_APP_SET_HEART_RATE_INTERVAL</code>)</span>
+        <p style="margin:0.35rem 0 0;font-size:0.88rem;color:var(--muted);"><strong>Short (5 B):</strong> angelfit — 3 BPM thresholds. <strong>VeryFit sync (20 B wire):</strong> <code>03 24</code> + 18 payload bytes from <code>app_fresh_launch.txt</code>; see repo <code>docs/set_hr_interval_0324.md</code>. Try short before <code>03 25</code>; use full form if the watch expects config-sync layout.</p>
+        <p style="margin:0.25rem 0;font-size:0.82rem;color:var(--warn);"><strong>Not</strong> the same as v3 form “interval (s)” above — that is evt <strong>5010</strong> / v3 cmd <strong>0x09</strong>.</p>
+        <div class="hr-form">
+            <span style="font-weight:600;color:var(--text);width:100%;">Short <code>03 24</code></span>
+            <label>Burn fat
+                <input type="number" id="hr24Burn" class="input-narrow" min="1" max="255" value="135" title="Burn fat zone (BPM)">
+            </label>
+            <label>Aerobic
+                <input type="number" id="hr24Aerobic" class="input-narrow" min="1" max="255" value="96" title="Aerobic (BPM)">
+            </label>
+            <label>Limit
+                <input type="number" id="hr24Limit" class="input-narrow" min="1" max="255" value="160" title="Limit (BPM)">
+            </label>
+            <button type="button" id="btnSetHr24" disabled>Send short (5 B)</button>
+        </div>
+        <div class="hr-presets">Angelfit: <button type="button" class="hr24-default">135 / 96 / 160</button></div>
+        <hr style="border:none;border-top:1px solid #30363d;margin:0.75rem 0;">
+        <div class="hr-form" style="align-items:flex-start;">
+            <span style="font-weight:600;color:var(--text);width:100%;">VeryFit extended <code>03 24</code> (20 B)</span>
+            <label>burnFat / aerobic / limitValue (Zone1)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_z1a" class="input-tiny" min="0" max="255" value="120" title="burnFat (u8)">
+                    <input type="number" id="vf24_z1b" class="input-tiny" min="0" max="255" value="140" title="aerobic (u8)">
+                    <input type="number" id="vf24_z1c" class="input-tiny" min="0" max="255" value="180" title="limitValue (u8)">
+                </span>
+            </label>
+            <label>userMaxHr / minHr (bytes 5–6)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_b5" class="input-tiny" min="0" max="255" value="200" title="userMaxHr u8 (0xC8)">
+                    <input type="number" id="vf24_b6" class="input-tiny" min="0" max="255" value="100" title="minHr u8 (0x64)">
+                </span>
+            </label>
+            <label>Zone2 (4 B)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_z2a" class="input-tiny" min="0" max="255" value="120">
+                    <input type="number" id="vf24_z2b" class="input-tiny" min="0" max="255" value="140">
+                    <input type="number" id="vf24_z2c" class="input-tiny" min="0" max="255" value="160">
+                    <input type="number" id="vf24_z2d" class="input-tiny" min="0" max="255" value="180">
+                </span>
+            </label>
+            <label>warmUp (u8, byte 11)
+                <input type="number" id="vf24_b11" class="input-tiny" min="0" max="255" value="20" title="warmUp value (0x14 = 20)">
+            </label>
+            <label>Start time h:m (experimental bytes 12–13)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_start_h" class="input-tiny" min="0" max="23" value="0" title="startHour">
+                    <input type="number" id="vf24_start_m" class="input-tiny" min="0" max="59" value="0" title="startMinute">
+                </span>
+            </label>
+            <label>Reminder switches (experimental bytes 14–15)
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_minHrRemind" class="input-tiny" min="0" max="1" value="0" title="minHrRemind (0/1)">
+                    <input type="number" id="vf24_maxHrRemind" class="input-tiny" min="0" max="1" value="0" title="maxHrRemind (0/1)">
+                </span>
+            </label>
+            <label>End time h:m
+                <span class="hr-form" style="gap:0.25rem;margin:0;">
+                    <input type="number" id="vf24_eh" class="input-tiny" min="0" max="23" value="23">
+                    <input type="number" id="vf24_em" class="input-tiny" min="0" max="59" value="59">
+                </span>
+            </label>
+            <label>userMaxHr tail LE u16
+                <input type="number" id="vf24_tail" class="input-narrow" min="0" max="65535" value="200" title="bytes 18–19 LE (often == userMaxHr u8)">
+            </label>
+            <button type="button" id="btnSetHr24VeryFit" disabled>Send extended (20 B)</button>
+            <button type="button" id="btnSetHr24VeryFitCapture" disabled title="Exact app_fresh_launch TX (20 B)">Send capture hex</button>
+            <button type="button" id="btnVf24LoadCapture">Load capture → fields</button>
+        </div>
+        <p style="margin:0.4rem 0 0;font-size:0.82rem;color:var(--muted);">Payload after <code>03 24</code>: <strong>36 hex</strong> (18 B, VeryFit capture) or any <strong>even</strong> length 2–64 hex. Or paste <strong>full packet</strong> starting with <code>0324</code> (e.g. 40 hex = 20 B).</p>
+        <textarea id="hr24ExtHex" rows="2" spellcheck="false">788cb4c864788ca0b41400000000173bc800</textarea>
+        <button type="button" id="btnSetHr24FromHex" disabled style="margin-top:0.35rem;">Send <code>03 24</code> + hex above</button>
+    </div>
+
+    <div class="panel row">
+        <span id="status" class="offline">Disconnected</span>
+        <button type="button" id="btnConnect">Connect (0x0AF0)</button>
+        <button type="button" id="btnBindStartupDefaults" disabled title="Replay app_fresh_launch startup: bind start, v3 func-table, 03 24 HR interval, v3 time-range pair + v3 HR mode, then v3 health sync for activity (type 4) and HR (type 3). Then replay available *_off captures (HR/Stress/Drinking reminders, walking/menstrual, auto-sport detect, raise-to-wake, auto brightness, music, weather, DND).">Bind + App startup</button>
+        <button type="button" id="btnHealthSizes" disabled title="v3 cmd 0x05 — HR-only size probe using typeId+savedOffset records">Get health sizes (0x05)</button>
+        <button type="button" id="btnSyncHr" disabled>Sync HR &amp; prepare CSV</button>
+        <button type="button" id="btnDownloadCsv" disabled>Download CSV</button>
+        <button type="button" id="btnDownloadRaw" disabled>Download raw hex</button>
+        <button type="button" id="btnClear">Clear log</button>
+    </div>
+
+    <div class="panel">
+        <div><strong>Last capture:</strong> <span id="lastMeta">—</span></div>
+        <div id="samplePreview" style="margin-top:0.5rem;font-size:0.88rem;color:var(--muted);max-height:120px;overflow:auto;"></div>
+    </div>
+
+    <div class="panel">
+        <div style="color:var(--muted);margin-bottom:0.35rem;">Log</div>
+        <div id="log"></div>
+    </div>
+
+    <script>
+(function () {
+    'use strict';
+    const SERVICE_UUID = 0x0AF0;
+    const TX_UUID = 0x0AF6;
+    const RX_UUID = 0x0AF7;
+
+    let sendChar = null;
+    let rxChar = null;
+    // Global v3 nseq stream (shared across all v3 commands we send: 0x04, 0x05, 0x07, 0x09, 0x1A, …).
+    // App logs (see app_fresh_launch.txt) show a single monotonic 16-bit counter per connection,
+    // reused across all v3 cmd ids. We approximate that with v3Seq here.
+    let v3Seq = 0x0002;
+    let rx_buffer = null;
+    let rx_written = 0;
+    let rx_label = '';
+    let rx_last_logged = -1;
+
+    let lastCapture = null;
+    let lastRawHex = '';
+    let lastCsvText = '';
+
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+    const lastMetaEl = document.getElementById('lastMeta');
+    const samplePreviewEl = document.getElementById('samplePreview');
+
+    function log(msg) {
+        const t = new Date().toISOString().slice(11, 19);
+        logEl.textContent += '[' + t + '] ' + msg + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function crc16Ccitt(buffer, offset, length) {
+        let crc = 0xFFFF;
+        const end = offset + length;
+        for (let i = offset; i < end; i++) {
+            crc ^= buffer[i] << 8;
+            for (let k = 0; k < 8; k++) crc = (crc & 0x8000) ? ((crc << 1) ^ 0x1021) : (crc << 1);
+            crc &= 0xFFFF;
+        }
+        return crc;
+    }
+
+    function nextV3Seq() {
+        v3Seq = (v3Seq + 1) & 0xFFFF;
+        return v3Seq;
+    }
+
+    function buildV3HealthSync04(operate, dataType) {
+        const packet = new Uint8Array(19);
+        packet[0] = 0x33;
+        packet.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        packet[5] = 0x01;
+        packet[6] = 0x10;
+        packet[7] = 0x00;
+        packet[8] = 0x04;
+        packet[9] = 0x00;
+        const seq = nextV3Seq();
+        packet[10] = seq & 0xff;
+        packet[11] = (seq >> 8) & 0xff;
+        packet[12] = operate & 0xff;
+        packet[13] = dataType & 0xff;
+        packet[14] = 0x01;
+        packet[15] = 0x00;
+        packet[16] = 0x00;
+        const crc = crc16Ccitt(packet, 1, packet.length - 3);
+        packet[17] = crc & 0xff;
+        packet[18] = (crc >> 8) & 0xff;
+        return packet;
+    }
+
+    // Captures show v3 cmd 0x05 uses a fixed 137-byte request where the payload after nseq
+    // begins with repeated records: typeId (1 B) + savedOffset LE32 (4 B), then zero padding.
+    // This HR-focused page only needs the HR record for now.
+    function buildV3HealthSizes05(records) {
+        const packet = new Uint8Array(137);
+        packet[0] = 0x33;
+        packet.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        packet[5] = 0x01;
+        packet[6] = 0x88;
+        packet[7] = 0x00;
+        packet[8] = 0x05;
+        packet[9] = 0x00;
+        const seq = nextV3Seq();
+        packet[10] = seq & 0xff;
+        packet[11] = (seq >> 8) & 0xff;
+
+        const list = Array.isArray(records) ? records : [];
+        let off = 12;
+        for (let i = 0; i < list.length && off + 5 <= packet.length; i++) {
+            const rec = list[i] || {};
+            const typeId = (rec.typeId || 0) & 0xff;
+            const savedOffset = Math.max(0, (rec.savedOffset >>> 0) || 0);
+            packet[off] = typeId;
+            packet[off + 1] = savedOffset & 0xff;
+            packet[off + 2] = (savedOffset >> 8) & 0xff;
+            packet[off + 3] = (savedOffset >> 16) & 0xff;
+            packet[off + 4] = (savedOffset >> 24) & 0xff;
+            off += 5;
+        }
+        return packet;
+    }
+
+    function sendV3PacketChunked(packet) {
+        const MAX_CHUNK = 134;
+        const chunks = [];
+        let offset = 0;
+        chunks.push(packet.subarray(0, Math.min(packet.length, MAX_CHUNK)));
+        offset = chunks[0].length;
+        while (offset < packet.length) {
+            const n = Math.min(packet.length - offset, MAX_CHUNK - 1);
+            const c = new Uint8Array(1 + n);
+            c[0] = 0x33;
+            c.set(packet.subarray(offset, offset + n), 1);
+            chunks.push(c);
+            offset += n;
+        }
+        let i = 0;
+        function next() {
+            if (i >= chunks.length) return Promise.resolve();
+            return sendChar.writeValue(chunks[i]).then(function () {
+                log('[TX] v3 chunk ' + (i + 1) + '/' + chunks.length + ' (' + chunks[i].length + ' B)');
+                i++;
+                if (i < chunks.length) return new Promise(function (r) { setTimeout(function () { next().then(r); }, 25); });
+            });
+        }
+        return next();
+    }
+
+    function parseHex(s) {
+        s = String(s || '').replace(/\s/g, '');
+        if (!/^[0-9a-f]*$/i.test(s) || s.length % 2) return null;
+        const out = new Uint8Array(s.length / 2);
+        for (let i = 0; i < out.length; i++) out[i] = parseInt(s.substr(i * 2, 2), 16);
+        return out;
+    }
+
+    function finalizeV3PacketCrc(packet) {
+        if (!packet || packet.length < 4) return packet;
+        const crc = crc16Ccitt(packet, 1, packet.length - 3);
+        packet[packet.length - 2] = crc & 0xff;
+        packet[packet.length - 1] = (crc >> 8) & 0xff;
+        return packet;
+    }
+
+    /** First v3 17 09 packet from set_hr_cont_state_on (26 B); bytes 10–11 = seq, 14–17 = timestamp-like COMMAND u32, 18 = state, 20–21 = hidden u16, 22–23 = interval LE (default 0x012C = 300). */
+    function applyV3Seq(p) {
+        // Advance global v3 seq; wrap in 16-bit space.
+        const seq = nextV3Seq();
+        p[10] = seq & 0xff;
+        p[11] = (seq >> 8) & 0xff;
+    }
+
+    function applyV3HiddenU16(p) {
+        const raw = document.getElementById('v3HiddenU16').value;
+        const n = parseInt(raw, 10);
+        if (isNaN(n)) return;
+        const v = Math.max(0, Math.min(65535, n >>> 0));
+        p[20] = v & 0xff;
+        p[21] = (v >> 8) & 0xff;
+        log('Hidden u16 before INTERVAL set to ' + v + ' (LE ' +
+            ('0' + p[20].toString(16)).slice(-2) + ' ' + ('0' + p[21].toString(16)).slice(-2) + ').');
+    }
+
+    function buildV3HrVar1Packet1(baseHex, intervalSec) {
+        const p = parseHex(baseHex);
+        if (!p || p.length !== 26) return null;
+        applyV3Seq(p);
+        applyV3HiddenU16(p);
+        const iv = Math.max(5, Math.min(3600, parseInt(intervalSec, 10) || 300));
+        p[22] = iv & 0xff;
+        p[23] = (iv >> 8) & 0xff;
+        return finalizeV3PacketCrc(p);
+    }
+
+    // Variation 2 builder: NULL_UPDATE_TIMESTAMP // UNKNOWN // START-END // UNKNOWN // CRC
+    // Based on V3_HR_FRESH_LAUNCH_PKT1_HEX but with START/END filled from the time-range form.
+    function buildV3HrVar2FromForm() {
+        const p = parseHex(V3_HR_FRESH_LAUNCH_PKT1_HEX);
+        if (!p || p.length !== 26) return null;
+        const sh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3StartHour').value, 10) || 0));
+        const sm = Math.max(0, Math.min(59, parseInt(document.getElementById('v3StartMinute').value, 10) || 0));
+        const eh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3EndHour').value, 10) || 23));
+        const em = Math.max(0, Math.min(59, parseInt(document.getElementById('v3EndMinute').value, 10) || 59));
+        // Bytes 10–11: seq (we overwrite from hrModeSeq).
+        applyV3Seq(p);
+        // Bytes 18–21: startHour, startMinute, endHour, endMinute (captured: 00 00 17 3B).
+        p[18] = sh & 0xff;
+        p[19] = sm & 0xff;
+        p[20] = eh & 0xff;
+        p[21] = em & 0xff;
+        return finalizeV3PacketCrc(p);
+    }
+
+    function buildV3HrUnifiedPacket(stateByte, intervalSec) {
+        // Unified TX shape:
+        // UPDATE_TIMESTAMP(4) // ON_OFF(2) // START-END(4) // INTERVAL(2 LE) // CRC(2)
+        const p = new Uint8Array(26);
+        p[0] = 0x33;
+        p.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        p[5] = 0x01;
+        p[6] = 0x17;
+        p[7] = 0x00;
+        p[8] = 0x09;
+        p[9] = 0x00;
+        applyV3Seq(p);
+
+        const zeroTs = !!document.getElementById('v3ZeroTimestamp').checked;
+        const zeroRange = !!document.getElementById('v3ZeroStartEnd').checked;
+        const sh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3StartHour').value, 10) || 0));
+        const sm = Math.max(0, Math.min(59, parseInt(document.getElementById('v3StartMinute').value, 10) || 0));
+        const eh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3EndHour').value, 10) || 23));
+        const em = Math.max(0, Math.min(59, parseInt(document.getElementById('v3EndMinute').value, 10) || 59));
+        const iv = Math.max(5, Math.min(3600, parseInt(intervalSec, 10) || 300));
+
+        if (!zeroTs) {
+            const nowSec = Math.floor(Date.now() / 1000) >>> 0;
+            p[12] = nowSec & 0xff;
+            p[13] = (nowSec >> 8) & 0xff;
+            p[14] = (nowSec >> 16) & 0xff;
+            p[15] = (nowSec >> 24) & 0xff;
+        }
+
+        p[16] = stateByte & 0xff;
+        p[17] = 0x00;
+
+        if (!zeroRange) {
+            p[18] = sh & 0xff;
+            p[19] = sm & 0xff;
+            p[20] = eh & 0xff;
+            p[21] = em & 0xff;
+        }
+
+        p[22] = iv & 0xff;
+        p[23] = (iv >> 8) & 0xff;
+        return finalizeV3PacketCrc(p);
+    }
+
+    /**
+     * v3 HR ON/OFF — packet 1 of 2 (app-style):
+     *   UPDATE_TIMESTAMP(4) // state 00 (CC=ON, AA=OFF) // NULL time-range(4) // interval(2 LE) // CRC
+     * Time-range is forced 00 00 00 00. Interval from hrIntervalSec.
+     * Timestamp respects "zero timestamp" checkbox when set.
+     */
+    function buildV3HrDualStep1(stateByte, intervalSec) {
+        const p = new Uint8Array(26);
+        p[0] = 0x33;
+        p.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        p[5] = 0x01;
+        p[6] = 0x17;
+        p[7] = 0x00;
+        p[8] = 0x09;
+        p[9] = 0x00;
+        applyV3Seq(p);
+
+        const zeroTs = !!document.getElementById('v3ZeroTimestamp').checked;
+        if (!zeroTs) {
+            const nowSec = Math.floor(Date.now() / 1000) >>> 0;
+            p[12] = nowSec & 0xff;
+            p[13] = (nowSec >> 8) & 0xff;
+            p[14] = (nowSec >> 16) & 0xff;
+            p[15] = (nowSec >> 24) & 0xff;
+        }
+        p[16] = stateByte & 0xff;
+        p[17] = 0x00;
+        // bytes 18..21: null time-range (already zero)
+        const iv = Math.max(5, Math.min(3600, parseInt(intervalSec, 10) || 300));
+        p[22] = iv & 0xff;
+        p[23] = (iv >> 8) & 0xff;
+        return finalizeV3PacketCrc(p);
+    }
+
+    /**
+     * v3 HR ON/OFF — packet 2 of 2 (reset-style schedule):
+     *   NULL timestamp // 00 01 // START-END from form // 0 interval // CRC
+     */
+    function buildV3HrDualStep2() {
+        const p = new Uint8Array(26);
+        p[0] = 0x33;
+        p.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        p[5] = 0x01;
+        p[6] = 0x17;
+        p[7] = 0x00;
+        p[8] = 0x09;
+        p[9] = 0x00;
+        applyV3Seq(p);
+        // 12..15 null timestamp
+        p[16] = 0x00;
+        p[17] = 0x01;
+        const zeroRange = !!document.getElementById('v3ZeroStartEnd').checked;
+        const sh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3StartHour').value, 10) || 0));
+        const sm = Math.max(0, Math.min(59, parseInt(document.getElementById('v3StartMinute').value, 10) || 0));
+        const eh = Math.max(0, Math.min(23, parseInt(document.getElementById('v3EndHour').value, 10) || 23));
+        const em = Math.max(0, Math.min(59, parseInt(document.getElementById('v3EndMinute').value, 10) || 59));
+        p[18] = (zeroRange ? 0 : sh) & 0xff;
+        p[19] = (zeroRange ? 0 : sm) & 0xff;
+        p[20] = (zeroRange ? 0 : eh) & 0xff;
+        p[21] = (zeroRange ? 0 : em) & 0xff;
+        // 22..23 interval 0
+        return finalizeV3PacketCrc(p);
+    }
+
+    const V3_HR_ON_PKT1_HEX = '33DAADDAAD01170009001701D8ADAC69CC00000000002C015608';
+    // OFF capture (state byte AA) — 26 B total, CRC will be recomputed.
+    const V3_HR_OFF_PKT1_HEX = '33DAADDAAD01170009001401BAADAC69AA00000000002C0156BE';
+    const V3_HR_FRESH_LAUNCH_PKT1_HEX = '33DAADDAAD011700090003000000000000010000173B0000B928';
+    const V3_HR_FRESH_LAUNCH_PKT2_HEX = '33DAADDAAD011700090004000000000000010000173B0000BF58';
+    const V3_HR_FRESH_SYNC_PKT_HEX = '33DAADDAAD0117000900090000000000000000000000AFF2';
+    // v3 HR mode packet observed during app config sync (func_v3_set_hr_mode).
+    // app_fresh_launch TX: `33 DA AD DA AD 01 17 00 09 00 09 ... AF F2`
+    const V3_HR_MODE_DEFAULT_PKT_HEX = '33DAADDAAD0117000900090000000000000000000000AFF2';
+
+    // v3 health sync packets observed during app_fresh_launch startup.
+    // Activity type (0x04) start/stop + HR cmd type (0x03) start/stop.
+    const V3_HEALTH_SYNC_ACTIVITY_START_PKT_HEX = '33DAADDAAD01100004000F000004000000C4B9';
+    const V3_HEALTH_SYNC_ACTIVITY_STOP_PKT_HEX = '33DAADDAAD01100004001000010400000007AE';
+    const V3_HEALTH_SYNC_HR_START_PKT_HEX = '33DAADDAAD0110000400170000030100000F7B';
+    const V3_HEALTH_SYNC_HR_STOP_PKT_HEX = '33DAADDAAD011000040018000103010000B75B';
+
+    // Bind + v3 function-table defaults observed in app_fresh_launch.
+    const BIND_START_PKT_HEX = '0401F1010102020100';
+    const V3_FUNC_TABLE_33_1A_PKT_HEX = '33DAADDAAD010B001A0002005FF9';
+
+    // ---- "All settings off" toggles (replay app *_off captures) ----
+    // Continuous HR off (VBUS_EVT_FUNC_V3_SET_HR_MODE)
+    const OFF_V3_HR_CONT_STATE_OFF_PKT1_HEX = '33DAADDAAD01170009001401BAADAC69AA00000000002C0156BE';
+    const OFF_V3_HR_CONT_STATE_OFF_PKT2_HEX = '33DAADDAAD0117000900150100000000010000173B00004AA0';
+
+    // Continuous Drinking reminder off
+    const OFF_VBUS_DRINK_WATER_REMINDER_OFF_HEX = '036000090012003E1E00010000000000';
+    const OFF_V3_DRINK_CONT_OFF_HEX = '33DAADDAAD01170009001F0100000000010000173B0000E3BD';
+
+    // Continuous Stress (pressure) off
+    const OFF_VBUS_PRESSURE_OFF_HEX = '03455509001200553F3C00500001001E';
+    const OFF_V3_STRESS_CONT_OFF_HEX = '33DAADDAAD01170009001D0100000000010000173B0000214B';
+
+    // Walking reminder off
+    const OFF_VBUS_WALK_REMINDER_OFF_HEX = '034700640009001500FE00007300000001';
+    const OFF_V3_WALK_CONT_OFF_HEX = '33DAADDAAD0117000900230100000000010000173B000015F0';
+
+    // Intelligent exercise recognition off
+    const OFF_VBUS_AUTO_SPORT_DETECT_OFF_HEX = '0349000000000000000000';
+
+    // Raise-to-wake / wrist gesture wake off
+    const OFF_VBUS_HAND_GESTURE_WAKE_OFF_HEX = '03285505010000173B';
+
+    // Menstrual reminder off (+ related HR mode packet)
+    const OFF_VBUS_MENSTRUATION_REMIND_OFF_HEX = '034203030800030303';
+    const OFF_V3_MENSTRUATION_CONT_OFF_HEX = '33DAADDAAD0117000900310100000000010000173B000020C0';
+
+    // Auto night brightness off
+    const OFF_VBUS_AUTO_BRIGHTNESS_OFF_HEX = '033228010001130006000005';
+
+    // Music control off
+    const OFF_VBUS_MUSIC_OFF_HEX = '032A5555';
+    const OFF_VBUS_MUSIC_SYS_STOP_HEX = '060101000000';
+
+    // Weather pushing off
+    const OFF_VBUS_WEATHER_OFF_HEX = '032D55000000';
+    const OFF_VBUS_WEATHER_SYS_02B1_HEX = '02B1';
+
+    // Do-not-disturb off (and follow-up queries in capture)
+    const OFF_VBUS_DND_OFF_HEX = '0329551700070002FE55170007000000';
+    const OFF_VBUS_DND_QUERY_0740_HEX = '074000001000000000000000000000000000';
+    const OFF_VBUS_DND_SYS_02B1_HEX = '02B1';
+    const OFF_VBUS_DND_QUERY_0230_HEX = '0230';
+
+    function sendSequencePackets(packets, label, delayMs) {
+        let i = 0;
+        const d = delayMs || 350;
+        function step() {
+            if (i >= packets.length) return Promise.resolve();
+            const pkt = packets[i];
+            log('[TX] ' + label + ' ' + (i + 1) + '/' + packets.length + ' (' + pkt.length + ' B) | ' + hexOf(pkt));
+            return sendChar.writeValue(pkt).then(function () {
+                i++;
+                if (i < packets.length) return new Promise(function (r) { setTimeout(function () { step().then(r); }, d); });
+            });
+        }
+        return step();
+    }
+
+    async function sendBindAndAppStartupDefaults() {
+        const btn = document.getElementById('btnBindStartupDefaults');
+        if (!sendChar) {
+            log('Not connected.');
+            return;
+        }
+        if (btn) btn.disabled = true;
+
+        const bindStart = parseHex(BIND_START_PKT_HEX);
+        const funcTable = parseHex(V3_FUNC_TABLE_33_1A_PKT_HEX);
+        const hr24 = parseHex(HR24_VERYFIT_CAPTURE_HEX);
+        const pktRange1 = parseHex(V3_HR_FRESH_LAUNCH_PKT1_HEX);
+        const pktRange2 = parseHex(V3_HR_FRESH_LAUNCH_PKT2_HEX);
+        const hrModeDefault = parseHex(V3_HR_MODE_DEFAULT_PKT_HEX);
+        const syncActivityStart = parseHex(V3_HEALTH_SYNC_ACTIVITY_START_PKT_HEX);
+        const syncActivityStop = parseHex(V3_HEALTH_SYNC_ACTIVITY_STOP_PKT_HEX);
+        const syncHrStart = parseHex(V3_HEALTH_SYNC_HR_START_PKT_HEX);
+        const syncHrStop = parseHex(V3_HEALTH_SYNC_HR_STOP_PKT_HEX);
+
+        const packets = [
+            bindStart,
+            funcTable,
+            hr24,
+            pktRange1,
+            pktRange2,
+            hrModeDefault,
+            syncActivityStart,
+            syncActivityStop,
+            syncHrStart,
+            syncHrStop
+        ];
+
+        // Apply "everything off" toggles (best-effort) after defaults.
+        const offPackets = [
+            // HR continuous off
+            parseHex(OFF_V3_HR_CONT_STATE_OFF_PKT1_HEX),
+            parseHex(OFF_V3_HR_CONT_STATE_OFF_PKT2_HEX),
+
+            // Drinking off
+            parseHex(OFF_VBUS_DRINK_WATER_REMINDER_OFF_HEX),
+            parseHex(OFF_V3_DRINK_CONT_OFF_HEX),
+
+            // Stress (pressure) off
+            parseHex(OFF_VBUS_PRESSURE_OFF_HEX),
+            parseHex(OFF_V3_STRESS_CONT_OFF_HEX),
+
+            // Walking reminder off
+            parseHex(OFF_VBUS_WALK_REMINDER_OFF_HEX),
+            parseHex(OFF_V3_WALK_CONT_OFF_HEX),
+
+            // Intelligent exercise recognition off (auto sport detect off)
+            parseHex(OFF_VBUS_AUTO_SPORT_DETECT_OFF_HEX),
+
+            // Menstrual reminder off
+            parseHex(OFF_VBUS_MENSTRUATION_REMIND_OFF_HEX),
+            parseHex(OFF_V3_MENSTRUATION_CONT_OFF_HEX),
+
+            // Raise-to-wake gesture off
+            parseHex(OFF_VBUS_HAND_GESTURE_WAKE_OFF_HEX),
+
+            // Auto-night screen brightness off
+            parseHex(OFF_VBUS_AUTO_BRIGHTNESS_OFF_HEX),
+
+            // Music control off
+            parseHex(OFF_VBUS_MUSIC_OFF_HEX),
+            parseHex(OFF_VBUS_MUSIC_SYS_STOP_HEX),
+
+            // Weather pushing off
+            parseHex(OFF_VBUS_WEATHER_OFF_HEX),
+            parseHex(OFF_VBUS_WEATHER_SYS_02B1_HEX),
+
+            // DND off (capture includes follow-up query packets)
+            parseHex(OFF_VBUS_DND_OFF_HEX),
+            parseHex(OFF_VBUS_DND_QUERY_0740_HEX),
+            parseHex(OFF_VBUS_DND_SYS_02B1_HEX),
+            parseHex(OFF_VBUS_DND_QUERY_0230_HEX)
+        ];
+
+        packets.push.apply(packets, offPackets);
+
+        if (packets.some(function (p) { return !p; })) {
+            log('Bind+startup build failed (hex parse).');
+            if (btn) btn.disabled = false;
+            return;
+        }
+
+        // Keep our generated v3 sequence counter roughly aligned for later buttons.
+        // Off captures end with a v3 HR-mode packet; use the last one for best alignment.
+        const lastV3 = parseHex(OFF_V3_MENSTRUATION_CONT_OFF_HEX) || syncHrStop;
+        if (lastV3 && lastV3.length >= 12) v3Seq = lastV3[10] | (lastV3[11] << 8);
+
+        async function waitForExpectedReplyForPacket(pkt) {
+            if (!pkt || pkt.length < 2) return Promise.resolve();
+            // VBUS
+            if (pkt[0] !== 0x33) {
+                const prefix = pkt.slice(0, 2);
+                return waitForVbusPrefix(prefix, 2500);
+            }
+
+            // v3
+            const v3Cmd = pkt[8] | (pkt[9] << 8);
+            const v3Seq = pkt[10] | (pkt[11] << 8);
+            if (v3Cmd === 0x0004) return waitForV3HealthByCmdSeq(v3Cmd, v3Seq, 12000);
+            if (v3Cmd === 0x0005) return waitForV3HealthByCmdSeq(v3Cmd, v3Seq, 12000);
+            if (v3Cmd === 0x0009) return waitForV3Hr09ReplyByNseq(v3Seq, 4000);
+            return waitForV3GenericByCmdSeq(v3Cmd, v3Seq, 5000);
+        }
+
+        log('[Bind+startup] Sending app_fresh_launch defaults, then "all off" toggles from *_off captures (continue on timeout / missing reply).');
+
+        const failures = [];
+        try {
+            for (let i = 0; i < packets.length; i++) {
+                const pkt = packets[i];
+                const stepNum = i + 1;
+                const stepLabel = 'step ' + stepNum + '/' + packets.length;
+                try {
+                    const expectWaitPromise = waitForExpectedReplyForPacket(pkt);
+                    log('[TX] bind+startup ' + stepLabel + ' waiting for reply… | ' + hexOf(pkt));
+                    await sendChar.writeValue(pkt);
+                    await expectWaitPromise;
+                } catch (e) {
+                    const msg = e && e.message ? e.message : String(e);
+                    failures.push({ step: stepNum, hex: hexOf(pkt), message: msg });
+                    log('[Bind+startup] ' + stepLabel + ' reply wait failed, continuing: ' + msg);
+                }
+                // Small inter-step delay to avoid back-to-back notification races.
+                await new Promise(function (r) { setTimeout(r, 60); });
+            }
+            if (failures.length) {
+                log('[Bind+startup] Done with ' + failures.length + ' timeout/reply miss(es); sequence continued past them.');
+            } else {
+                log('[Bind+startup] Done (all replies observed).');
+            }
+        } finally {
+            if (btn) btn.disabled = false;
+        }
+    }
+
+    function applyHrModeFromForm() {
+        if (!sendChar) {
+            log('Not connected.');
+            return;
+        }
+        const action = document.getElementById('hrModeAction').value;
+        const sec = parseInt(document.getElementById('hrIntervalSec').value, 10) || 300;
+
+        // SDK JSON-style fields (IDOSetV3HeartRateModeBluetoothModel) — logged for reference only (not fully sent).
+        const modeType = parseInt(document.getElementById('v3ModeType').value, 10);
+        const startHour = parseInt(document.getElementById('v3StartHour').value, 10) || 0;
+        const startMinute = parseInt(document.getElementById('v3StartMinute').value, 10) || 0;
+        const endHour = parseInt(document.getElementById('v3EndHour').value, 10) || 0;
+        const endMinute = parseInt(document.getElementById('v3EndMinute').value, 10) || 0;
+        const notifyFlag = parseInt(document.getElementById('v3NotifyFlag').value, 10) || 0;
+        const highHeartMode = parseInt(document.getElementById('v3HighMode').value, 10) || 0;
+        const lowHeartMode = parseInt(document.getElementById('v3LowMode').value, 10) || 0;
+        const highHeartValue = parseInt(document.getElementById('v3HighValue').value, 10) || 0;
+        const lowHeartValue = parseInt(document.getElementById('v3LowValue').value, 10) || 0;
+
+        if (action === 'v3_off' || action === 'v3_on') {
+            log('[v3_set_hr_mode JSON] (reference only) modeType=' + modeType +
+                ' measurementInterval=' + sec +
+                ' start=' + startHour + ':' + (startMinute < 10 ? '0' + startMinute : startMinute) +
+                ' end=' + endHour + ':' + (endMinute < 10 ? '0' + endMinute : endMinute) +
+                ' notifyFlag=' + notifyFlag +
+                ' highMode=' + highHeartMode + ' highValue=' + highHeartValue +
+                ' lowMode=' + lowHeartMode + ' lowValue=' + lowHeartValue);
+        }
+
+        if (action === 'v3_off') {
+            const dualEl = document.getElementById('v3OffUseDualStage');
+            const dual = dualEl ? !!dualEl.checked : true;
+            if (dual) {
+                const a = buildV3HrDualStep1(0xAA, sec);
+                const b = buildV3HrDualStep2();
+                if (!a || a.length !== 26 || !b || b.length !== 26) {
+                    log('Build packet failed: v3 HR off expects two 26 B 0x09 packets.');
+                    return;
+                }
+                const le = a[22] | (a[23] << 8);
+                log('[v3 HR off] 2-step: (1) TS + AA 00 + null range + interval LE=' + le + 's | (2) null TS + 00 01 + form time-range + interval 0');
+                sendSequencePackets([a, b], 'v3 HR off', 120).then(function () {
+                    log('Sent v3 HR off (2× 0x09). Step1 interval LE @22-23 vs [v3 0x09 reply] echoed_interval.');
+                }).catch(function (e) { log('Error: ' + e.message); });
+            } else {
+                const a = buildV3HrUnifiedPacket(0xAA, sec);
+                if (!a || a.length !== 26) { log('Build packet failed: v3 HR off single must be 26 B.'); return; }
+                log('[v3 HR off] single: TS + AA 00 + start/end + interval LE=' + (a[22] | (a[23] << 8)) + 's | ' + hexOf(a));
+                sendChar.writeValue(a).then(function () {
+                    log('Sent v3 HR off (single unified 0x09).');
+                }).catch(function (e) { log('Error: ' + e.message); });
+            }
+            return;
+        }
+        if (action === 'v3_on') {
+            const dualEl = document.getElementById('v3OnUseDualStage');
+            const dual = dualEl ? !!dualEl.checked : true;
+            if (dual) {
+                const a = buildV3HrDualStep1(0xCC, sec);
+                const b = buildV3HrDualStep2();
+                if (!a || a.length !== 26 || !b || b.length !== 26) {
+                    log('Build packet failed: v3 HR on expects two 26 B 0x09 packets.');
+                    return;
+                }
+                const le = a[22] | (a[23] << 8);
+                log('[v3 HR on] 2-step: (1) TS + CC 00 + null range + interval LE=' + le + 's | (2) null TS + 00 01 + form time-range + interval 0');
+                sendSequencePackets([a, b], 'v3 HR on', 120).then(function () {
+                    log('Sent v3 HR on (2× 0x09). Step1 interval LE @22-23 vs [v3 0x09 reply] echoed_interval.');
+                }).catch(function (e) { log('Error: ' + e.message); });
+            } else {
+                const a = buildV3HrUnifiedPacket(0xCC, sec);
+                if (!a || a.length !== 26) { log('Build packet failed: v3 HR on single must be 26 B.'); return; }
+                log('[v3 HR on] single: TS + CC 00 + start/end + interval LE=' + (a[22] | (a[23] << 8)) + 's | ' + hexOf(a));
+                sendChar.writeValue(a).then(function () {
+                    log('Sent v3 HR on (single unified 0x09).');
+                }).catch(function (e) { log('Error: ' + e.message); });
+            }
+            return;
+        }
+        if (action === 'legacy_88') {
+            const buf = new Uint8Array([0x03, 0x25, 0x88]);
+            sendChar.writeValue(buf).then(function () { log('Sent 03 25 auto (0x88) | ' + hexOf(buf)); }).catch(function (e) { log('Error: ' + e.message); });
+            return;
+        }
+        if (action === 'legacy_55') {
+            const buf = new Uint8Array([0x03, 0x25, 0x55]);
+            sendChar.writeValue(buf).then(function () { log('Sent 03 25 off (0x55) | ' + hexOf(buf)); }).catch(function (e) { log('Error: ' + e.message); });
+            return;
+        }
+        if (action === 'legacy_03') {
+            const buf = new Uint8Array([0x03, 0x25, 0x03]);
+            sendChar.writeValue(buf).then(function () { log('Sent 03 25 byte 0x03 (continuous experiment) | ' + hexOf(buf)); }).catch(function (e) { log('Error: ' + e.message); });
+        }
+    }
+
+    function updateHrModeUiState() {
+        const action = document.getElementById('hrModeAction').value;
+        const intervalEl = document.getElementById('hrIntervalSec');
+        const labelEl = document.getElementById('hrIntervalLabel');
+        const onDualEl = document.getElementById('v3OnUseDualStage');
+        const offDualEl = document.getElementById('v3OffUseDualStage');
+        const applies = (action === 'v3_on' || action === 'v3_off');
+        intervalEl.disabled = !applies;
+        labelEl.style.opacity = applies ? '1' : '0.6';
+        if (!applies) {
+            labelEl.title = 'Legacy 03 25 actions do not use this interval field.';
+        } else {
+            labelEl.title = 'v3 HR on/off uses hrIntervalSec as LE bytes 22–23. In 2-stage mode, that interval is sent in step 1 only; in single mode, it is sent in the one unified packet.';
+        }
+
+        const actionSel = document.getElementById('hrModeAction');
+        const btnApply = document.getElementById('btnApplyHrMode');
+        const freshPairBtn = document.getElementById('btnV3HrFreshLaunch');
+        const freshSyncBtn = document.getElementById('btnV3HrFreshSync');
+        const twelveZeroBtn = document.getElementById('btnV3Hr09TwelveZeroPayload');
+        const hrResetBtn = document.getElementById('btnV3HrResetSequence');
+        const custom09Btn = document.getElementById('btnV3Hr09Hex');
+
+        // Unified mode: action dropdown always enabled.
+        actionSel.disabled = false;
+
+        // Main Apply button is always clickable; applyHrModeFromForm()
+        // itself guards on connection (sendChar) and logs “Not connected.”
+        btnApply.disabled = false;
+        btnApply.textContent = 'Apply HR mode';
+
+        if (onDualEl) onDualEl.disabled = !applies;
+        if (offDualEl) offDualEl.disabled = !applies;
+
+        // Keep low-level replay controls available in unified mode.
+        freshPairBtn.disabled = !sendChar;
+        freshSyncBtn.disabled = !sendChar;
+        twelveZeroBtn.disabled = !sendChar;
+        hrResetBtn.disabled = !sendChar;
+        custom09Btn.disabled = !sendChar;
+    }
+
+    function sendV3HrFreshLaunchSingle(pkt) {
+        if (!sendChar) { log('Not connected.'); return; }
+        const a = pkt || parseHex(V3_HR_FRESH_LAUNCH_PKT1_HEX);
+        if (!a) { log('Build packet failed.'); return; }
+        finalizeV3PacketCrc(a);
+        log('[TX] v3 HR fresh-launch time-range pkt1 (single) | ' + hexOf(a));
+        sendChar.writeValue(a).then(function () {
+            log('Sent fresh-launch HR time-range pkt1 (single).');
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    function sendV3HrFreshLaunchPair() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const a = parseHex(V3_HR_FRESH_LAUNCH_PKT1_HEX);
+        const b = parseHex(V3_HR_FRESH_LAUNCH_PKT2_HEX);
+        if (!a || !b) { log('Build packet failed.'); return; }
+        // Give each packet its own advancing seq.
+        applyV3Seq(a);
+        applyV3Seq(b);
+        finalizeV3PacketCrc(a);
+        finalizeV3PacketCrc(b);
+        sendSequencePackets([a, b], 'v3 HR fresh-launch all-day pair', 120).then(function () {
+            log('Sent fresh-launch HR all-day pair payload (pkt1+pkt2).');
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    // Variation sweep helper:
+    // var1 (v3 HR off) -> var2 (time-range) -> var1 (v3 HR on) -> var2 (time-range)
+    function sendV3HrIntervalSwitchSequence() {
+        if (!sendChar) {
+            log('Not connected.');
+            return;
+        }
+        const sec = parseInt(document.getElementById('hrIntervalSec').value, 10) || 300;
+
+        const pktOff = buildV3HrVar1Packet1(V3_HR_OFF_PKT1_HEX, sec);
+        const pktRange1 = buildV3HrVar2FromForm();
+        const pktOn = buildV3HrVar1Packet1(V3_HR_ON_PKT1_HEX, sec);
+        const pktRange2 = buildV3HrVar2FromForm();
+
+        if (!pktOff || !pktOn || !pktRange1 || !pktRange2) {
+            log('Interval switch sequence build failed.');
+            return;
+        }
+
+        log('[v3 interval switch] var1 off(' + sec + 's) → var2 range → var1 on(' + sec + 's) → var2 range');
+        sendSequencePackets([pktOff, pktRange1, pktOn, pktRange2], 'v3 interval switch sequence', 160)
+            .then(function () {
+                log('Sent v3 interval switch sequence.');
+            })
+            .catch(function (e) {
+                log('Error: ' + e.message);
+            });
+    }
+
+    function sendV3HrFreshSyncPacket() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const p = parseHex(V3_HR_FRESH_SYNC_PKT_HEX);
+        if (!p) { log('Build packet failed.'); return; }
+        finalizeV3PacketCrc(p);
+        sendChar.writeValue(p).then(function () {
+            log('Sent fresh-launch HR single zeroed payload | ' + hexOf(p));
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    function buildV3Hr09TwelveZeroPayloadPacket() {
+        // v3 frame format (single-frame cmd 0x09):
+        //  - Header: 33 DA AD DA AD
+        //  - Version: 01
+        //  - Length: 17 00
+        //  - Cmd: 09 00
+        //  - nseq: (2 bytes LE)
+        //  - Payload: 12x00
+        //  - CRC16-CCITT on bytes [1..len-3], written as 2 bytes LE at end.
+        const packet = new Uint8Array(26);
+        packet[0] = 0x33;
+        packet.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        packet[5] = 0x01;
+        packet[6] = 0x17;
+        packet[7] = 0x00;
+        packet[8] = 0x09;
+        packet[9] = 0x00;
+
+        const seq = nextV3Seq();
+        packet[10] = seq & 0xff;
+        packet[11] = (seq >> 8) & 0xff;
+
+        // packet[12..23] are already 0x00
+        packet[24] = 0x00;
+        packet[25] = 0x00;
+        return { packet: finalizeV3PacketCrc(packet), nseq: seq & 0xffff };
+    }
+
+    function sendV3Hr09TwelveZeroPayloadPacket() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const built = buildV3Hr09TwelveZeroPayloadPacket();
+        if (!built || !built.packet) { log('Build packet failed.'); return; }
+        const p = built.packet;
+        log('[TX] v3 cmd 0x09 12x00 payload | nseq=0x' + built.nseq.toString(16) + ' | ' + hexOf(p));
+        sendChar.writeValue(p).then(function () {
+            log('Sent v3 cmd 0x09 with 12x00 payload (CRC recomputed).');
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    function buildV3HrResetPacket(kind) {
+        // 26-byte v3 cmd 0x09 packet:
+        // [12..15] timestamp, [16..17] mode bytes, [18..21] time range, [22..23] interval LE, [24..25] CRC.
+        const packet = new Uint8Array(26);
+        packet[0] = 0x33;
+        packet.set([0xDA, 0xAD, 0xDA, 0xAD], 1);
+        packet[5] = 0x01;
+        packet[6] = 0x17;
+        packet[7] = 0x00;
+        packet[8] = 0x09;
+        packet[9] = 0x00;
+        const seq = nextV3Seq();
+        packet[10] = seq & 0xff;
+        packet[11] = (seq >> 8) & 0xff;
+
+        if (kind === 'timeRange') {
+            // NULL timestamp (already zero at 12..15)
+            // 00 01 instead of CC 00 / AA 00
+            packet[16] = 0x00;
+            packet[17] = 0x01;
+            // TimeRange 00:00 -> 23:59
+            packet[18] = 0x00;
+            packet[19] = 0x00;
+            packet[20] = 0x17;
+            packet[21] = 0x3B;
+            // interval = 0 (already zero at 22..23)
+        } else {
+            // fullZero: bytes 12..23 remain zeroed.
+        }
+
+        return { packet: finalizeV3PacketCrc(packet), nseq: seq & 0xffff };
+    }
+
+    function sendV3HrResetSequence() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const p1 = buildV3HrResetPacket('timeRange');
+        const p2 = buildV3HrResetPacket('timeRange');
+        const p3 = buildV3HrResetPacket('fullZero');
+        log('[v3 HR reset] step1 nseq=0x' + p1.nseq.toString(16) + ' | NULL_TS + 00 01 + 00:00-23:59 + interval0');
+        log('[v3 HR reset] step2 nseq=0x' + p2.nseq.toString(16) + ' | repeat');
+        log('[v3 HR reset] step3 nseq=0x' + p3.nseq.toString(16) + ' | full zero payload');
+        sendSequencePackets([p1.packet, p2.packet, p3.packet], 'v3 HR reset', 120).then(function () {
+            log('Sent v3 HR reset sequence.');
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    function sendV3Hr09FromHexArea() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const s = String(document.getElementById('v3Hr09Hex').value).replace(/[^0-9a-f]/gi, '');
+        const p = parseHex(s);
+        if (!p || p.length < 12) {
+            log('0x09 hex area: need full even-length packet hex (at least 12 bytes).');
+            return;
+        }
+        if (!(p[0] === 0x33 && p[1] === 0xDA && p[2] === 0xAD && p[3] === 0xDA && p[4] === 0xAD && p[8] === 0x09 && p[9] === 0x00)) {
+            log('0x09 hex area: expected full v3 packet starting 33 DA AD DA AD ... 09 00.');
+            return;
+        }
+        finalizeV3PacketCrc(p);
+        sendChar.writeValue(p).then(function () {
+            log('Sent custom v3 0x09 packet from hex area (' + p.length + ' B) | ' + hexOf(p));
+        }).catch(function (e) { log('Error: ' + e.message); });
+    }
+
+    function parseUint16LE(u8, o) { return u8[o] | (u8[o + 1] << 8); }
+    function parseUint32LE(u8, o) {
+        return u8[o] | (u8[o + 1] << 8) | (u8[o + 2] << 16) | (u8[o + 3] << 24);
+    }
+
+    function parseV3HealthCommon(payload) {
+        if (!payload || payload.length < 14) return null;
+        return {
+            operate: payload[0],
+            dataType: payload[1],
+            flag1: payload[2],
+            flag2: payload[3],
+            flag3: payload[4],
+            itemCount: parseUint16LE(payload, 5),
+            headSize: parseUint16LE(payload, 7),
+            dataSize: parseUint32LE(payload, 9),
+            reserved: payload[13]
+        };
+    }
+
+    function resetV3RxState() {
+        rx_buffer = null;
+        rx_written = 0;
+        rx_label = '';
+        rx_last_logged = -1;
+    }
+
+    function getV3FirstPacketTotalLen(arr) {
+        return arr[6] | (arr[7] << 8);
+    }
+
+    function getV3PacketLabel(arr) {
+        const cmd = arr.length >= 10 ? (arr[8] | (arr[9] << 8)) : 0;
+        if (cmd === 0x0005) return 'v3 health sizes';
+        if (cmd === 0x0004) {
+            const dt = arr.length > 13 ? arr[13] : null;
+            const names = { 3: 'HR', 7: 'sleep', 8: 'sport' };
+            return 'v3 health ' + (names[dt] || ('type' + dt));
+        }
+        return 'v3 cmd 0x' + cmd.toString(16);
+    }
+
+    let hrReplyResolver = null;
+    let sizesReplyResolver = null;
+
+    // ----- RX waiters (used by Bind + startup) -----
+    // These let us "wait for reply" instead of fire-and-forget.
+    // vbus: match by leading bytes (typically 2-byte cmd header).
+    let vbusWaiters = [];
+    // v3 cmd 0x04/0x05: reassembled before dispatchV3Reply is called.
+    let v3HealthWaiters = [];
+    // v3 cmd 0x09: single-frame reply; tryLogV3Hr09Reply parses it.
+    let v3Hr09Waiters = [];
+    // Generic v3 single-frame (e.g. func-table replies): match by cmd+seq.
+    let v3GenericWaiters = [];
+
+    function u8StartsWith(arr, prefix) {
+        if (!arr || !prefix) return false;
+        if (arr.length < prefix.length) return false;
+        for (let i = 0; i < prefix.length; i++) if (arr[i] !== prefix[i]) return false;
+        return true;
+    }
+
+    function waitForVbusPrefix(prefixU8, timeoutMs) {
+        const prefix = prefixU8 ? new Uint8Array(prefixU8) : null;
+        if (!prefix || prefix.length === 0) return Promise.reject(new Error('waitForVbusPrefix: invalid prefix'));
+        return new Promise(function (resolve, reject) {
+            const waiter = { prefix: prefix, resolve: resolve, reject: reject, timer: null };
+            waiter.timer = setTimeout(function () {
+                const idx = vbusWaiters.indexOf(waiter);
+                if (idx >= 0) vbusWaiters.splice(idx, 1);
+                reject(new Error('Timeout waiting for VBUS reply after ' + timeoutMs + 'ms'));
+            }, timeoutMs);
+            vbusWaiters.push(waiter);
+        });
+    }
+
+    function waitForV3Hr09ReplyByNseq(nseq, timeoutMs) {
+        const expectedNseq = nseq & 0xFFFF;
+        return new Promise(function (resolve, reject) {
+            const waiter = { nseq: expectedNseq, resolve: resolve, reject: reject, timer: null };
+            waiter.timer = setTimeout(function () {
+                const idx = v3Hr09Waiters.indexOf(waiter);
+                if (idx >= 0) v3Hr09Waiters.splice(idx, 1);
+                reject(new Error('Timeout waiting for v3 HR(0x09) reply after ' + timeoutMs + 'ms'));
+            }, timeoutMs);
+            v3Hr09Waiters.push(waiter);
+        });
+    }
+
+    function waitForV3HealthByCmdSeq(cmd, seq, timeoutMs) {
+        const expectedCmd = cmd & 0xFFFF;
+        const expectedSeq = seq & 0xFFFF;
+        return new Promise(function (resolve, reject) {
+            const waiter = { cmd: expectedCmd, seq: expectedSeq, resolve: resolve, reject: reject, timer: null };
+            waiter.timer = setTimeout(function () {
+                const idx = v3HealthWaiters.indexOf(waiter);
+                if (idx >= 0) v3HealthWaiters.splice(idx, 1);
+                reject(new Error('Timeout waiting for v3 health reply after ' + timeoutMs + 'ms'));
+            }, timeoutMs);
+            v3HealthWaiters.push(waiter);
+        });
+    }
+
+    function waitForV3GenericByCmdSeq(cmd, seq, timeoutMs) {
+        const expectedCmd = cmd & 0xFFFF;
+        const expectedSeq = seq & 0xFFFF;
+        return new Promise(function (resolve, reject) {
+            const waiter = { cmd: expectedCmd, seq: expectedSeq, resolve: resolve, reject: reject, timer: null };
+            waiter.timer = setTimeout(function () {
+                const idx = v3GenericWaiters.indexOf(waiter);
+                if (idx >= 0) v3GenericWaiters.splice(idx, 1);
+                reject(new Error('Timeout waiting for v3 reply after ' + timeoutMs + 'ms'));
+            }, timeoutMs);
+            v3GenericWaiters.push(waiter);
+        });
+    }
+
+    function dispatchVbusWaiters(arr) {
+        if (!arr || vbusWaiters.length === 0) return;
+        for (let i = 0; i < vbusWaiters.length; i++) {
+            const w = vbusWaiters[i];
+            if (u8StartsWith(arr, w.prefix)) {
+                clearTimeout(w.timer);
+                w.resolve(arr);
+                vbusWaiters.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    function dispatchV3GenericWaiters(arr) {
+        if (!arr || arr.length < 12 || v3GenericWaiters.length === 0) return;
+        // Expect v3 single-frame: cmd bytes 8-9, seq bytes 10-11.
+        const cmd = arr[8] | (arr[9] << 8);
+        const seq = arr[10] | (arr[11] << 8);
+        for (let i = 0; i < v3GenericWaiters.length; i++) {
+            const w = v3GenericWaiters[i];
+            if (w.cmd === cmd && w.seq === seq) {
+                clearTimeout(w.timer);
+                w.resolve(arr);
+                v3GenericWaiters.splice(i, 1);
+                return;
+            }
+        }
+    }
+
+    function dispatchV3Reply(buffer) {
+        if (!buffer || buffer.length < 11) return;
+        const cmd = parseUint16LE(buffer, 7);
+        const seq = parseUint16LE(buffer, 9);
+        const payload = buffer.subarray(11);
+
+        // Resolve any health waiters on reassembled completion (cmd 0x04/0x05).
+        if (v3HealthWaiters.length && (cmd === 0x0004 || cmd === 0x0005)) {
+            for (let i = 0; i < v3HealthWaiters.length; i++) {
+                const w = v3HealthWaiters[i];
+                if (w.cmd === cmd && w.seq === seq) {
+                    clearTimeout(w.timer);
+                    w.resolve(buffer);
+                    v3HealthWaiters.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        if (cmd === 0x0005) {
+            const totalBytes = payload.length >= 4 ? parseUint32LE(payload, 0) : 0;
+            log('[v3 0x05] sync_all_size=' + totalBytes + ' seq=0x' + seq.toString(16));
+            if (sizesReplyResolver) {
+                sizesReplyResolver({ totalBytes, rawHex: hexOf(buffer) });
+                sizesReplyResolver = null;
+            }
+            return;
+        }
+
+        if (cmd !== 0x0004) {
+            log('[v3] cmd=0x' + cmd.toString(16) + ' len=' + buffer.length);
+            return;
+        }
+
+        const common = parseV3HealthCommon(payload);
+        if (!common) return;
+
+        const headerStart = 14;
+        const headerEnd = Math.min(payload.length, headerStart + common.headSize);
+        const dataEnd = Math.min(payload.length, headerEnd + common.dataSize);
+        const headerBytes = payload.slice(headerStart, headerEnd);
+        const dataBytes = payload.slice(headerEnd, dataEnd);
+
+        if (common.dataType !== 3) {
+            log('[v3 0x04] data_type=' + common.dataType + ' (not HR); ignored here.');
+            return;
+        }
+
+        const prevSz = lastCapture && lastCapture.common ? (lastCapture.common.dataSize || 0) : -1;
+        if (prevSz > 0 && (common.dataSize || 0) < prevSz) {
+            log('[HR] skip follow-up packet (smaller data than captured start reply).');
+            if (hrReplyResolver) { hrReplyResolver(); hrReplyResolver = null; }
+            return;
+        }
+
+        lastRawHex = hexOf(buffer);
+
+        const parsed = parseHrV3(common, headerBytes, dataBytes, payload);
+        lastCapture = {
+            common: common,
+            headerBytes: headerBytes,
+            dataBytes: dataBytes,
+            parsed: parsed,
+            receivedAt: new Date().toISOString()
+        };
+        lastCsvText = buildCsv(parsed, common, headerBytes);
+
+        log('[HR] model=' + (parsed.parsingModel || '?') + ' items=' + common.itemCount + ' head=' + common.headSize + ' data=' + common.dataSize +
+            ' | CSV rows: ' + parsed.rows.length + (parsed.note ? ' | ' + parsed.note : ''));
+
+        lastMetaEl.innerHTML = '<span class="ok">' + lastCapture.receivedAt + '</span> — items=' + common.itemCount +
+            ', samples=' + parsed.rows.length + (common.dataSize === 0 ? ' <span class="warn">(no HR payload — enable logging / wear watch)</span>' : '');
+        previewSamples(parsed.rows);
+        document.getElementById('btnDownloadCsv').disabled = !lastCsvText;
+        document.getElementById('btnDownloadRaw').disabled = !lastRawHex;
+
+        if (hrReplyResolver) {
+            hrReplyResolver();
+            hrReplyResolver = null;
+        }
+    }
+
+    function plausibleHrYear(y) {
+        return y >= 2018 && y <= 2036;
+    }
+
+    /**
+     * Native layout before JNI json (callback 7003 / sub_16DE1C):
+     * +0 u16 year, +2 month u8, +3 day u8, +4 startTime i32 LE, +8 dataType u8, +9 silentHR u8,
+     * +10..+24 five slots: threshold u8 @ (10+3i), minute u16 LE @ (11+3i).
+     * BLE header may be shifted by +1 byte (try base 0 then 1).
+     */
+    function parseHr7003Header(h) {
+        for (let base = 0; base <= 1; base++) {
+            if (h.length < base + 25) continue;
+            const year = parseUint16LE(h, base);
+            if (!plausibleHrYear(year)) continue;
+            const month = h[base + 2];
+            const day = h[base + 3];
+            if (month < 1 || month > 12 || day < 1 || day > 31) continue;
+            const startTime = parseUint32LE(h, base + 4);
+            const dataType = h[base + 8];
+            const silentHR = h[base + 9];
+            const hrInterval = [];
+            for (let i = 0; i < 5; i++) {
+                hrInterval.push({
+                    threshold: h[base + 10 + 3 * i],
+                    minute: parseUint16LE(h, base + 11 + 3 * i)
+                });
+            }
+            return { base: base, year: year, month: month, day: day, startTime: startTime, dataType: dataType, silentHR: silentHR, hrInterval: hrInterval };
+        }
+        return null;
+    }
+
+    function parseHrV3(common, headerBytes, dataBytes, fullPayload) {
+        const rows = [];
+        let note = '';
+        const h = headerBytes;
+        const d = dataBytes;
+        const n = common.itemCount || 0;
+        const head = parseHr7003Header(h);
+
+        if (head) {
+            if (n > 0 && d.length >= 2 * n) {
+                let sec = head.startTime;
+                for (let j = 0; j < n; j++) {
+                    const off = d[j * 2];
+                    const bpm = d[j * 2 + 1];
+                    sec += off;
+                    if (bpm < 1 || bpm > 250) continue;
+                    rows.push({
+                        index: j,
+                        minuteOffset: off,   // raw 0–255 delta byte from struct
+                        bpm: bpm,
+                        secondOfDay: sec,
+                        note: 'u8_delta_sec_u8_bpm'
+                    });
+                }
+                note = 'JNI-7003 header; items match native (offset, heartRateVal) byte pairs; accumulate delta seconds across all pairs, including empty ff 00 gaps.';
+            } else if (n > 0 && d.length >= 3 * n) {
+                for (let j = 0; j < n; j++) {
+                    const o = j * 3;
+                    const minuteOff = parseUint16LE(d, o);
+                    const bpm = d[o + 2] || 0;
+                    if (bpm < 1 || bpm > 250) continue;
+                    rows.push({
+                        index: j,
+                        minuteOffset: minuteOff,
+                        bpm: bpm,
+                        secondOfDay: head.startTime + minuteOff * 60,
+                        note: 'u16_minute_u8_bpm'
+                    });
+                }
+                note = 'JNI-7003 header; data uses u16 minute + u8 BPM (variant).';
+            } else if (n > 0 && d.length >= n) {
+                const perItem = Math.floor(d.length / n);
+                if (perItem === 1) {
+                    for (let i = 0; i < n; i++) {
+                        const bpm = d[i];
+                        if (bpm < 1 || bpm > 250) continue;
+                        rows.push({
+                            index: i,
+                            secondOfDay: head.startTime + i * 60,
+                            bpm: bpm,
+                            note: '1B_per_item_1min_from_startTime'
+                        });
+                    }
+                    note = 'JNI-7003 header; 1 byte BPM per item, 1 min index from startTime.';
+                } else if (perItem >= 2) {
+                    for (let i = 0; i < n; i++) {
+                        const o = i * perItem;
+                        const minuteOff = parseUint16LE(d, o);
+                        const bpm = d[o + 2] || 0;
+                        if (bpm < 1 || bpm > 250) continue;
+                        rows.push({
+                            index: i,
+                            minuteOffset: minuteOff,
+                            bpm: bpm,
+                            secondOfDay: head.startTime + minuteOff * 60,
+                            note: 'u16_minute_u8_bpm_packed'
+                        });
+                    }
+                    note = 'JNI-7003 header; packed u16 minute + BPM.';
+                }
+            } else if (d.length > 0 && n === 0) {
+                for (let i = 0; i < d.length; i++) {
+                    const bpm = d[i];
+                    if (bpm >= 30 && bpm <= 220) rows.push({ index: i, bpm: bpm, note: 'raw_index_itemCount0' });
+                }
+                note = 'JNI-7003 header; itemCount=0 — raw bytes as BPM 30–220.';
+            }
+
+            if (rows.length === 0 && (common.dataSize || 0) === 0) {
+                note = 'No HR samples (7003 header OK).';
+            } else if (rows.length === 0 && d.length > 0 && n > 0) {
+                note = '7003 header but data length ≠ 2×/3×/N× itemCount — check raw hex.';
+            }
+
+            return {
+                year: head.year,
+                month: head.month,
+                day: head.day,
+                startTime: head.startTime,
+                dataType: head.dataType,
+                silentHr: head.silentHR,
+                hrInterval: head.hrInterval,
+                parsingModel: 'native_7003',
+                headerBaseByte: head.base,
+                rows: rows,
+                note: note,
+                headerHex: hexOf(h),
+                dataHex: hexOf(d)
+            };
+        }
+
+        /* Legacy heuristic when header does not match 7003 struct */
+        let year = 0, month = 0, day = 0, secondOffset = 0, silentHr = 0;
+        if (h.length >= 5) {
+            year = parseUint16LE(h, 1);
+            month = h[3] || 0;
+            day = h[4] || 0;
+        }
+        if (h.length >= 9) secondOffset = parseUint32LE(h, 5);
+        if (h.length >= 10) silentHr = h[9] || 0;
+
+        if (n > 0 && d.length >= n) {
+            const perItem = Math.floor(d.length / n);
+            if (perItem === 1) {
+                for (let i = 0; i < n; i++) {
+                    const bpm = d[i];
+                    if (bpm < 1 || bpm > 250) continue;
+                    const sec = secondOffset + i * 60;
+                    rows.push({ index: i, secondOfDay: sec, bpm: bpm, note: 'legacy_1B_1min' });
+                }
+                note = 'Legacy: 1 B BPM per item, 60s from secondOffset.';
+            } else if (perItem >= 2) {
+                for (let i = 0; i < n; i++) {
+                    const o = i * perItem;
+                    const minuteOff = parseUint16LE(d, o);
+                    const bpm = d[o + 2] || 0;
+                    if (bpm < 1 || bpm > 250) continue;
+                    rows.push({ index: i, minuteOffset: minuteOff, bpm: bpm, note: 'legacy_u16_min_bpm' });
+                }
+                note = 'Legacy: u16 minute + BPM.';
+            }
+        } else if (d.length > 0 && n === 0) {
+            for (let i = 0; i < d.length; i++) {
+                const bpm = d[i];
+                if (bpm >= 30 && bpm <= 220) rows.push({ index: i, bpm: bpm, note: 'legacy_raw' });
+            }
+            note = 'Legacy: itemCount=0, bytes as BPM 30–220.';
+        }
+
+        if (rows.length === 0 && common.dataSize === 0) {
+            note = 'No HR samples in sync.';
+        }
+
+        return {
+            year: year,
+            month: month,
+            day: day,
+            startTime: secondOffset,
+            dataType: '',
+            silentHr: silentHr,
+            hrInterval: null,
+            parsingModel: 'legacy_heuristic',
+            headerBaseByte: '',
+            rows: rows,
+            note: note,
+            headerHex: hexOf(h),
+            dataHex: hexOf(d)
+        };
+    }
+
+    function buildCsv(parsed, common, headerBytes) {
+        const lines = [];
+        lines.push('# TOOBUR v3 health HR (type 3) export');
+        lines.push('# ' + (parsed.note || ''));
+        lines.push('# parsing_model,' + (parsed.parsingModel || ''));
+        if (parsed.parsingModel === 'native_7003' && parsed.hrInterval) {
+            lines.push('# jni_callback_7003_header_base_byte,' + parsed.headerBaseByte);
+            const iv = parsed.hrInterval.map(function (x) { return x.threshold + ':' + x.minute; });
+            lines.push('# hr_interval_5x_threshold_minute,' + iv.join(','));
+        }
+        lines.push('# header_hex,' + parsed.headerHex);
+        lines.push('# data_hex,' + parsed.dataHex);
+        lines.push('# itemsCount,' + common.itemCount + ',headSize,' + common.headSize + ',dataSize,' + common.dataSize);
+        // Epoch seconds columns are computed using local midnight for (year, month, day),
+        // then adding start_time_sec / second_of_day offsets.
+        lines.push('date_ymd,year,month,day,start_time_sec,start_time_unix_sec,data_type,silent_hr,thr0,min0,thr1,min1,thr2,min2,thr3,min3,thr4,min4,index,minute_offset,second_of_day,sample_time_unix_sec,bpm,parsing_note');
+        const ymd = (parsed.year && parsed.month && parsed.day) ? (parsed.year + '-' + pad2(parsed.month) + '-' + pad2(parsed.day)) : '';
+        const hi = parsed.hrInterval || [];
+        const thrMin = [];
+        for (let k = 0; k < 5; k++) {
+            if (hi[k]) {
+                thrMin.push(hi[k].threshold, hi[k].minute);
+            } else {
+                thrMin.push('', '');
+            }
+        }
+        const st = parsed.startTime != null ? parsed.startTime : '';
+        const dt = parsed.dataType !== '' && parsed.dataType != null ? parsed.dataType : '';
+
+        // Convert (date + seconds since midnight) -> unix epoch seconds, using local timezone.
+        let midnightEpochSec = null;
+        if (parsed.year && parsed.month && parsed.day) {
+            const y = Number(parsed.year);
+            const m = Number(parsed.month);
+            const d = Number(parsed.day);
+            if (isFinite(y) && isFinite(m) && isFinite(d)) {
+                const ms = new Date(y, m - 1, d, 0, 0, 0, 0).getTime();
+                if (!isNaN(ms)) midnightEpochSec = Math.floor(ms / 1000);
+            }
+        }
+        const startUnixSec = (midnightEpochSec != null && st !== '' && isFinite(st)) ? (midnightEpochSec + Number(st)) : '';
+        for (let i = 0; i < parsed.rows.length; i++) {
+            const r = parsed.rows[i];
+
+            const sampleUnixSec = (midnightEpochSec != null && r.secondOfDay != null && isFinite(r.secondOfDay))
+                ? (midnightEpochSec + Number(r.secondOfDay))
+                : '';
+            lines.push([
+                csvEsc(ymd), parsed.year || '', parsed.month || '', parsed.day || '', st, startUnixSec, dt, parsed.silentHr || '',
+                thrMin[0], thrMin[1], thrMin[2], thrMin[3], thrMin[4], thrMin[5], thrMin[6], thrMin[7], thrMin[8], thrMin[9],
+                r.index, r.minuteOffset != null ? r.minuteOffset : '', r.secondOfDay != null ? r.secondOfDay : '', sampleUnixSec, r.bpm, csvEsc(r.note || '')
+            ].join(','));
+        }
+        if (parsed.rows.length === 0) {
+            lines.push([
+                csvEsc(ymd), parsed.year || '', parsed.month || '', parsed.day || '', st, startUnixSec, dt, parsed.silentHr || '',
+                thrMin[0], thrMin[1], thrMin[2], thrMin[3], thrMin[4], thrMin[5], thrMin[6], thrMin[7], thrMin[8], thrMin[9],
+                '', '', '', '', '', 'no_sample_rows'
+            ].join(','));
+        }
+        return lines.join('\n');
+    }
+
+    function pad2(n) { return (n < 10 ? '0' : '') + n; }
+    function csvEsc(s) {
+        const x = String(s);
+        if (/[",\n]/.test(x)) return '"' + x.replace(/"/g, '""') + '"';
+        return x;
+    }
+
+    function formatTimeOfDay(sec) {
+        if (sec == null || !isFinite(sec)) return '';
+        const s = Math.max(0, Math.floor(sec % 86400));
+        const h = Math.floor(s / 3600);
+        const m = Math.floor((s % 3600) / 60);
+        const ss = s % 60;
+        const pad = function (n) { return (n < 10 ? '0' : '') + n; };
+        return pad(h) + ':' + pad(m) + ':' + pad(ss);
+    }
+
+    function hexOf(u8) {
+        if (!u8 || !u8.length) return '';
+        return Array.from(u8).map(function (b) { return ('0' + b.toString(16)).slice(-2); }).join(' ');
+    }
+
+    function previewSamples(rows) {
+        if (!rows.length) {
+            samplePreviewEl.textContent = 'No sample rows to preview.';
+            return;
+        }
+        const tail = rows.slice(-4);
+        samplePreviewEl.textContent = 'Rows (' + rows.length + '), last 4: ' + tail.map(function (r) {
+            const sec = r.secondOfDay;
+            const tod = sec != null ? formatTimeOfDay(sec) : '';
+            let s = 'bpm=' + r.bpm;
+            if (r.minuteOffset != null) s += ' minOff=' + r.minuteOffset;
+            if (sec != null) s += ' sec=' + sec + (tod ? ' (' + tod + ')' : '');
+            return s;
+        }).join(' | ');
+    }
+
+    function handleV3ReplyReassembly(arr) {
+        if (!arr || arr.length < 2) return false;
+        const inReassembly = rx_buffer && rx_written < rx_buffer.length && rx_written > 0;
+        if (inReassembly && arr[0] === 0x33 && !(arr.length >= 5 && arr[1] === 0xda && arr[2] === 0xad)) {
+            const skip = 1;
+            const toCopy = Math.min(arr.length - skip, rx_buffer.length - rx_written);
+            if (toCopy > 0) {
+                rx_buffer.set(arr.subarray(skip, skip + toCopy), rx_written);
+                rx_written += toCopy;
+                const pct = Math.floor((rx_written / rx_buffer.length) * 100);
+                if (pct >= 10 && (pct - rx_last_logged >= 10 || pct === 100)) {
+                    rx_last_logged = pct;
+                    log('[RX] ' + rx_label + ' ' + rx_written + '/' + rx_buffer.length + ' (' + pct + '%)');
+                }
+            }
+            if (rx_written === rx_buffer.length) {
+                dispatchV3Reply(rx_buffer);
+                resetV3RxState();
+            }
+            return true;
+        }
+        if (arr[0] === 0x33 && arr[1] === 0xda && arr[2] === 0xad && arr[3] === 0xda && arr[4] === 0xad && arr.length >= 10) {
+            const cmd = arr[8] | (arr[9] << 8);
+            if (cmd !== 0x0004 && cmd !== 0x0005) return false;
+            const totalLen = getV3FirstPacketTotalLen(arr);
+            if (totalLen <= 0 || totalLen > 65536) return false;
+            rx_buffer = new Uint8Array(totalLen);
+            rx_written = 0;
+            rx_last_logged = 0;
+            rx_label = getV3PacketLabel(arr);
+            const toCopy = Math.min(totalLen, arr.length - 1);
+            if (toCopy > 0) {
+                rx_buffer.set(arr.subarray(1, 1 + toCopy), 0);
+                rx_written = toCopy;
+            }
+            log('[RX] ' + rx_label + ' ' + rx_written + '/' + totalLen + (rx_written < totalLen ? ' …' : ''));
+            if (rx_written === rx_buffer.length) {
+                dispatchV3Reply(rx_buffer);
+                resetV3RxState();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    function describeV3Hr09StateByte(b) {
+        if (b == null) return 'unknown';
+        if (b === 0x99) return 'legacy_on_reply';
+        if (b === 0xAA) return 'off_reply';
+        if (b === 0xCC) return 'continuous_on_reply';
+        return 'unknown_state';
+    }
+
+    /** Single-frame v3 0x09 reply: observed layout is nseq + u32 zero + state byte + u32 zero + interval + u32 zero + u32 reply_code + CRC. */
+    function tryLogV3Hr09Reply(arr) {
+        if (!arr || arr.length < 32) return;
+        if (arr[0] !== 0x33 || arr[1] !== 0xDA || arr[8] !== 0x09 || arr[9] !== 0) return;
+        const nseq = arr[10] | (arr[11] << 8);
+        const payload0 = parseUint32LE(arr, 12);
+        const stateByte = arr[16];
+        const payload1 = parseUint32LE(arr, 17);
+        const interval = arr[22] | (arr[23] << 8);
+        const payload2 = parseUint32LE(arr, 24);
+        const replyCode = parseUint32LE(arr, 28);
+
+        // Resolve v3 HR-mode waiters (cmd 0x09 replies) by matching nseq.
+        if (v3Hr09Waiters.length) {
+            for (let i = 0; i < v3Hr09Waiters.length; i++) {
+                const w = v3Hr09Waiters[i];
+                if (w.nseq === (nseq & 0xFFFF)) {
+                    clearTimeout(w.timer);
+                    w.resolve(arr);
+                    v3Hr09Waiters.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        log('[v3 0x09 reply] nseq=0x' + nseq.toString(16) +
+            ' state=0x' + ('0' + stateByte.toString(16)).slice(-2) + ' (' + describeV3Hr09StateByte(stateByte) + ')' +
+            ' interval=' + interval + 's' +
+            ' reply_code=' + replyCode +
+            ' pad0=0x' + payload0.toString(16) +
+            ' pad1=0x' + payload1.toString(16) +
+            ' pad2=0x' + payload2.toString(16));
+    }
+
+    function sendHealthSizes() {
+        // HR-only size query:
+        // capture-backed cmd 0x05 record layout is [typeId][savedOffset LE32]...
+        // HR (type 3) has only been observed with saved offset 0 in our logcats.
+        const buf = buildV3HealthSizes05([{ typeId: 3, savedOffset: 0 }]);
+        log('[TX] get_sync_health_v3 HR-only (137 B) ' + hexOf(buf.subarray(0, 17)) + ' 00 x ' + (buf.length - 17));
+        return sendChar.writeValue(buf);
+    }
+
+    function setConnected(ok) {
+        statusEl.textContent = ok ? 'Connected' : 'Disconnected';
+        statusEl.className = ok ? 'ok' : 'warn offline';
+        document.getElementById('btnHealthSizes').disabled = !ok;
+        document.getElementById('btnSyncHr').disabled = !ok;
+        document.getElementById('btnBindStartupDefaults').disabled = !ok;
+        // v3 controls: enable/disable low-level ones here; Apply button stays active and
+        // applyHrModeFromForm() will refuse to run when disconnected.
+        document.getElementById('btnV3HrFreshLaunch').disabled = !ok;
+        document.getElementById('btnV3HrFreshSync').disabled = !ok;
+        document.getElementById('btnV3Hr09TwelveZeroPayload').disabled = !ok;
+        document.getElementById('btnV3HrResetSequence').disabled = !ok;
+        document.getElementById('btnV3Hr09Hex').disabled = !ok;
+        document.getElementById('btnV3HrIntervalSwitch').disabled = !ok;
+        document.getElementById('btnSetHr24').disabled = !ok;
+        document.getElementById('btnSetHr24VeryFit').disabled = !ok;
+        document.getElementById('btnSetHr24VeryFitCapture').disabled = !ok;
+        document.getElementById('btnSetHr24FromHex').disabled = !ok;
+        document.getElementById('btnConnect').textContent = ok ? 'Disconnect' : 'Connect (0x0AF0)';
+    }
+
+    function clampByte(n, def) {
+        const v = parseInt(n, 10);
+        if (isNaN(v)) return def;
+        return Math.max(1, Math.min(255, v));
+    }
+
+    const HR24_VERYFIT_CAPTURE_HEX = '0324788cb4c864788ca0b41400000000173bc800';
+
+    function sendSetHrInterval24() {
+        if (!sendChar) {
+            log('Not connected.');
+            return;
+        }
+        const burn = clampByte(document.getElementById('hr24Burn').value, 135);
+        const aerobic = clampByte(document.getElementById('hr24Aerobic').value, 96);
+        const limit = clampByte(document.getElementById('hr24Limit').value, 160);
+        const buf = new Uint8Array([0x03, 0x24, burn, aerobic, limit]);
+        sendChar.writeValue(buf).then(function () {
+            log('Sent 03 24 short (evt 112) burn=' + burn + ' aer=' + aerobic + ' lim=' + limit + ' | ' + hexOf(buf));
+        }).catch(function (e) { log('03 24 error: ' + e.message); });
+    }
+
+    function byteVal(id, def) {
+        const n = parseInt(document.getElementById(id).value, 10);
+        if (isNaN(n)) return def;
+        return Math.max(0, Math.min(255, n));
+    }
+
+    function buildHr24VeryFitFromForm() {
+        const t = parseInt(document.getElementById('vf24_tail').value, 10);
+        const tail = isNaN(t) ? 200 : Math.max(0, Math.min(65535, t));
+        const buf = new Uint8Array(20);
+        buf[0] = 0x03;
+        buf[1] = 0x24;
+        buf[2] = byteVal('vf24_z1a', 120);
+        buf[3] = byteVal('vf24_z1b', 140);
+        buf[4] = byteVal('vf24_z1c', 180);
+        buf[5] = byteVal('vf24_b5', 200);
+        buf[6] = byteVal('vf24_b6', 100);
+        buf[7] = byteVal('vf24_z2a', 120);
+        buf[8] = byteVal('vf24_z2b', 140);
+        buf[9] = byteVal('vf24_z2c', 160);
+        buf[10] = byteVal('vf24_z2d', 180);
+        buf[11] = byteVal('vf24_b11', 20);
+        // These 4 bytes were 00 00 00 00 in the app_fresh_launch capture.
+        // Mapping guess: startHour/startMinute + reminder switches (0/1).
+        buf[12] = byteVal('vf24_start_h', 0);
+        buf[13] = byteVal('vf24_start_m', 0);
+        buf[14] = byteVal('vf24_minHrRemind', 0);
+        buf[15] = byteVal('vf24_maxHrRemind', 0);
+        buf[16] = byteVal('vf24_eh', 23);
+        buf[17] = byteVal('vf24_em', 59);
+        buf[18] = tail & 0xff;
+        buf[19] = (tail >> 8) & 0xff;
+        return buf;
+    }
+
+    function loadVeryFit24CaptureToForm() {
+        const p = parseHex(HR24_VERYFIT_CAPTURE_HEX);
+        if (!p || p.length !== 20) return;
+        document.getElementById('vf24_z1a').value = p[2];
+        document.getElementById('vf24_z1b').value = p[3];
+        document.getElementById('vf24_z1c').value = p[4];
+        document.getElementById('vf24_b5').value = p[5];
+        document.getElementById('vf24_b6').value = p[6];
+        document.getElementById('vf24_z2a').value = p[7];
+        document.getElementById('vf24_z2b').value = p[8];
+        document.getElementById('vf24_z2c').value = p[9];
+        document.getElementById('vf24_z2d').value = p[10];
+        document.getElementById('vf24_b11').value = p[11];
+        document.getElementById('vf24_start_h').value = p[12];
+        document.getElementById('vf24_start_m').value = p[13];
+        document.getElementById('vf24_minHrRemind').value = p[14];
+        document.getElementById('vf24_maxHrRemind').value = p[15];
+        document.getElementById('vf24_eh').value = p[16];
+        document.getElementById('vf24_em').value = p[17];
+        document.getElementById('vf24_tail').value = p[18] | (p[19] << 8);
+        document.getElementById('hr24ExtHex').value = HR24_VERYFIT_CAPTURE_HEX.slice(4);
+        log('Loaded app_fresh_launch 03 24 capture into fields + hex.');
+    }
+
+    function sendHr24Buffer(buf, label) {
+        if (!sendChar || !buf || buf.length < 3) return;
+        sendChar.writeValue(buf).then(function () {
+            log('Sent ' + label + ' (' + buf.length + ' B) evt 112 | ' + hexOf(buf));
+        }).catch(function (e) { log('03 24 error: ' + e.message); });
+    }
+
+    function sendSetHr24VeryFitBuilt() {
+        if (!sendChar) { log('Not connected.'); return; }
+        sendHr24Buffer(buildHr24VeryFitFromForm(), '03 24 VeryFit extended');
+    }
+
+    function sendSetHr24VeryFitCaptureExact() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const p = parseHex(HR24_VERYFIT_CAPTURE_HEX);
+        if (!p) { log('Internal hex error.'); return; }
+        sendHr24Buffer(p, '03 24 VeryFit capture (app_fresh_launch)');
+    }
+
+    function sendSetHr24FromHexArea() {
+        if (!sendChar) { log('Not connected.'); return; }
+        const s = String(document.getElementById('hr24ExtHex').value).replace(/[^0-9a-f]/gi, '');
+        if (s.length < 2 || s.length % 2 !== 0) {
+            log('Hex area: need even-length hex (got ' + s.length + ' chars). Strip spaces/newlines.');
+            return;
+        }
+        let buf;
+        if (s.length >= 4 && s.slice(0, 4).toLowerCase() === '0324') {
+            buf = parseHex(s);
+            if (!buf || buf.length < 3) {
+                log('Hex parse failed.');
+                return;
+            }
+        } else {
+            if (s.length > 64) {
+                log('Hex area: payload max 32 B (64 hex) without 0324 prefix.');
+                return;
+            }
+            const payload = parseHex(s);
+            if (!payload) {
+                log('Hex parse failed.');
+                return;
+            }
+            buf = new Uint8Array(2 + payload.length);
+            buf[0] = 0x03;
+            buf[1] = 0x24;
+            buf.set(payload, 2);
+        }
+        sendHr24Buffer(buf, '03 24 custom hex');
+    }
+
+    document.getElementById('btnApplyHrMode').addEventListener('click', applyHrModeFromForm);
+    document.getElementById('btnV3HrIntervalSwitch').addEventListener('click', sendV3HrIntervalSwitchSequence);
+    document.getElementById('hrModeAction').addEventListener('change', updateHrModeUiState);
+    document.getElementById('btnV3HrFreshLaunch').addEventListener('click', sendV3HrFreshLaunchPair);
+    document.getElementById('btnV3HrFreshSync').addEventListener('click', sendV3HrFreshSyncPacket);
+    document.getElementById('btnV3Hr09TwelveZeroPayload').addEventListener('click', sendV3Hr09TwelveZeroPayloadPacket);
+    document.getElementById('btnV3HrResetSequence').addEventListener('click', sendV3HrResetSequence);
+    document.getElementById('btnV3Hr09Hex').addEventListener('click', sendV3Hr09FromHexArea);
+    document.getElementById('btnSetHr24').addEventListener('click', sendSetHrInterval24);
+    document.getElementById('btnSetHr24VeryFit').addEventListener('click', sendSetHr24VeryFitBuilt);
+    document.getElementById('btnSetHr24VeryFitCapture').addEventListener('click', sendSetHr24VeryFitCaptureExact);
+    document.getElementById('btnSetHr24FromHex').addEventListener('click', sendSetHr24FromHexArea);
+    document.getElementById('btnVf24LoadCapture').addEventListener('click', loadVeryFit24CaptureToForm);
+    document.querySelectorAll('.hr24-default').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            document.getElementById('hr24Burn').value = '135';
+            document.getElementById('hr24Aerobic').value = '96';
+            document.getElementById('hr24Limit').value = '160';
+        });
+    });
+    document.querySelectorAll('.hr-preset').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            const s = btn.getAttribute('data-sec');
+            if (s) document.getElementById('hrIntervalSec').value = s;
+        });
+    });
+
+    document.getElementById('btnConnect').addEventListener('click', function () {
+        if (sendChar) {
+            sendChar.service.device.gatt.disconnect();
+            sendChar = null;
+            rxChar = null;
+            setConnected(false);
+            log('Disconnected.');
+            return;
+        }
+        if (!navigator.bluetooth) {
+            log('Web Bluetooth not available.');
+            return;
+        }
+        navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE_UUID] }] })
+            .then(function (d) { return d.gatt.connect(); })
+            .then(function (server) { return server.getPrimaryService(SERVICE_UUID); })
+            .then(function (service) {
+                return Promise.all([
+                    service.getCharacteristic(TX_UUID),
+                    service.getCharacteristic(RX_UUID)
+                ]);
+            })
+            .then(function (_ref) {
+                sendChar = _ref[0];
+                rxChar = _ref[1];
+                return rxChar.startNotifications();
+            })
+            .then(function () {
+                rxChar.addEventListener('characteristicvaluechanged', function (e) {
+                    const arr = new Uint8Array(e.target.value.buffer);
+                    if (arr.length <= 64) log('[RX] ' + arr.length + ' B ' + hexOf(arr).slice(0, 120));
+                    else log('[RX] ' + arr.length + ' B …');
+                    tryLogV3Hr09Reply(arr);
+                    handleV3ReplyReassembly(arr);
+                    dispatchV3GenericWaiters(arr);
+                    dispatchVbusWaiters(arr);
+                });
+                setConnected(true);
+                log('Connected. Use Get health sizes or Sync HR.');
+            })
+            .catch(function (err) {
+                log('Error: ' + (err && err.message));
+            });
+    });
+
+    document.getElementById('btnBindStartupDefaults').addEventListener('click', function () {
+        if (!sendChar) return;
+        sendBindAndAppStartupDefaults();
+    });
+
+    document.getElementById('btnHealthSizes').addEventListener('click', function () {
+        if (!sendChar) return;
+        sizesReplyResolver = function (info) {
+            if (info && info.totalBytes != null) log('[0x05] total sync bytes (HR-only query): ' + info.totalBytes);
+        };
+        sendHealthSizes().then(function () {
+            log('Sent v3 health sizes (0x05, HR-only). Watch log for RX.');
+        }).catch(function (e) { log('Send error: ' + e.message); });
+        setTimeout(function () { sizesReplyResolver = null; }, 8000);
+    });
+
+    document.getElementById('btnSyncHr').addEventListener('click', function () {
+        if (!sendChar) return;
+        const startPkt = buildV3HealthSync04(0, 3);
+        const stopPkt = buildV3HealthSync04(1, 3);
+        const startSeq = parseUint16LE(startPkt, 10);
+        const stopSeq = parseUint16LE(stopPkt, 10);
+        const HR_REPLY_TIMEOUT_MS = 15000;
+
+        log('HR sync START seq=0x' + startSeq.toString(16) + ' …');
+        sendV3PacketChunked(startPkt)
+            .then(function () {
+                return new Promise(function (resolve) {
+                    hrReplyResolver = resolve;
+                    setTimeout(function () {
+                        if (hrReplyResolver) {
+                            log('Timeout waiting for HR reply (' + (HR_REPLY_TIMEOUT_MS / 1000) + 's).');
+                            hrReplyResolver = null;
+                        }
+                        resolve();
+                    }, HR_REPLY_TIMEOUT_MS);
+                });
+            })
+            .then(function () {
+                log('HR sync STOP seq=0x' + stopSeq.toString(16));
+                return sendV3PacketChunked(stopPkt);
+            })
+            .then(function () {
+                log('Stop sent. If CSV disabled, try Sync again after collecting HR on the watch.');
+            })
+            .catch(function (e) { log('Sync error: ' + e.message); });
+    });
+
+    document.getElementById('btnDownloadCsv').addEventListener('click', function () {
+        if (!lastCsvText) return;
+        const blob = new Blob([lastCsvText], { type: 'text/csv;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'toobur_hr_' + new Date().toISOString().slice(0, 19).replace(/[:-]/g, '') + '.csv';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById('btnDownloadRaw').addEventListener('click', function () {
+        if (!lastRawHex) return;
+        const t = '# TOOBUR HR v3 raw reassembled buffer (hex bytes)\n' + lastRawHex + '\n';
+        const blob = new Blob([t], { type: 'text/plain;charset=utf-8' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'toobur_hr_raw_' + new Date().toISOString().slice(0, 19).replace(/[:-]/g, '') + '.txt';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    });
+
+    document.getElementById('btnClear').addEventListener('click', function () {
+        logEl.textContent = '';
+    });
+
+    updateHrModeUiState();
+})();
+    </script>
+</body>
+</html>

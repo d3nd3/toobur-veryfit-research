@@ -297,7 +297,7 @@ VeryFit logcat uses **VBUS event** names and numeric **evt** IDs. The **parent c
 
 | Evt (decimal) | VBUS name | Wire (v3) | Source |
 |---------------|-----------|-----------|--------|
-| 5010 | VBUS_EVT_FUNC_V3_SET_HR_MODE | v3 **cmd 0x09** (17 09 / 14 09 in payload) | set_hr_cont_state_*.txt, set_drinking_cont_*.txt |
+| 5010 | VBUS_EVT_FUNC_V3_SET_HR_MODE (search also **hr_mode_set**, **func_v3_set_hr_mode** in native SDK) | v3 **cmd 0x09** (17 09 / 14 09 in payload) | set_hr_cont_state_*.txt, set_drinking_cont_*.txt; **wire notes:** [docs/v3_set_hr_mode_continuous.md](docs/v3_set_hr_mode_continuous.md) |
 | 5013 / 5017 | VBUS_EVT_FUNC_V3_SPORT_SORT | v3 **cmd 0x0E** (set alarms + sport order; 355 B) | set_alarms_and_sports.txt (evt 5017), app_fresh_launch.txt (5013) |
 | 5018 | VBUS_EVT_FUNC_V3_GET_ALARM | v3 **cmd 0x0F** — TX e.g. `33 DA AD DA AD 01 0C 00 0F 00 24 01 00 28 18` | get_alarm.txt |
 
@@ -417,7 +417,7 @@ The **IDO SMART BAND SDK** (GitBook) describes v3 at the **API level only** — 
 | | 0x45 | Continuous health config? | Capture-backed from `healthdata_toggles.json`: the payload flips between `03:45:55:09:00:12:00:55:3f:3c:00:50:00:01:00:1e` and `03:45:aa:...`. This is the only plausible watch-side family for VeryFit's continuous-HR / continuous-stress UI in that trace, but the dump does not separate those two features cleanly. |
 | | 0x47 | Walk-around reminder? | Capture-backed from `healthdata_toggles.json`: `03:47:01:64:00:09:00:15:00:fe:00:00:73:00:00:00:01` then the same packet with byte 2 = `00`, both ACKed. Likely sedentary / walk-around reminder. |
 | | 0x60 | Drinking reminder? | Capture-backed from `healthdata_toggles.json`: `03:60:01:09:00:12:00:3f:1e:00:01:00:00:00:00:00` then `03:60:00:09:00:12:00:3e:1e:00:01:00:00:00:00:00`, both ACKed. Likely drink-water reminder. |
-| | **0x24** | **Heart rate interval (VBUS_EVT_APP_SET_HEART_RATE_INTERVAL)** | burn_fat_threshold, aerobic_threshold, limit_threshold (3 bytes, 1–255 bpm) — alert thresholds, not on/off; app_fresh_launch.txt shows TX `03 24 78 8C B4...` for this evt. |
+| | **0x24** | **Heart rate interval (`set_hr_interval` / VBUS_EVT_APP_SET_HEART_RATE_INTERVAL, evt 112)** | **Short form:** `03 24` + 3 BPM thresholds (angelfit). **VeryFit sync:** **20 B** payload — see [docs/set_hr_interval_0324.md](docs/set_hr_interval_0324.md). `app_fresh_launch.txt`: `03 24 78 8C B4 C8 64 78 8C A0 B4 14 00 00 00 00 17 3B C8 00`. |
 | | **0x25** | **Heart rate mode** | mode: **0x55=off (close)**, **0x88=auto (continuous)**, **0xAA=manual** — this is the heart rate enable/disable (angelfit CoreDataHandler default 0x88) |
 | | **0x52** | **Real-time sensor status** | gsensor_status, heart_rate_sensor_status (2 bytes): **0x55=off, 0xAA=on** per byte. App: Real-time sensors off / HR stream on / both on. |
 | **BIND 0x04** | 0x01 | Bind start (VBUS_EVT_APP_BIND_START evt 200) | 9 B: `04 01 F1 01 01 02 02 01 00` (app_fresh_launch.txt). Sent after GET MTU; watch may reply to confirm bind mode. |

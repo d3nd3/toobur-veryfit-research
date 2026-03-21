@@ -1,0 +1,271 @@
+    #define PROTOCOL_CMD_OTA                0x01
+    #define PROTOCOL_CMD_GET                0x02
+    #define PROTOCOL_CMD_SET                0x03
+    #define PROTOCOL_CMD_BIND               0x04
+    #define PROTOCOL_CMD_MSG                0x05
+    #define PROTOCOL_CMD_APP_CONTROL        0x06
+    #define PROTOCOL_CMD_BLE_CONTROL        0x07
+    #define PROTOCOL_CMD_HEALTH_DATA        0x08
+	#define PROTOCOL_CMD_NEW_HEALTH_DATA	0x09
+	#define PROTOCOL_CMD_WEATHER			0x0A
+    #define PROTOCOL_CMD_DUMP_STACK         0x20
+    #define PROTOCOL_CMD_LOG                0x21
+    #define PROTOCOL_CMD_TEST               0xAA
+    #define PROTOCOL_CMD_RESET              0xF0
+
+PROTOCOL_CMD_OTA
+[VALID] 01 01 - OTA_START  (in vbus_mapping: VBUS_EVT_APP_OTA_START 400 (occurrence 1))
+
+PROTOCOL_CMD_GET
+[VALID] 02 01 - GET_DEVICE_INFO  (in vbus_mapping: VBUS_EVT_APP_GET_DEVICE_INFO 301 (occurrence 1))
+[VALID] 02 02 - GET_FUNC_TABLE  (in vbus_mapping: VBUS_EVT_APP_GET_FUNC_TABLE 302 (occurrence 1))
+[VALID] 02 03 - GET_TIME
+[VALID] 02 04 - GET_MAC  (in vbus_mapping: VBUS_EVT_APP_APP_GET_MAC 300 (occurrence 1))
+[VALID] 02 05 - GET_BATT  (in vbus_mapping: VBUS_EVT_APP_GET_BATT_INFO 321 (occurrence 1))
+[VALID] 02 07 - GET_FUNC_TABLE_EX  (in vbus_mapping: VBUS_EVT_APP_GET_FUNC_TABLE_EX 311 (occurrence 1))
+[VALID] 02 10 - GET_NOTICE_STATUS  (in vbus_mapping: VBUS_EVT_APP_GET_NOTICE_STATUS 306 (occurrence 1))
+[VALID] 02 11 - ???
+[VALID] 02 30 - GET_DND  (in vbus_mapping: VBUS_EVT_APP_GET_DO_NOT_DISTURB 316 (occurrence 1))
+[VALID] 02 A0 - GET_LIVE_DATA  (in vbus_mapping: VBUS_EVT_APP_GET_LIVE_DATA 304 (occurrence 1))
+[VALID] 02 A7 - GET_FLASH_BIN_INFO  (in vbus_mapping: VBUS_EVT_APP_GET_FLASH_BIN_INFO 322 (occurrence 1))
+[VALID] 02 B0 - Bright screen parameters have been modified
+[VALID] 02 B1 - GET_WEATHER_SWITCH or Wrist Lift Parameters modified
+[VALID] 02 B2 - ???
+[VALID] 02 B3 - ???
+[VALID] 02 F0 - GET_MTU  (in vbus_mapping: VBUS_EVT_APP_GET_MTU_INFO 317 (occurrence 1))
+
+PROTOCOL_CMD_SET
+[VALID] 03 01 - SET_TIME  (in vbus_mapping: VBUS_EVT_APP_SET_TIME 104 (occurrence 1))
+[VALID] 03 03 - SET_SPORT_GOAL  (in vbus_mapping: VBUS_EVT_APP_SET_SPORT_GOAL 105 (occurrence 1))
+[VALID] 03 04 - SET_SLEEP_GOAL  (in vbus_mapping: VBUS_EVT_APP_SET_SLEEP_GOAL 106 (occurrence 1))
+[VALID] 03 10 - SET_USER_INFO  (in vbus_mapping: VBUS_EVT_APP_SET_USER_INFO 107 (occurrence 1))
+[VALID] 03 11 - SET_UINT  (in vbus_mapping: VBUS_EVT_APP_SET_UINT 108 (occurrence 1))
+[VALID] 03 12 - SET_WATCH_DIAL  (in vbus_mapping: VBUS_EVT_APP_SET_WATCH_DIAL 124 (occurrence 1))
+[VALID] 03 13 - SET_SHORTCUT  (in vbus_mapping: VBUS_EVT_APP_SET_SHORTCUT 125 (occurrence 1))
+[VALID] 03 20 - SET_LONG_SIT  (in vbus_mapping: VBUS_EVT_APP_SET_LONG_SIT 101 (occurrence 1))
+[VALID] 03 21 - SET_LOST_FIND  (in vbus_mapping: VBUS_EVT_APP_SET_LOST_FIND 102 (occurrence 1))
+[VALID] 03 22 - SET_HAND  (in vbus_mapping: VBUS_EVT_APP_SET_HAND 109 (occurrence 1))
+[VALID] 03 23 - SET_APP_OS  (in vbus_mapping: VBUS_EVT_APP_SET_APP_OS 110 (occurrence 1))
+[VALID] 03 24 - SET_HR_INTERVAL / set_hr_interval  (vbus: VBUS_EVT_APP_SET_HEART_RATE_INTERVAL evt 112; wire notes: docs/set_hr_interval_0324.md)
+[VALID] 03 25 - SET_HR_MODE  (in vbus_mapping: VBUS_EVT_APP_SET_HEART_RATE_MODE 113 (occurrence 1))
+[VALID] 03 26 - SET_FIND_PHONE  (in vbus_mapping: VBUS_EVT_APP_SET_FIND_PHONE 103 (occurrence 1))
+[VALID] 03 27 - SET_DEFAULT_CONFIG  (in vbus_mapping: VBUS_EVT_APP_SET_DEFAULT_CONFIG 115 (occurrence 1))
+[VALID] 03 28 - SET_UP_HAND_GESTURE  (in vbus_mapping: VBUS_EVT_APP_SET_UP_HAND_GESTURE 114 (occurrence 1))
+[VALID] 03 29 - SET_DND  (in vbus_mapping: VBUS_EVT_APP_SET_DO_NOT_DISTURB 116 (occurrence 1))
+[VALID] 03 2A - SET_MUSIC_ON_OFF  (in vbus_mapping: VBUS_EVT_APP_SET_MUISC_ONOFF 117 (occurrence 1))
+[VALID] 03 2B - SET_DISPLAY_MODE  (in vbus_mapping: VBUS_EVT_APP_SET_DISPLAY_MODE 118 (occurrence 1))
+[VALID] 03 2C - SET_ONEKEY_SOS  (in vbus_mapping: VBUS_EVT_APP_SET_ONEKEY_SOS 119 (occurrence 1))
+[VALID] 03 2D - SET_WEATHER_SWITCH  (in vbus_mapping: VBUS_EVT_APP_SET_WEATHER_SWITCH 150 (occurrence 1))
+[VALID] 03 2E - SET_SPORT_MODE_SELECT  (in vbus_mapping: VBUS_EVT_APP_SET_SPORT_MODE_SELECT 151 (occurrence 1))
+[HUH?] 03 30 - REQUIRED more data for response?  (in vbus_mapping: VBUS_EVT_APP_SET_NOTICE 111 (occurrence 1))
+[VALID] 03 31 - SET_SLEEP_PERIOD  (in vbus_mapping: VBUS_EVT_APP_SET_SLEEP_PERIOD 152 (occurrence 1))
+[VALID] 03 32 - SET_SCREEN_BRIGHTNESS  (in vbus_mapping: VBUS_EVT_APP_SET_SCREEN_BRIGHTNESS 154 (occurrence 1))
+[VALID] 03 33 - SET_CONFIG_GPS  (in vbus_mapping: VBUS_EVT_APP_SET_CONFIG_GPS 155 (occurrence 1))
+[VALID] 03 35 - SET_CONN_PARAM  (in vbus_mapping: VBUS_EVT_APP_SET_CONN_PARAM 157 (occurrence 1))
+[VALID] 03 40 - 
+[VALID] 03 41 - SET_MENSTRUATION  (in vbus_mapping: VBUS_EVT_APP_SET_MENSTRUATION 159 (occurrence 1))
+[VALID] 03 42 - SET_MENUSTRUATION_REMIND  (in vbus_mapping: VBUS_EVT_APP_SET_MENSTRUATION_REMIND 160 (occurrence 1))
+[VALID] 03 43 - SET_CALORIE_DISTANCE_GOAL  (in vbus_mapping: VBUS_EVT_APP_SET_CALORIE_DISTANCE_GOAL 161 (occurrence 1))
+[VALID] 03 44 - SET_SPO2  (in vbus_mapping: VBUS_EVT_APP_SET_SPO2 162 (occurrence 1))
+[VALID] 03 45 - SET_PRESSURE  (in vbus_mapping: VBUS_EVT_APP_SET_PRESSURE 163 (occurrence 1))
+[VALID] 03 47 - SET_WALK_REMINDER  (in vbus_mapping: VBUS_EVT_APP_SET_WALK_REMINDER 165 (occurrence 1))
+[VALID] 03 49 - SET_ACTIVITY_SWITCH  (in vbus_mapping: VBUS_EVT_APP_SET_ACTIVITY_SWITCH 167 (occurrence 1))
+[VALID] 03 54 - AutoIdentify Running/Walking mb?
+[VALID] 03 60 - SET_DRINK_WATER_REMINDER  (in vbus_mapping: VBUS_EVT_APP_SET_DRINK_WATER_REMINDER 168 (occurrence 1))
+[HUH?] 03 D1 - WHY NOT VALID?  (in vbus_mapping: VBUS_EVT_APP_CLEAN_BOND_INFO 405 (occurrence 1))
+[VALID] 03 E3 - ??
+
+PROTOCOL_CMD_BIND
+[HUH] 04 01 - BIND_START  (in vbus_mapping: VBUS_EVT_APP_BIND_START 200 (occurrence 1))
+[VALID] 04 02 - BIND_REMOVE  (in vbus_mapping: VBUS_EVT_APP_BIND_REMOVE 201 (occurrence 1))
+[VALID] 04 03 - BIND_AUTH  (in vbus_mapping: VBUS_EVT_APP_AUTH 202 (occurrence 1))
+[HUH] 04 05 - BIND_SET_ENCRYPTED_AUTH  (in vbus_mapping: VBUS_EVT_APP_SET_ENCRYPTED_AUTH 204 (occurrence 1))
+
+
+PROTOCOL_CMD_MSG
+[VALID] 05 01 - MSG_CALL
+[VALID] 05 02 - SET_NOTICE_STOP_CALL MSG_CALL_STATUS  (in vbus_mapping: VBUS_EVT_APP_SET_NOTICE_STOP_CALL 412 (occurrence 1) / VBUS_EVT_APP_SET_NOTICE_MISSED_CALL 420 (occurrence 1))
+[VALID] 05 03 - MSG_UNREAD
+
+
+PROTOCOL_CMD_APP_CONTROL
+[VALID] 06 01 - CONTROL_MUSIC  (in vbus_mapping: VBUS_EVT_APP_APP_TO_BLE_MUSIC_START 500 (occurrence 1) / VBUS_EVT_APP_APP_TO_BLE_MUSIC_STOP 501 (occurrence 1))
+[VALID] 06 02 - CONTROL_PHOTO  (in vbus_mapping: VBUS_EVT_APP_APP_TO_BLE_PHOTO_START 502 (occurrence 1) / VBUS_EVT_APP_APP_TO_BLE_PHOTO_STOP 503 (occurrence 1))
+[VALID] 06 03 - CONTROL_SINGLE_SPORT
+[VALID] 06 04 - CONTROL_FIND_DEVICE  (in vbus_mapping: VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_START 504 (occurrence 1) / VBUS_EVT_APP_APP_TO_BLE_FIND_DEVICE_STOP 505 (occurrence 1))
+[VALID] 06 30 - CONTROL_OPEN_ANCS  (in vbus_mapping: VBUS_EVT_APP_APP_TO_BLE_OPEN_ANCS 506 (occurrence 1))
+[VALID] 06 31 - CONTROL_CLOSE_ANCS
+
+**RECEIVED FROM WATCH TO PHONE**
+[VALID] 07 40 - Notify app of data update
+
+PROTOCOL_CMD_WEATHER
+[VALID] 0A 01 - WEATCHER_DATA  (in vbus_mapping: VBUS_EVT_APP_WEATCHER_DATA 153 (occurrence 1))
+[VALID] 0A 6C - ???
+
+???
+[VALID] 10 02 - 
+[VALID] 10 03 - 
+[VALID] 10 04 - 
+[VALID] 10 05 - 
+[VALID] 10 06
+[VALID] 10 20
+
+PROTOCOL_CMD_TEST
+[VALID] AA 01 - TEST_MODE_START
+[VALID] AA 03 - TEST_MODE_SENSOR
+[VALID] AA 04 - TEST_MODE_MOTOR
+[VALID] AA 05 - TEST_MODE_KEY
+[VALID] AA 07 - TEST_MODE_OLED
+[VALID] AA 09 - TEST_MODE_BELL
+[VALID] AA 0A - TEST_MODE_CHARGING
+[VALID] AA 0B - ???
+[VALID] AA 0F - ??? 
+[VALID] AA 11 - ???
+[VALID] AA 20 - TEST_MODE_LONG_MOTOR
+[VALID] AA 21 - TEST_MODE_LONG_OLED
+[VALID] AA 22 - TEST_MODE_LONG_LED
+[VALID] AA 32
+[VALID] AA 44
+[VALID] AA 45
+[VALID] AA 46
+[VALID] AA 47
+[VALID] AA 48
+[VALID] AA 60
+[VALID] AA 61
+[VALID] AA 68
+[VALID] AA D5
+[VALID] AA E0
+[VALID] AA E2
+[VALID] AA F1
+[VALID] AA F3
+
+
+???
+[VALID] AB 81
+[VALID] AB 83
+[VALID] AB 84
+[VALID] AB 88
+[VALID] AB 8A
+[VALID] AB 8C
+[VALID] AB 8D
+[VALID] AB 8E
+[VALID] AB 8F
+[VALID] AB 91
+[VALID] AB A1
+[VALID] AB A2
+[VALID] AB A3
+[VALID] AB B1
+[VALID] AB B3
+[VALID] AB B4
+[VALID] AB B8
+[VALID] AB BA
+[VALID] AB BC
+[VALID] AB BD
+[VALID] AB BE
+[VALID] AB C0
+
+???
+[VALID] DD E1
+
+[VALID] F0 01 - reboot  (in vbus_mapping: VBUS_EVT_APP_REBOOT 403 (occurrence 1))
+[VALID] F0 02 - 
+[VALID] F0 03 - shutdown  (in vbus_mapping: VBUS_EVT_APP_SHUTDOWN 406 (occurrence 1))
+[VALID] F0 04 - reset?
+
+[VALID] F3 09 (Close connection?)
+[VALID] F3 2D (Close connection?)
+[VALID] F3 F4 (Close connection?)
+[VALID] F3 F5 (Close connection?)
+[VALID] F3 F6 (Close connection?)
+[VALID] F3 F7 (Close connection?)
+[VALID] F3 FA
+[VALID] F3 FB
+[VALID] F3 FC
+[VALID] F3 FD
+[VALID] F3 FE
+[VALID] F3 FF
+
+[VALID] FA FC (Close connection?)
+
+[VALID] F6 F3
+[VALID] F6 F4
+
+[VALID] F7 07 (Close connection?)
+
+[VALID] FA FC (Close connection?)
+MISSING_FROM_BRUTEFORCE_RESULTS (in vbus_mapping.json but not in this list):
+
+01 02 - VBUS_EVT_APP_OTA_DIRECT_START 401 (occurrence 1)
+01 03 - VBUS_EVT_APP_OTA_AUTH 407 (occurrence 1)
+02 15 - VBUS_EVT_APP_GET_SETTINGS_DURING_EXERCISE 345 (occurrence 1)
+02 22 - VBUS_EVT_APP_GET_UNIT 342 (occurrence 1)
+02 23 - VBUS_EVT_APP_GET_LEFT_RIGHT_WEAR_SETTINGS 344 (occurrence 1)
+02 31 - VBUS_EVT_APP_GET_DOWN_LANGUAGE 319 (occurrence 1)
+02 32 - VBUS_EVT_APP_GET_UNREAD_APP_ONOFF 351 (occurrence 1)
+02 33 - VBUS_EVT_APP_GET_SET_BT_NOTICE 352 (occurrence 1)
+02 40 - VBUS_EVT_APP_GET_ERROR_RECORD 320 (occurrence 1)
+02 46 - VBUS_EVT_APP_GET_OTHER_SWITCH_STATE 343 (occurrence 1)
+02 48 - VBUS_EVT_APP_GET_FIRMWARE_STATUS_INFO 348 (occurrence 1)
+02 59 - VBUS_EVT_APP_GET_DEVICE_CMEI 356 (occurrence 1)
+02 A2 - VBUS_EVT_APP_GET_HID_INFO 310 (occurrence 1)
+02 A3 - VBUS_EVT_APP_GET_GPS_INFO 312 (occurrence 1)
+02 A4 - VBUS_EVT_APP_GET_HOT_START_PARAM 313 (occurrence 1)
+02 A5 - VBUS_EVT_APP_GET_GPS_STATUS 314 (occurrence 1)
+03 02 - VBUS_EVT_APP_SET_ALARM 100 (occurrence 1)
+03 14 - VBUS_EVT_APP_SET_BP_CAL 126 (occurrence 1)
+03 15 - VBUS_EVT_APP_SET_DURING_EXERCISE 199 (occurrence 1)
+03 34 - VBUS_EVT_APP_SET_CONTROL_GPS 156 (occurrence 1)
+03 36 - VBUS_EVT_APP_SET_HOT_START_PARAM 158 (occurrence 1)
+03 46 - VBUS_EVT_APP_SET_SPORT_MODE_SORT 164 (occurrence 1)
+03 48 - VBUS_EVT_APP_SET_BREATHE_TRAIN 166 (occurrence 1)
+03 51 - VBUS_EVT_APP_SET_GSENSOR_PARAM 121 (occurrence 1)
+03 52 - VBUS_EVT_APP_SET_REAL_TIME_SENSOR_DATA 122 (occurrence 1)
+03 53 - VBUS_EVT_APP_SET_START_MOTOT 123 (occurrence 1)
+03 61 - VBUS_EVT_APP_SET_MENU_LIST 171 (occurrence 1)
+03 E1 - VBUS_EVT_FUNC_SIMPLE_FILE_OPERATIONS 5510 (occurrence 1)
+03 EC - VBUS_EVT_APP_SET_STRESS_CAL 128 (occurrence 1)
+03 F1 - VBUS_EVT_APP_SET_DRINK_WATER_PLAN 195 (occurrence 1)
+03 F2 - VBUS_EVT_APP_SET_ECG_REMINDER 196 (occurrence 1)
+03 F3 - VBUS_EVT_APP_SET_GAME_TIME_REMINDER 197 (occurrence 1)
+03 F5 - VBUS_EVT_APP_SET_STRIDE_DEVICE_SYNC 198 (occurrence 1)
+05 05 - VBUS_EVT_APP_SET_NOTICE_CALL_TIME 415 (occurrence 1)
+05 06 - VBUS_EVT_APP_SET_NOTICE_CALL_QUICK_REPLY_ON_OFF 194 (occurrence 1)
+06 06 - VBUS_EVT_APP_SET_BP_MEASURE 127 (occurrence 1)
+06 32 - VBUS_EVT_APP_APP_TO_BLE_NOTCIE_ICON_INFORMATIONG 511 (occurrence 1)
+06 33 - VBUS_EVT_APP_APP_TO_BLE_NOTCIE_DISABLE_FUNC 513 (occurrence 1)
+07 01 - VBUS_EVT_APP_BLE_TO_APP_OPEN_APP_PHOTO_INTO_PREVIEW 567 (occurrence 1) | VBUS_EVT_APP_BLE_TO_APP_PARSE_APP_PHOTO_STOP_PREVIEW 568 (occurrence 1) | VBUS_EVT_APP_BLE_TO_APP_CLOSE_APP_PHOTO_OUT_PREVIEW 569 (occurrence 1)
+07 03 - VBUS_EVT_APP_BLE_TO_APP_ONEKEY_SOS_START 574 (occurrence 1)
+09 07 - VBUS_EVT_APP_GET_ACTIVITY_COUNT 309 (occurrence 1)
+0A 02 - VBUS_EVT_APP_WEATCHER_CITY_NAME 6500 (occurrence 1)
+0A 03 - VBUS_EVT_APP_WEATCHER_REAL_TIME_ONE 6501 (occurrence 1)
+0A 04 - VBUS_EVT_APP_WEATCHER_REAL_TIME_TWO 6502 (occurrence 1)
+0A 05 - VBUS_EVT_APP_WEATCHER_REAL_TIME_THREE 6503 (occurrence 1)
+0B 01 - VBUS_EVT_APP_SET_IOT_BUTTON_NAME 169 (occurrence 1)
+0B 02 - VBUS_EVT_APP_BLE_TO_APP_IOT_COMMAND 170 (occurrence 1)
+11 30 - VBUS_EVT_VOICE_SET_ON_OFF_FUNCTION 7625 (occurrence 1)
+B1 01 - VBUS_EVT_IBEACON_WRITE_HEAD 1000 (occurrence 1)
+B1 02 - VBUS_EVT_IBEACON_WRITE_UUID 1002 (occurrence 1)
+B1 03 - VBUS_EVT_IBEACON_WRITE_PASSWORD 1004 (occurrence 1)
+B1 04 - VBUS_EVT_IBEACON_GET_HEAD 1006 (occurrence 1)
+B1 05 - VBUS_EVT_IBEACON_GET_UUID 1008 (occurrence 1)
+FF 01 - VBUS_EVT_APP_PROTOCOL_TEST_CMD_1 900 (occurrence 1)
+
+
+
+---
+
+V3 Protocol bruteforce results
+[VALID 00 04] - Sync Activities
+[VALID 00 05] - Get Activity Sync Size
+[VALID 00 06] - IDOV3GetDailLIstNew
+[VALID 00 08] - IDOV3SetDial
+[VALID 00 09] - Set HR Continuous
+[VALID] 00 0E - Set Alarms
+[VALID] 00 0F - Get Alarms
+[VALID] 00 10 - fast_msg_data
+[VALID] 00 12 - exchange_data_reply_add_real_time_speed_pace
+[VALID] 00 13
+[VALID] 00 14
+[VALID] 00 1A - get func table v3
+[VALID] 00 31 - capacity_size_display - local_1 local_2 local_3

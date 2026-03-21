@@ -4,24 +4,146 @@ Instructions used to clone Gadgetbridge into this project, add TOOBUR device sup
 
 ---
 
-## 0. Compile and install the GadgetBridge mod
+## Quick start: compile and put Gadgetbridge on your phone
 
-From the project root, after cloning this repo and entering `gadgetbridge`:
+1. **Prerequisites (once):** JDK 21, Android SDK (`local.properties` or `ANDROID_HOME`), `adb` on PATH. See [§3 JDK](#3-jdk-kubuntu-2510) and [§4 Android SDK](#4-android-sdk).
+
+2. **From the idowatch repo root**, enter the fork and build a **debug APK** (pick one flavor):
+
+   | Flavor | What it is | Compile command |
+   |--------|------------|-----------------|
+   | **mainline** | Standard Gadgetbridge package id | `./gradlew :app:assembleMainlineDebug` |
+   | **banglejs** | Same app + Bangle.js branding / extra permissions (`applicationIdSuffix .banglejs`) — **still includes TOOBUR** and other devices | `./gradlew :app:assembleBanglejsDebug` |
+
+   ```bash
+   cd gadgetbridge
+   ./gradlew :app:assembleMainlineDebug
+   # or
+   ./gradlew :app:assembleBanglejsDebug
+   ```
+
+3. **Install onto a USB-connected phone** (USB debugging on, device authorized):
+
+   ```bash
+   ./gradlew :app:installMainlineDebug
+   # or
+   ./gradlew :app:installBanglejsDebug
+   ```
+
+   This pushes the debug build to the device the same as **Run** from Android Studio.
+
+4. **Or install the APK manually** (e.g. copy over USB/Wi‑Fi, or `adb install`):
+
+   - **Mainline debug APK:**  
+     `gadgetbridge/app/build/outputs/apk/mainline/debug/`  
+     (filename like `app-mainline-debug.apk` — exact name may vary by Gradle version.)
+   - **Bangle.js debug APK:**  
+     `gadgetbridge/app/build/outputs/apk/banglejs/debug/`
+
+   ```bash
+   adb install -r app/build/outputs/apk/mainline/debug/app-mainline-debug.apk
+   # adjust path/filename to match what is on disk; use Tab completion or:
+   ls app/build/outputs/apk/mainline/debug/
+   ls app/build/outputs/apk/banglejs/debug/
+   ```
+
+   **Release** builds (smaller, signed with your keystore if configured):
+
+   ```bash
+   ./gradlew :app:assembleMainlineRelease
+   ./gradlew :app:assembleBanglejsRelease
+   ```
+
+   APKs under `app/build/outputs/apk/<flavor>/release/`.
+
+5. **Side-by-side:** Mainline and Bangle.js builds use **different application IDs**, so you can install **both** debug APKs on one phone if you want.
+
+---
+
+## Run on the phone and read debug logs at the same time
+
+Use **two terminal windows** (or one terminal for `adb logcat` and Android Studio for everything else): one session is for building/installing if needed; the other keeps **`logcat`** streaming while you use the app on the device.
+
+### Application IDs (for filters)
+
+| Flavor | Package name (use in `adb` / Logcat) |
+|--------|----------------------------------------|
+| **mainline** | `nodomain.freeyourgadget.gadgetbridge` |
+| **banglejs** | `com.espruino.gadgetbridge.banglejs` |
+
+### 1) Logcat in a terminal (recommended)
+
+1. Connect the phone over **USB** with **USB debugging** enabled.
+2. **Install** the debug APK (see Quick start), then **open Gadgetbridge** on the phone and connect/use the watch so the process is running.
+3. In a second terminal, stream logs for **only this app’s process** (PID changes each launch; this picks the current PID):
+
+   **Mainline:**
+
+   ```bash
+   adb logcat --pid="$(adb shell pidof -s nodomain.freeyourgadget.gadgetbridge | tr -d '\r')"
+   ```
+
+   **Bangle.js flavor:**
+
+   ```bash
+   adb logcat --pid="$(adb shell pidof -s com.espruino.gadgetbridge.banglejs | tr -d '\r')"
+   ```
+
+   If `pidof` prints nothing, bring Gadgetbridge to the **foreground** on the phone and run the command again.
+
+   If your device’s `pidof` has no `-s` flag, use the first PID from `adb shell pidof nodomain.freeyourgadget.gadgetbridge` manually in `--pid=…`.
+
+4. **Narrow noise** — after you see the stream, you can filter lines (examples):
+
+   ```bash
+   adb logcat --pid="$(adb shell pidof -s nodomain.freeyourgadget.gadgetbridge | tr -d '\r')" | grep -iE 'Toobur|ID115|Gatt|BluetoothGatt|ERROR'
+   ```
+
+5. **Clear old lines before a repro:**
+
+   ```bash
+   adb logcat -c
+   ```
+
+6. **Save a session to a file:**
+
+   ```bash
+   adb logcat --pid="$(adb shell pidof -s nodomain.freeyourgadget.gadgetbridge | tr -d '\r')" -v time > ~/gadgetbridge-debug.txt
+   ```
+
+### 2) Android Studio
+
+1. Open the **`gadgetbridge/`** folder in Android Studio.
+2. Choose the **`mainlineDebug`** or **`banglejsDebug`** build variant.
+3. Click **Run** (▶) — Studio installs/starts the app and opens the **Logcat** tool window.
+4. In Logcat, set the **package** / process filter to the same package name as in the table above so you only see this app’s lines while it runs.
+
+You can keep **Logcat** open and interact with the app on the device; logs update live.
+
+### 3) Wireless debugging (optional)
+
+If the phone uses **wireless debugging** (Android 11+), pair once with `adb pair`, then `adb connect IP:PORT`. After that, the same `adb logcat` commands work without USB.
+
+---
+
+## 0. Compile and install (same as Quick start)
+
+Use the Gradle task names below — the flavor is **`mainline`**, not `main`.
 
 ```bash
 cd gadgetbridge
-./gradlew assembleMainDebug
-./gradlew installMainDebug
+./gradlew :app:assembleMainlineDebug
+./gradlew :app:installMainlineDebug
 ```
 
-If you also build the Bangle.js flavor:
+**Bangle.js flavor:**
 
 ```bash
-./gradlew assembleBanglejsDebug
-./gradlew installBanglejsDebug
+./gradlew :app:assembleBanglejsDebug
+./gradlew :app:installBanglejsDebug
 ```
 
-Make sure a device is connected with USB debugging enabled and trusted before running the install commands.
+Connect the phone over USB with **USB debugging** enabled and the RSA prompt accepted before `install*`.
 
 ## 1. Clone Gadgetbridge
 
@@ -183,38 +305,30 @@ From the Gadgetbridge directory:
 
 ```bash
 cd gadgetbridge
-./gradlew assembleDebug
+# Debug APKs (most common):
+./gradlew :app:assembleMainlineDebug
+./gradlew :app:assembleBanglejsDebug
 ```
 
-To build a specific flavor (e.g. main debug APK):
+To build **release** APKs (signing config required for publishing; local release builds may use debug keys depending on project setup):
 
 ```bash
-./gradlew assembleMainDebug
+./gradlew :app:assembleMainlineRelease
+./gradlew :app:assembleBanglejsRelease
 ```
 
-### Bangle.js release (includes TOOBUR)
+### Bangle.js flavor (includes TOOBUR)
 
-To build the **Bangle.js** variant (for use with Bangle.js watches) **with TOOBUR/VeryFit support included** — one APK for both Bangle.js and TOOBUR:
+The **banglejs** product flavor changes app identity and permissions (e.g. app name “Bangle.js Gadgetbridge”, `applicationIdSuffix .banglejs`). It does **not** exclude device coordinators — **TOOBUR** and other devices stay in the build.
 
-```bash
-./gradlew assembleBanglejsRelease
-```
+- **Debug:** `./gradlew :app:assembleBanglejsDebug` → APK under `app/build/outputs/apk/banglejs/debug/`
+- **Release:** `./gradlew :app:assembleBanglejsRelease` → `app/build/outputs/apk/banglejs/release/`
 
-- **Debug (install alongside mainline):** `./gradlew assembleBanglejsDebug`
-- **Release APK output:** `app/build/outputs/apk/banglejs/release/` (or `banglejsRelease/` depending on Gradle version)
-
-The `banglejs` product flavor only changes app identity and permissions (e.g. app name “Bangle.js Gadgetbridge”, `INTERNET_ACCESS=true`). It does **not** exclude any device coordinators, so TOOBUR (and all other devices) remain in the build. You can use this single APK for both your Bangle.js and your TOOBUR.
-
-To install the mainline debug build to a connected device:
+Install to a USB-connected device:
 
 ```bash
-./gradlew installMainDebug
-```
-
-To install the Bangle.js debug build (so you can use both Bangle.js and TOOBUR with one app):
-
-```bash
-./gradlew installBanglejsDebug
+./gradlew :app:installMainlineDebug
+./gradlew :app:installBanglejsDebug
 ```
 
 ---
