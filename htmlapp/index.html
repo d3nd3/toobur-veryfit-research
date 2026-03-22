@@ -676,18 +676,18 @@
                     event_log("[Battery] voltage=" + v + "mV status=" + status + " level=" + level + "%");
                     logDataParsing({ Battery: level + "%", Steps: "—", Sports: "—", Sleep: "—", BPM: "—", kcal: "—", SPO2: "—", Relax: "—", "Blood sugar": "—", Hydration: "—" });
             } else if (key === 0xA0 && arr.length >= 3) {
-                    var step = 0, cal = 0, dist = 0, active = 0, hr = 0;
+                    var step = 0, activeMin = 0, dist = 0, reserved32 = 0, hr = 0;
                     if (arr.length >= 19) {
                         step = (arr[2]|(arr[3]<<8)|(arr[4]<<16)|(arr[5]<<24))>>>0;
-                        cal = (arr[6]|(arr[7]<<8)|(arr[8]<<16)|(arr[9]<<24))>>>0;
+                        activeMin = (arr[6]|(arr[7]<<8)|(arr[8]<<16)|(arr[9]<<24))>>>0;
                         dist = (arr[10]|(arr[11]<<8)|(arr[12]<<16)|(arr[13]<<24))>>>0;
-                        active = (arr[14]|(arr[15]<<8)|(arr[16]<<16)|(arr[17]<<24))>>>0;
+                        reserved32 = (arr[14]|(arr[15]<<8)|(arr[16]<<16)|(arr[17]<<24))>>>0;
                         hr = arr[18];
                     }
                     var rawHex = Array.from(arr).map(function(b){ return ("0" + b.toString(16)).slice(-2); }).join(" ");
-                    event_log("[Live data] len=" + arr.length + " steps=" + step + " cal=" + cal + " dist=" + dist + "m active=" + active + "s HR=" + hr + (arr.length !== 19 ? " (expected len 19; raw: " + rawHex + ")" : ""));
+                    event_log("[Live data 0x02 0xA0] len=" + arr.length + " steps=" + step + " activeMin=" + activeMin + " dist=" + dist + " reserved=0x" + reserved32.toString(16) + " HR=" + hr + (arr.length !== 19 ? " (expected len 19; raw: " + rawHex + ")" : ""));
                     if (typeof updateLiveHRDisplay === 'function') updateLiveHRDisplay(hr);
-                    logDataParsing({ Steps: step, kcal: cal, BPM: hr, Sleep: "—", SPO2: "—", Relax: "—", "Blood sugar": "—", Hydration: "—", Battery: "—", Sports: "—" });
+                    logDataParsing({ Steps: step, kcal: "—", BPM: hr, Sleep: "—", SPO2: "—", Relax: "—", "Blood sugar": "—", Hydration: "—", Battery: "—", Sports: "—" });
                     if (arr.length >= 19 && arr.length <= 25) {
                         var altHr = arr.length > 19 ? arr[19] : null;
                         if (altHr != null && altHr >= 40 && altHr <= 240) event_log("[Live data] alternate HR at [19]? " + altHr + " bpm");

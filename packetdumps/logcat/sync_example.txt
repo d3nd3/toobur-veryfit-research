@@ -1,0 +1,809 @@
+03-21 19:29:24.632 25867 25867 I DEBUG LOG: [03-21 19:29:24.632] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:107(VBUS_EVT_APP_SET_USER_INFO)
+03-21 19:29:24.633 25867 25867 I DEBUG LOG: [03-21 19:29:24.633] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:107(VBUS_EVT_APP_SET_USER_INFO)
+03-21 19:29:24.633 25867 25867 I DEBUG LOG: [03-21 19:29:24.633] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:24.633 25867 25867 I DEBUG LOG: [03-21 19:29:24.633] [protocol.c] [protocol_write_data] [line 235]   TX : 03 10 B4 40 1F 00 D6 07 03 01 
+03-21 19:29:24.633 25867 25867 I DEBUG LOG: [03-21 19:29:24.633] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:10
+03-21 19:29:24.633 25867 25867 I DEBUG LOG: [03-21 19:29:24.633] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:24.693 25867 25867 I DEBUG LOG: [03-21 19:29:24.693] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:24.693 25867 25867 I DEBUG LOG: [03-21 19:29:24.693] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:24.693 25867 25867 I DEBUG LOG: [03-21 19:29:24.693] [protocol_write.c] [protocol_write_process] [line 102] warn:queue cmd 0x3 0x10 not reply yet add queue to send failed,queue list size:1
+03-21 19:29:24.697 25867 25867 I DEBUG LOG: [03-21 19:29:24.697] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:108(VBUS_EVT_APP_SET_UINT)
+03-21 19:29:24.698 25867 25867 I DEBUG LOG: [03-21 19:29:24.698] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:108(VBUS_EVT_APP_SET_UINT)
+03-21 19:29:24.698 25867 25867 I DEBUG LOG: [03-21 19:29:24.698] [protocol_write.c] [protocol_write_process] [line 102] warn:queue cmd 0x3 0x10 not reply yet add queue to send failed,queue list size:2
+03-21 19:29:24.899 25867 30621 I DEBUG LOG: [03-21 19:29:24.899] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_SysEvtSet] [line 266] api sysEvtSet,intput evt base:VBUS_EVT_BASE_APP_GET evt:VBUS_EVT_APP_GET_DEVICE_INFO
+03-21 19:29:24.899 25867 30621 I DEBUG LOG: [03-21 19:29:24.899] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:301(VBUS_EVT_APP_GET_DEVICE_INFO)
+03-21 19:29:24.899 25867 30621 I DEBUG LOG: [03-21 19:29:24.899] [protocol_write.c] [protocol_write_process] [line 102] warn:queue cmd 0x3 0x10 not reply yet add queue to send failed,queue list size:3
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [protocol.c] [protocol_receive_data] [line 469] RX : 03 10 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:107(VBUS_EVT_APP_SET_USER_INFO)
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [protocol.c] [protocol_write_data] [line 235]   TX : 03 35 01 00 00 00 00 00 00 00 00 00 
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:12
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:25.433 25867 27772 I DEBUG LOG: [03-21 19:29:25.433] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:107
+03-21 19:29:25.434 25867 27772 I DEBUG LOG: [03-21 19:29:25.434] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:107 err code:0
+03-21 19:29:25.441 25867 27772 I DEBUG LOG: [03-21 19:29:25.441] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:25.441 25867 27772 I DEBUG LOG: [03-21 19:29:25.441] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:25.441 25867 27772 I DEBUG LOG: [03-21 19:29:25.441] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:25.441 25867 27772 I DEBUG LOG: [03-21 19:29:25.441] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:25.753 25867 25885 I DEBUG LOG: [03-21 19:29:25.753] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [protocol.c] [protocol_receive_data] [line 469] RX : 03 35 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [protocol.c] [protocol_write_data] [line 235]   TX : 03 11 01 01 01 00 02 01 00 00 00 01 01 01 01 00 00 
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:17
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:157
+03-21 19:29:25.754 25867 25885 I DEBUG LOG: [03-21 19:29:25.754] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:157 err code:0
+03-21 19:29:26.068 25867 25885 I DEBUG LOG: [03-21 19:29:26.068] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:26.068 25867 25885 I DEBUG LOG: [03-21 19:29:26.068] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:26.068 25867 25885 I DEBUG LOG: [03-21 19:29:26.068] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:26.068 25867 25885 I DEBUG LOG: [03-21 19:29:26.068] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:26.069 25867 27772 I DEBUG LOG: [03-21 19:29:26.069] [protocol.c] [protocol_receive_data] [line 469] RX : 03 11 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.069] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:108(VBUS_EVT_APP_SET_UINT)
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [protocol.c] [protocol_write_data] [line 235]   TX : 02 01 
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:2
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:26.070 25867 27772 I DEBUG LOG: [03-21 19:29:26.070] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:108
+03-21 19:29:26.071 25867 27772 I DEBUG LOG: [03-21 19:29:26.071] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:108 err code:0
+03-21 19:29:26.388 25867 25885 I DEBUG LOG: [03-21 19:29:26.388] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:26.388 25867 25885 I DEBUG LOG: [03-21 19:29:26.388] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:26.388 25867 25885 I DEBUG LOG: [03-21 19:29:26.388] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:26.388 25867 25885 I DEBUG LOG: [03-21 19:29:26.388] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:26.394 25867 25885 I DEBUG LOG: [03-21 19:29:26.394] [protocol.c] [protocol_receive_data] [line 469] RX : 02 01 14 02 11 01 00 5E 01 00 01 00 28 02 01 03 03 00 00 00 
+03-21 19:29:26.394 25867 25885 I DEBUG LOG: [03-21 19:29:26.394] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:301(VBUS_EVT_APP_GET_DEVICE_INFO)
+03-21 19:29:26.394 25867 25885 I DEBUG LOG: [03-21 19:29:26.394] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:26.394 25867 25885 I DEBUG LOG: [03-21 19:29:26.394] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:301
+03-21 19:29:26.395 25867 25885 I DEBUG LOG: [03-21 19:29:26.395] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:301 err code:0
+03-21 19:29:26.840 25867 25867 I DEBUG LOG: [03-21 19:29:26.840] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_SysEvtSet] [line 266] api sysEvtSet,intput evt base:VBUS_EVT_BASE_APP_SET evt:VBUS_EVT_FUNC_START_SYNC_V3_HEALTH
+03-21 19:29:26.840 25867 25867 I DEBUG LOG: [03-21 19:29:26.840] [protocol_write.c] [protocol_write_vbus_control] [line 949] warn:protocol write invalid evt:5002
+03-21 19:29:26.840 25867 25867 I DEBUG LOG: [03-21 19:29:26.840] [protocol_v3_health_client.c] [protocol_v3_health_client_sync_start] [line 1095] MANUAL SYNC
+03-21 19:29:26.840 25867 25867 I DEBUG LOG: [03-21 19:29:26.840] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 34
+03-21 19:29:26.840 25867 25867 I DEBUG LOG: [03-21 19:29:26.840] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 34 ms = 250
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.090] [jni_timer.cpp] [jni_timer_handle] [line 50] jni timer handle int:34
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.091] [protocol_sync_config.c] [get_m_is_v3_table_sync_states] [line 1115] m_is_v3_table_sync:1
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.091] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 34
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.091] [protocol_v3_health_client.c] [protocol_v3_health_base_client_sync_start] [line 1011] start sync v3 health info mtu:137
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.091] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:27.091 25867 25970 I DEBUG LOG: [03-21 19:29:27.091] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 31 ms = 10
+03-21 19:29:27.102 25867 25967 I DEBUG LOG: [03-21 19:29:27.102] [jni_timer.cpp] [jni_timer_handle] [line 50] jni timer handle int:31
+03-21 19:29:27.102 25867 25967 I DEBUG LOG: [03-21 19:29:27.102] [protocol_v3_health_client.c] [sync_timer_handles] [line 1180] v3 health sync type:0x01(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2) [day data,save data offset:0] 
+03-21 19:29:27.102 25867 25967 I DEBUG LOG: [03-21 19:29:27.102] [protocol_v3_health_client.c] [sync_timer_handles] [line 1180] v3 health sync type:0x02(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE) [day data,save data offset:0] 
+03-21 19:29:27.102 25867 25967 I DEBUG LOG: [03-21 19:29:27.102] [protocol_v3_health_client.c] [sync_timer_handles] [line 1184] v3 health sync type:0x04(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY) [count data]
+03-21 19:29:27.103 25867 25967 I DEBUG LOG: [03-21 19:29:27.103] [protocol_v3_health_client.c] [sync_timer_handles] [line 1184] v3 health sync type:0x06(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM) [count data]
+03-21 19:29:27.103 25867 25967 I DEBUG LOG: [03-21 19:29:27.103] [protocol_v3_health_client.c] [sync_timer_handles] [line 1184] v3 health sync type:0x07(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP) [count data]
+03-21 19:29:27.103 25867 25967 I DEBUG LOG: [03-21 19:29:27.103] [protocol_v3_health_client.c] [sync_timer_handles] [line 1180] v3 health sync type:0x08(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT) [day data,save data offset:78] 
+03-21 19:29:27.103 25867 25967 I DEBUG LOG: [03-21 19:29:27.103] [protocol_v3_health_client.c] [sync_timer_handles] [line 1180] v3 health sync type:0x03(PROTOCOL_V3_HEALTH_CMD_TYPE_HR) [day data,save data offset:0] 
+03-21 19:29:27.105 25867 25967 I DEBUG LOG: [03-21 19:29:27.105] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:27.105 25867 25967 I DEBUG LOG: [03-21 19:29:27.105] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x5 nseq=0x2F send queue cout=1
+03-21 19:29:27.106 25867 25967 I DEBUG LOG: [03-21 19:29:27.106] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x5 nseq=0x2F
+03-21 19:29:27.106 25867 25967 I DEBUG LOG: [03-21 19:29:27.106] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:27.106 25867 25967 I DEBUG LOG: [03-21 19:29:27.106] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:138,offset:0
+03-21 19:29:27.107 25867 25967 I DEBUG LOG: [03-21 19:29:27.107] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 88 00 05 00 2F 00 01 00 00 00 00 02 00 00 00 00 08 4E 00 00 00 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:27.107 25867 25967 I DEBUG LOG: [03-21 19:29:27.107] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:137
+03-21 19:29:27.110 25867 25967 I DEBUG LOG: [03-21 19:29:27.110] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:27.110 25867 25967 I DEBUG LOG: [03-21 19:29:27.110] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:27.110 25867 25967 I DEBUG LOG: [03-21 19:29:27.110] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:27.110 25867 25967 I DEBUG LOG: [03-21 19:29:27.110] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:27.110 25867 25967 I DEBUG LOG: [03-21 19:29:27.110] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:27.675 25867 25885 I DEBUG LOG: [03-21 19:29:27.675] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:27.676 25867 25885 I DEBUG LOG: [03-21 19:29:27.676] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:27.676 25867 25885 I DEBUG LOG: [03-21 19:29:27.676] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:138,offset:136
+03-21 19:29:27.676 25867 25885 I DEBUG LOG: [03-21 19:29:27.676] [protocol.c] [protocol_write_data] [line 235]   TX : 33 59 83 
+03-21 19:29:27.676 25867 25885 I DEBUG LOG: [03-21 19:29:27.676] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:3
+03-21 19:29:27.677 25867 25885 I DEBUG LOG: [03-21 19:29:27.677] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:27.677 25867 25885 I DEBUG LOG: [03-21 19:29:27.677] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:27.677 25867 25885 I DEBUG LOG: [03-21 19:29:27.677] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:27.677 25867 25885 I DEBUG LOG: [03-21 19:29:27.677] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.681] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 10 00 05 00 2F 00 FD 03 00 00 00 10 73 
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x5,nseq:0x2F,total length:16(+2Bytes CRC),cur get data length:18
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x5 nseq:0x2F vserion: 0x1 complete,length:16(+2Bytes CRC)
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x5,nseq = 47,is reply
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3_health_client.c] [protocol_v3_queue_get_health_size_handle] [line 820] sync all size = 1021
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [protocol_v3_health_client.c] [count_all_pack] [line 791] all_package = 8, all_delay = 4
+03-21 19:29:27.683 25867 25885 I DEBUG LOG: [03-21 19:29:27.683] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5027
+03-21 19:29:27.686 25867 25885 I DEBUG LOG: [03-21 19:29:27.686] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5027 err code:0
+03-21 19:29:27.686 25867 25885 I DEBUG LOG: [03-21 19:29:27.686] [protocol_v3_health_client.c] [get_sync_offset] [line 431] get_sync_offset index = 1,pressure
+03-21 19:29:27.687 25867 25885 I DEBUG LOG: [03-21 19:29:27.687] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:1(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2) operate:0(start) offset:0
+03-21 19:29:27.693 25867 25885 I DEBUG LOG: [03-21 19:29:27.693] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:27.693 25867 25885 I DEBUG LOG: [03-21 19:29:27.693] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x30 send queue cout=1
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x30
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 30 00 00 01 01 00 00 D5 E1 
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:27.694 25867 25885 I DEBUG LOG: [03-21 19:29:27.694] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:27.695 25867 25885 I DEBUG LOG: [03-21 19:29:27.695] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:27.695 25867 25885 I DEBUG LOG: [03-21 19:29:27.695] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:27.695 25867 25885 I DEBUG LOG: [03-21 19:29:27.695] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:27.695 25867 25885 I DEBUG LOG: [03-21 19:29:27.695] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x30 send end
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:27.989 25867 25885 I DEBUG LOG: [03-21 19:29:27.989] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.334 25867 25885 I DEBUG LOG: [03-21 19:29:28.334] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.334 25867 25885 I DEBUG LOG: [03-21 19:29:28.334] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.334 25867 25885 I DEBUG LOG: [03-21 19:29:28.334] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.334 25867 25885 I DEBUG LOG: [03-21 19:29:28.334] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.335 25867 25885 I DEBUG LOG: [03-21 19:29:28.335] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.337 25867 25885 I DEBUG LOG: [03-21 19:29:28.337] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 26 00 04 00 30 00 00 01 01 00 00 00 00 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:28.337 25867 25885 I DEBUG LOG: [03-21 19:29:28.337] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x30,total length:38,cur get data length:38
+03-21 19:29:28.337 25867 25885 I DEBUG LOG: [03-21 19:29:28.337] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:1(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2) cmd pack cout:1
+03-21 19:29:28.337 25867 25885 I DEBUG LOG: [03-21 19:29:28.337] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:1 cur:13 all:1021
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x30 vserion: 0x1 complete,length:38
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 48,is reply
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 1,PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2,raw raw length = 27,data_start_offset = 0,head_size = 13,data_size = 0
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_health_resolve_spo2.c] [protocol_v3_health_client_data_cb_handle] [line 44] v3 health spo2(data type:1) cb handle data length:13 start time:0 data size:0
+03-21 19:29:28.338 25867 25885 I DEBUG LOG: [03-21 19:29:28.338] [protocol_v3_health_resolve_spo2.c] [protocol_v3_health_client_data_cb_handle] [line 59] get_now_items_count = 0, start_time = 0
+03-21 19:29:28.339 25867 25885 I DEBUG LOG: [03-21 19:29:28.339] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7001 err code:0
+03-21 19:29:28.339 25867 25885 I DEBUG LOG: [03-21 19:29:28.339] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.339 25867 25885 I DEBUG LOG: [03-21 19:29:28.339] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:1(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2),data_start_offset:0,item_count:0,data_size: 0,is_today:1.have next:0,count_err_time: 0
+03-21 19:29:28.339 25867 25885 I DEBUG LOG: [03-21 19:29:28.339] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:1
+03-21 19:29:28.340 25867 25885 I DEBUG LOG: [03-21 19:29:28.339] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:1(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2) operate:1(stop) offset:0
+03-21 19:29:28.340 25867 25885 I DEBUG LOG: [03-21 19:29:28.340] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.340 25867 25885 I DEBUG LOG: [03-21 19:29:28.340] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x31 send queue cout=1
+03-21 19:29:28.340 25867 25885 I DEBUG LOG: [03-21 19:29:28.340] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x31
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 31 00 01 01 01 00 00 E5 F3 
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.341 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.342 25867 25885 I DEBUG LOG: [03-21 19:29:28.341] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.342 25867 25885 I DEBUG LOG: [03-21 19:29:28.342] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.342 25867 25885 I DEBUG LOG: [03-21 19:29:28.342] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.342 25867 25885 I DEBUG LOG: [03-21 19:29:28.342] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x31 send end
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.423 25867 25885 I DEBUG LOG: [03-21 19:29:28.423] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 31 00 01 01 01 00 00 00 00 0D 00 00 00 00 00 00 
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x31,total length:25,cur get data length:25
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:1 cur:13 all:1021
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x31 vserion: 0x1 complete,length:25
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 49,is reply
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 1,PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2,raw raw length = 14,data_start_offset = 0,head_size = 13,data_size = 0
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:1(PROTOCOL_V3_HEALTH_DATA_TYPE_SPO2),item_count:0,is_today:1,have next: 0
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:0(spo2) is today:1 is day type data not next same data tp data,rec end
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [get_sync_offset] [line 431] get_sync_offset index = 2,activity
+03-21 19:29:28.427 25867 25885 I DEBUG LOG: [03-21 19:29:28.427] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:2(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE) operate:0(start) offset:0
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x32 send queue cout=1
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x32
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 32 00 00 02 01 00 00 EA 1A 
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.428 25867 25885 I DEBUG LOG: [03-21 19:29:28.428] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x32 send end
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.554 25867 25885 I DEBUG LOG: [03-21 19:29:28.554] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.556 25867 25885 I DEBUG LOG: [03-21 19:29:28.556] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 26 00 04 00 32 00 00 02 01 00 00 00 00 0D 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:28.556 25867 25885 I DEBUG LOG: [03-21 19:29:28.556] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x32,total length:38,cur get data length:38
+03-21 19:29:28.556 25867 25885 I DEBUG LOG: [03-21 19:29:28.556] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:2(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE) cmd pack cout:1
+03-21 19:29:28.556 25867 25885 I DEBUG LOG: [03-21 19:29:28.556] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:28.557 25867 25885 I DEBUG LOG: [03-21 19:29:28.557] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:28.557 25867 25885 I DEBUG LOG: [03-21 19:29:28.557] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.557 25867 25885 I DEBUG LOG: [03-21 19:29:28.557] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.557 25867 25885 I DEBUG LOG: [03-21 19:29:28.557] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:2 cur:26 all:1021
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x32 vserion: 0x1 complete,length:38
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 50,is reply
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 2,PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE,raw raw length = 27,data_start_offset = 0,head_size = 13,data_size = 0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_resolve_pressure.c] [protocol_v3_health_pressure_data_cb_handle] [line 42] v3 health pressure(data type:2) cb handle data length:13 start time:0 data size:0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_resolve_pressure.c] [protocol_v3_health_pressure_data_cb_handle] [line 55] get_now_items_count = 0, start_time = 0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7002 err code:0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:2(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE),data_start_offset:0,item_count:0,data_size: 0,is_today:1.have next:0,count_err_time: 0
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:2
+03-21 19:29:28.558 25867 25885 I DEBUG LOG: [03-21 19:29:28.558] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:2(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE) operate:1(stop) offset:0
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x33 send queue cout=1
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x33
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.559 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 33 00 01 02 01 00 00 DA 08 
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.559] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.560 25867 25885 I DEBUG LOG: [03-21 19:29:28.560] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x33 send end
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.630 25867 25885 I DEBUG LOG: [03-21 19:29:28.630] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 33 00 01 02 01 00 00 00 00 0D 00 00 00 00 00 00 
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x33,total length:25,cur get data length:25
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:2 cur:26 all:1021
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x33 vserion: 0x1 complete,length:25
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 51,is reply
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 2,PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE,raw raw length = 14,data_start_offset = 0,head_size = 13,data_size = 0
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:2(PROTOCOL_V3_HEALTH_DATA_TYPE_PRESSURE),item_count:0,is_today:1,have next: 0
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:1(pressure) is today:1 is day type data not next same data tp data,rec end
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:4(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY) operate:0(start) offset:0
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.634 25867 25885 I DEBUG LOG: [03-21 19:29:28.634] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x34 send queue cout=1
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x34
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 34 00 00 04 00 00 00 66 AB 
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.635 25867 25885 I DEBUG LOG: [03-21 19:29:28.635] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x34 send end
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.692 25867 25885 I DEBUG LOG: [03-21 19:29:28.692] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 65 00 04 00 34 00 00 04 00 00 00 00 00 4C 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x34,total length:101,cur get data length:101
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:4(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY) cmd pack cout:1
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.698 25867 25885 I DEBUG LOG: [03-21 19:29:28.698] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:9 cur:102 all:1021
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x34 vserion: 0x1 complete,length:101
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 52,is reply
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 4,PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY,raw raw length = 90,data_start_offset = 0,head_size = 76,data_size = 0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 977] v3 health activity data cb version = 0x0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1005] protocol_v3_health_resolve_activity_data_cb_handle 0-0-0 0:0:0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1008] item_hr_count  = 0，getData->activity_data_item_count = 0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1036] count_num = 0, activity_data_item_count = 0, length = 76,base_len = 76
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1069] km_speed_get = 0, km_speed_count = 0 
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1083] frequency_count_get = 0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [protocol_v3_health_resolve_activity.c] [protocol_v3_health_client_data_cb_handle] [line 1107] mi_count_get = 0
+03-21 19:29:28.699 25867 25885 I DEBUG LOG: [03-21 19:29:28.699] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7004 err code:0
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:4(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY),data_start_offset:0,item_count:0,data_size: 0,is_today:0.have next:0,count_err_time: 0
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:4
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:4(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY) operate:1(stop) offset:0
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.700 25867 25885 I DEBUG LOG: [03-21 19:29:28.700] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x35 send queue cout=1
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x35
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 35 00 01 04 00 00 00 56 B9 
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.701 25867 25885 I DEBUG LOG: [03-21 19:29:28.701] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x35 send end
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.779 25867 25885 I DEBUG LOG: [03-21 19:29:28.779] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 35 00 01 04 00 00 00 00 00 4C 00 00 00 00 00 00 
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x35,total length:25,cur get data length:25
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:9 cur:102 all:1021
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x35 vserion: 0x1 complete,length:25
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 53,is reply
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 4,PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY,raw raw length = 14,data_start_offset = 0,head_size = 76,data_size = 0
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:4(PROTOCOL_V3_HEALTH_DATA_TYPE_ACTIVITY),item_count:0,is_today:0,have next: 0
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:2(activity) is today:0 is cout type data not next same data tp data,rec end
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:6(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM) operate:0(start) offset:0
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x36 send queue cout=1
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x36
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 36 00 00 06 00 00 00 ED 26 
+03-21 19:29:28.785 25867 25885 I DEBUG LOG: [03-21 19:29:28.785] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.786 25867 25885 I DEBUG LOG: [03-21 19:29:28.786] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.786 25867 25885 I DEBUG LOG: [03-21 19:29:28.786] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.786 25867 25885 I DEBUG LOG: [03-21 19:29:28.786] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.786 25867 25885 I DEBUG LOG: [03-21 19:29:28.786] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.786 25867 25885 I DEBUG LOG: [03-21 19:29:28.786] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x36 send end
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.866 25867 25885 I DEBUG LOG: [03-21 19:29:28.866] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 3B 00 04 00 36 00 00 06 00 00 00 00 00 22 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x36,total length:59,cur get data length:59
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:6(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM) cmd pack cout:1
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:13 cur:136 all:1021
+03-21 19:29:28.868 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x36 vserion: 0x1 complete,length:59
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.868] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 54,is reply
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 6,PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM,raw raw length = 48,data_start_offset = 0,head_size = 34,data_size = 0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_resolve_swimming.c] [protocol_v3_health_client_data_cb_handle] [line 340] v3 health swim(data type:6) cb handle data length:34 version:0x1 data size:0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_resolve_swimming.c] [protocol_lift_struct_resolve] [line 50] err:date empty,skip
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:6(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM),data_start_offset:0,item_count:0,data_size: 0,is_today:0.have next:0,count_err_time: 0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:6
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:6(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM) operate:1(stop) offset:0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x37 send queue cout=1
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x37
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 37 00 01 06 00 00 00 DD 34 
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.869 25867 25885 I DEBUG LOG: [03-21 19:29:28.869] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x37 send end
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.925 25867 25885 I DEBUG LOG: [03-21 19:29:28.925] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.926 25867 25885 I DEBUG LOG: [03-21 19:29:28.926] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 37 00 01 06 00 00 00 00 00 22 00 00 00 00 00 00 
+03-21 19:29:28.926 25867 25885 I DEBUG LOG: [03-21 19:29:28.926] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x37,total length:25,cur get data length:25
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:13 cur:136 all:1021
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x37 vserion: 0x1 complete,length:25
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 55,is reply
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 6,PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM,raw raw length = 14,data_start_offset = 0,head_size = 34,data_size = 0
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:6(PROTOCOL_V3_HEALTH_DATA_TYPE_SWIM),item_count:0,is_today:0,have next: 0
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:4(swim) is today:0 is cout type data not next same data tp data,rec end
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:7(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP) operate:0(start) offset:0
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x38 send queue cout=1
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x38
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 38 00 00 07 00 00 00 D1 62 
+03-21 19:29:28.927 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.928 25867 25885 I DEBUG LOG: [03-21 19:29:28.927] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.928 25867 25885 I DEBUG LOG: [03-21 19:29:28.928] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.928 25867 25885 I DEBUG LOG: [03-21 19:29:28.928] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.928 25867 25885 I DEBUG LOG: [03-21 19:29:28.928] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.928 25867 25885 I DEBUG LOG: [03-21 19:29:28.928] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.987 25867 25885 I DEBUG LOG: [03-21 19:29:28.987] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.987 25867 25885 I DEBUG LOG: [03-21 19:29:28.987] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.987 25867 25885 I DEBUG LOG: [03-21 19:29:28.987] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:28.987 25867 25885 I DEBUG LOG: [03-21 19:29:28.987] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x38 send end
+03-21 19:29:28.988 25867 25885 I DEBUG LOG: [03-21 19:29:28.988] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:28.988 25867 25885 I DEBUG LOG: [03-21 19:29:28.988] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:28.988 25867 25885 I DEBUG LOG: [03-21 19:29:28.988] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:28.988 25867 25885 I DEBUG LOG: [03-21 19:29:28.988] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 41 00 04 00 38 00 00 07 00 00 00 00 00 28 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x38,total length:65,cur get data length:65
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:7(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP) cmd pack cout:1
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:28.990 25867 25885 I DEBUG LOG: [03-21 19:29:28.990] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:17 cur:176 all:1021
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x38 vserion: 0x1 complete,length:65
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 56,is reply
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 7,PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP,raw raw length = 54,data_start_offset = 0,head_size = 40,data_size = 0
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_resolve_sleep.c] [protocol_v3_health_client_data_cb_handle] [line 21] v3 health sleep(data type:7) cb handle data length:40 version:0x0 item cout:0
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7007 err code:0
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:7(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP),data_start_offset:0,item_count:0,data_size: 0,is_today:0.have next:0,count_err_time: 0
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:7
+03-21 19:29:28.991 25867 25885 I DEBUG LOG: [03-21 19:29:28.991] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:7(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP) operate:1(stop) offset:0
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x39 send queue cout=1
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x39
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 39 00 01 07 00 00 00 E1 70 
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:28.992 25867 25885 I DEBUG LOG: [03-21 19:29:28.992] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x39 send end
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.050 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.051 25867 25885 I DEBUG LOG: [03-21 19:29:29.050] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.055 25867 25885 I DEBUG LOG: [03-21 19:29:29.055] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 39 00 01 07 00 00 00 00 00 28 00 00 00 00 00 00 
+03-21 19:29:29.055 25867 25885 I DEBUG LOG: [03-21 19:29:29.055] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x39,total length:25,cur get data length:25
+03-21 19:29:29.055 25867 25885 I DEBUG LOG: [03-21 19:29:29.055] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.055 25867 25885 I DEBUG LOG: [03-21 19:29:29.055] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.055 25867 25885 I DEBUG LOG: [03-21 19:29:29.055] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:17 cur:176 all:1021
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x39 vserion: 0x1 complete,length:25
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 57,is reply
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:29.057 25867 25885 I DEBUG LOG: [03-21 19:29:29.057] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 7,PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP,raw raw length = 14,data_start_offset = 0,head_size = 40,data_size = 0
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:7(PROTOCOL_V3_HEALTH_DATA_TYPE_SLEEP),item_count:0,is_today:0,have next: 0
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:5(sleep) is today:0 is cout type data not next same data tp data,rec end
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [get_sync_offset] [line 431] get_sync_offset index = 8,temperature
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:8(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT) operate:0(start) offset:78
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x3A send queue cout=1
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x3A
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 3A 00 00 08 01 4E 00 2F CF 
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:29.058 25867 25885 I DEBUG LOG: [03-21 19:29:29.058] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x3A send end
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.110 25867 25885 I DEBUG LOG: [03-21 19:29:29.110] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 49 03 04 00 3A 00 00 08 01 00 00 4E 00 24 00 0C 03 00 00 00 00 EA 07 03 15 00 00 0F 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 4E 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:136
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:8(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT) cmd pack cout:7
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:29.113 25867 25885 I DEBUG LOG: [03-21 19:29:29.113] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.114 25867 25885 I DEBUG LOG: [03-21 19:29:29.114] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.114 25867 25885 I DEBUG LOG: [03-21 19:29:29.114] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.114 25867 25885 I DEBUG LOG: [03-21 19:29:29.114] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:28 cur:287 all:1021
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:272
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.120 25867 25885 I DEBUG LOG: [03-21 19:29:29.120] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:41 cur:423 all:1021
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:408
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.127 25867 25885 I DEBUG LOG: [03-21 19:29:29.127] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:54 cur:559 all:1021
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:544
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.128 25867 25885 I DEBUG LOG: [03-21 19:29:29.128] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:68 cur:695 all:1021
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:680
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.137 25867 25885 I DEBUG LOG: [03-21 19:29:29.137] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:81 cur:831 all:1021
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:816
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:94 cur:967 all:1021
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol.c] [protocol_receive_data] [line 469] RX : 33 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3A,total length:841,cur get data length:841
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:97 cur:992 all:1021
+03-21 19:29:29.140 25867 27772 I DEBUG LOG: [03-21 19:29:29.140] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x3A vserion: 0x1 complete,length:841
+03-21 19:29:29.141 25867 27772 I DEBUG LOG: [03-21 19:29:29.141] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 58,is reply
+03-21 19:29:29.141 25867 27772 I DEBUG LOG: [03-21 19:29:29.141] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.141 25867 27772 I DEBUG LOG: [03-21 19:29:29.141] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:29.141 25867 27772 I DEBUG LOG: [03-21 19:29:29.141] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 8,PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT,raw raw length = 830,data_start_offset = 0,head_size = 36,data_size = 780
+03-21 19:29:29.141 25867 27772 I DEBUG LOG: [03-21 19:29:29.141] [protocol_v3_health_resolve_sport.c] [protocol_v3_health_sports_data_cb_handle] [line 105] v3 health sport(data type:8) cb handle data length:816 start time:0 version:0x0 item cout:78
+03-21 19:29:29.147 25867 27772 I DEBUG LOG: [03-21 19:29:29.147] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7008 err code:0
+03-21 19:29:29.148 25867 27772 I DEBUG LOG: [03-21 19:29:29.148] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:29.148 25867 27772 I DEBUG LOG: [03-21 19:29:29.148] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:8(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT),data_start_offset:0,item_count:78,data_size: 780,is_today:1.have next:0,count_err_time: 0
+03-21 19:29:29.148 25867 27772 I DEBUG LOG: [03-21 19:29:29.148] [protocol_v3_health_client.c] [set_sync_offset] [line 414] set_sync_offset index = 8,temperature,offset = 78
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:8
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:8(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT) operate:1(stop) offset:0
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x3B send queue cout=1
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x3B
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 3B 00 01 08 01 00 00 DC F3 
+03-21 19:29:29.149 25867 27772 I DEBUG LOG: [03-21 19:29:29.149] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.150 25867 27772 I DEBUG LOG: [03-21 19:29:29.150] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.231 25867 27772 I DEBUG LOG: [03-21 19:29:29.231] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.231 25867 27772 I DEBUG LOG: [03-21 19:29:29.231] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.231] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x3B send end
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.232 25867 27772 I DEBUG LOG: [03-21 19:29:29.232] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 3B 00 01 08 01 00 00 4E 00 24 00 00 00 00 00 00 
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3B,total length:25,cur get data length:25
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:97 cur:992 all:1021
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x3B vserion: 0x1 complete,length:25
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 59,is reply
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 8,PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT,raw raw length = 14,data_start_offset = 0,head_size = 36,data_size = 0
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:8(PROTOCOL_V3_HEALTH_DATA_TYPE_SPORT),item_count:78,is_today:1,have next: 0
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:6(sports) is today:1 is day type data not next same data tp data,rec end
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [process_sync_complete] [line 723] sync next
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [get_sync_offset] [line 431] get_sync_offset index = 3,gps
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:3(PROTOCOL_V3_HEALTH_CMD_TYPE_HR) operate:0(start) offset:0
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x3C send queue cout=1
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x3C
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 3C 00 00 03 01 00 00 D6 5E 
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:29.233 25867 27772 I DEBUG LOG: [03-21 19:29:29.233] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x3C send end
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.350 25867 27772 I DEBUG LOG: [03-21 19:29:29.350] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 36 00 04 00 3C 00 00 03 01 00 00 00 00 1D 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3C,total length:54,cur get data length:54
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [protocol_v3.c] [protocol_v3_deal_each_head] [line 296] v3 health data type:3(PROTOCOL_V3_HEALTH_CMD_TYPE_HR) cmd pack cout:1
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:5026
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:5026 err code:0
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:99 cur:1021 all:1021
+03-21 19:29:29.357 25867 27772 I DEBUG LOG: [03-21 19:29:29.357] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x3C vserion: 0x1 complete,length:54
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 60,is reply
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 3,PROTOCOL_V3_HEALTH_CMD_TYPE_HR,raw raw length = 43,data_start_offset = 0,head_size = 29,data_size = 0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_resolve_heart_rate.c] [protocol_v3_health_client_data_cb_handle] [line 311] v3 health sports(data type:3) cb handle data length:29 start time:0 data size:0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_resolve_heart_rate.c] [protocol_v3_health_client_data_cb_handle] [line 324] length = 29,get_item_len=0,get_now_items_count = 0, start_time = 0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:7003 err code:0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_client.c] [process_sync_complete] [line 653] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_START,data_type:3(PROTOCOL_V3_HEALTH_CMD_TYPE_HR),data_start_offset:0,item_count:0,data_size: 0,is_today:1.have next:0,count_err_time: 0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_client.c] [write_sync_stop_cmd] [line 989] write sync stop cmd type:3
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_health_client.c] [client_sync] [line 944] sync v3 health data type:3(PROTOCOL_V3_HEALTH_CMD_TYPE_HR) operate:1(stop) offset:0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 360] free ptr:tmp & queue_data
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_queue.c] [protocol_v3_queue_write_ex] [line 362] v3 protocol add queue cmd id=0x4 nseq=0x3D send queue cout=1
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3_queue.c] [send_packet] [line 193] v3 protocol send packet cmd id=0x4 nseq=0x3D
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:0
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [protocol.c] [protocol_write_data] [line 235]   TX : 33 DA AD DA AD 01 10 00 04 00 3D 00 01 03 01 00 00 E6 4C 
+03-21 19:29:29.358 25867 27772 I DEBUG LOG: [03-21 19:29:29.358] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:19
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 29 ms = 1500
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [protocol_v3_queue.c] [send_packet] [line 208] v3 write data rel:0,free send buff
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 30 ms = 5000
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [protocol_v3_queue.c] [process_queue] [line 265] free queue_data
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.359 25867 27772 I DEBUG LOG: [03-21 19:29:29.359] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [protocol_v3.c] [process_tx_buff] [line 88] v3 protocol write complete
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [protocol_v3.c] [process_tx_buff] [line 102] send data buff length:18,offset:18
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [protocol_v3.c] [send_end] [line 67] protocol cmd id:0x4 nseq:0x3D send end
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.446 25867 27772 I DEBUG LOG: [03-21 19:29:29.446] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol.c] [protocol_receive_data] [line 469] RX : 33 DA AD DA AD 01 19 00 04 00 3D 00 01 03 01 00 00 00 00 1D 00 00 00 00 00 00 
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3.c] [protocol_v3_exec] [line 394] rec v3 protocol cmd id:0x4,nseq:0x3D,total length:25,cur get data length:25
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 33 ms = 10000
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [protocol_v3_rx_data_status_cb_handle] [line 1236] sync progress:99 cur:1021 all:1021
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_queue.c] [protocol_v3_rx_data_cb_handle] [line 109] rec v3 protocol cmd id:0x4 nseq:0x3D vserion: 0x1 complete,length:25
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_queue.c] [cmd_reply_process] [line 86] cmd 0x4,nseq = 61,is reply
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 30
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_queue.c] [process_queue] [line 269] warn:   queue is empty
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 738] health data rec exec, data_type = 3,PROTOCOL_V3_HEALTH_CMD_TYPE_HR,raw raw length = 14,data_start_offset = 0,head_size = 29,data_size = 0
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [protocol_v3_queue_cmd_evt_handle] [line 759] ret = 0
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [process_sync_complete] [line 698] next sync_operate:PROTOCOL_V3_HEALTH_OPERATE_STOP,data_type:3(PROTOCOL_V3_HEALTH_CMD_TYPE_HR),item_count:0,is_today:1,have next: 0
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [sync_once_end] [line 594] sync one end:sync_index:20(hr) is today:1 is day type data not next same data tp data,rec end
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 32 ms = 120000
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [process_sync_complete] [line 706] sync success
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:19
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [protocol_v3_health_client.c] [protocol_v3_health_client_sync_stop] [line 1107] stop sync v3 health info
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 34
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 31
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 32
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 33
+03-21 19:29:29.447 25867 27772 I DEBUG LOG: [03-21 19:29:29.447] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:18
+03-21 19:29:29.465 25867 25867 I DEBUG LOG: [03-21 19:29:29.465] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:29.466 25867 25867 I DEBUG LOG: [03-21 19:29:29.466] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:29.466 25867 25867 I DEBUG LOG: [03-21 19:29:29.466] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:29.466 25867 25867 I DEBUG LOG: [03-21 19:29:29.466] [protocol.c] [protocol_write_data] [line 235]   TX : 03 35 02 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.466 25867 25867 I DEBUG LOG: [03-21 19:29:29.466] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:12
+03-21 19:29:29.466 25867 25867 I DEBUG LOG: [03-21 19:29:29.466] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:29.533 25867 27772 I DEBUG LOG: [03-21 19:29:29.533] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:29.533 25867 27772 I DEBUG LOG: [03-21 19:29:29.533] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:29.533 25867 27772 I DEBUG LOG: [03-21 19:29:29.533] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:29.533 25867 27772 I DEBUG LOG: [03-21 19:29:29.533] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:29.538 25867 27772 I DEBUG LOG: [03-21 19:29:29.538] [protocol.c] [protocol_receive_data] [line 469] RX : 03 35 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:29.538 25867 27772 I DEBUG LOG: [03-21 19:29:29.538] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:29.538 25867 27772 I DEBUG LOG: [03-21 19:29:29.538] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:29.538 25867 27772 I DEBUG LOG: [03-21 19:29:29.538] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:157
+03-21 19:29:29.538 25867 27772 I DEBUG LOG: [03-21 19:29:29.538] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:157 err code:0
+03-21 19:29:30.546 25867 25867 I DEBUG LOG: [03-21 19:29:30.546] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:30.548 25867 25867 I DEBUG LOG: [03-21 19:29:30.548] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:30.548 25867 25867 I DEBUG LOG: [03-21 19:29:30.548] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:30.548 25867 25867 I DEBUG LOG: [03-21 19:29:30.548] [protocol.c] [protocol_write_data] [line 235]   TX : 03 35 02 00 00 00 00 00 00 00 00 00 
+03-21 19:29:30.548 25867 25867 I DEBUG LOG: [03-21 19:29:30.548] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:12
+03-21 19:29:30.548 25867 25867 I DEBUG LOG: [03-21 19:29:30.548] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:31.030 25867 27772 I DEBUG LOG: [03-21 19:29:31.030] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:31.030 25867 27772 I DEBUG LOG: [03-21 19:29:31.030] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:31.030 25867 27772 I DEBUG LOG: [03-21 19:29:31.030] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:31.030 25867 27772 I DEBUG LOG: [03-21 19:29:31.030] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:31.036 25867 27772 I DEBUG LOG: [03-21 19:29:31.036] [protocol.c] [protocol_receive_data] [line 469] RX : 03 35 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:31.036 25867 27772 I DEBUG LOG: [03-21 19:29:31.036] [protocol_write.c] [protocol_write_vbus_control] [line 1293] stop resend evt:157(VBUS_EVT_APP_SET_CONN_PARAM)
+03-21 19:29:31.036 25867 27772 I DEBUG LOG: [03-21 19:29:31.036] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 0
+03-21 19:29:31.036 25867 27772 I DEBUG LOG: [03-21 19:29:31.036] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:157
+03-21 19:29:31.038 25867 27772 I DEBUG LOG: [03-21 19:29:31.038] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:157 err code:0
+03-21 19:29:31.137 25867 25867 I DEBUG LOG: [03-21 19:29:31.137] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:104(VBUS_EVT_APP_SET_TIME)
+03-21 19:29:31.138 25867 25867 I DEBUG LOG: [03-21 19:29:31.138] [protocol.c] [protocol_write_data] [line 235]   TX : 03 01 EA 07 03 15 13 1D 1F 05 00 00 00 00 00 00 
+03-21 19:29:31.138 25867 25867 I DEBUG LOG: [03-21 19:29:31.138] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:16
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_SysEvtSet] [line 266] api sysEvtSet,intput evt base:VBUS_EVT_BASE_APP_GET evt:422
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:422(422)
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [protocol_write.c] [protocol_write_process] [line 108] mem_pop is success
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [protocol.c] [protocol_write_data] [line 235]   TX : 02 08 
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:2
+03-21 19:29:31.150 25867 25867 I DEBUG LOG: [03-21 19:29:31.150] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:31.172 25867 25867 I DEBUG LOG: [03-21 19:29:31.172] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_SysEvtSet] [line 266] api sysEvtSet,intput evt base:VBUS_EVT_BASE_APP_GET evt:VBUS_EVT_APP_GET_DEVICE_INFO
+03-21 19:29:31.172 25867 25867 I DEBUG LOG: [03-21 19:29:31.172] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:301(VBUS_EVT_APP_GET_DEVICE_INFO)
+03-21 19:29:31.172 25867 25867 I DEBUG LOG: [03-21 19:29:31.172] [protocol_write.c] [protocol_write_process] [line 102] warn:queue cmd 0x2 0x8 not reply yet add queue to send failed,queue list size:1
+03-21 19:29:31.211 25867 25867 I DEBUG LOG: [03-21 19:29:31.211] [jni_protocol.cpp] [Java_com_veryfit_multi_nativeprotocol_Protocol_WriteJsonData] [line 612] app send protocol evt:322(VBUS_EVT_APP_GET_FLASH_BIN_INFO)
+03-21 19:29:31.212 25867 25867 I DEBUG LOG: [03-21 19:29:31.212] [protocol_write.c] [protocol_write_data_add] [line 236] add queue to send evt:322(VBUS_EVT_APP_GET_FLASH_BIN_INFO)
+03-21 19:29:31.212 25867 25867 I DEBUG LOG: [03-21 19:29:31.212] [protocol_write.c] [protocol_write_process] [line 102] warn:queue cmd 0x2 0x8 not reply yet add queue to send failed,queue list size:2
+03-21 19:29:31.513 25867 27772 I DEBUG LOG: [03-21 19:29:31.513] [protocol.c] [protocol_receive_data] [line 469] RX : 03 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 
+03-21 19:29:31.513 25867 27772 I DEBUG LOG: [03-21 19:29:31.513] [jni_protocol.cpp] [jni_notice_app_evt] [line 436] jni send evt notice to app evt type:104
+03-21 19:29:31.519 25867 27772 I DEBUG LOG: [03-21 19:29:31.519] [jni_json_data_transfer.cpp] [jni_json_data_transfer_callback_data] [line 33] jni json callback to app evt:104 err code:0
+03-21 19:29:31.536 25867 27772 I DEBUG LOG: [03-21 19:29:31.536] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:31.537 25867 27772 I DEBUG LOG: [03-21 19:29:31.537] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:31.537 25867 27772 I DEBUG LOG: [03-21 19:29:31.537] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:31.537 25867 27772 I DEBUG LOG: [03-21 19:29:31.537] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:31.839 25867 27772 I DEBUG LOG: [03-21 19:29:31.839] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:31.840 25867 27772 I DEBUG LOG: [03-21 19:29:31.840] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:31.840 25867 27772 I DEBUG LOG: [03-21 19:29:31.840] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:31.840 25867 27772 I DEBUG LOG: [03-21 19:29:31.840] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:34.153 25867 25936 I DEBUG LOG: [03-21 19:29:34.153] [jni_timer.cpp] [jni_timer_handle] [line 50] jni timer handle int:0
+03-21 19:29:34.153 25867 25936 I DEBUG LOG: [03-21 19:29:34.153] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:34.153 25867 25936 I DEBUG LOG: [03-21 19:29:34.153] [protocol_write.c] [send_timer_handle] [line 161] warn:evt:422,cmd 0x2 0x8 response timeout,resend(resend time:1)
+03-21 19:29:34.153 25867 25936 I DEBUG LOG: [03-21 19:29:34.153] [protocol.c] [protocol_write_data] [line 235]   TX : 02 08 
+03-21 19:29:34.153 25867 25936 I DEBUG LOG: [03-21 19:29:34.153] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:2
+03-21 19:29:35.184 25867 27772 I DEBUG LOG: [03-21 19:29:35.184] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:35.184 25867 27772 I DEBUG LOG: [03-21 19:29:35.184] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:35.184 25867 27772 I DEBUG LOG: [03-21 19:29:35.184] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:35.184 25867 27772 I DEBUG LOG: [03-21 19:29:35.184] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11
+03-21 19:29:37.154 25867 25936 I DEBUG LOG: [03-21 19:29:37.153] [jni_timer.cpp] [jni_timer_handle] [line 50] jni timer handle int:0
+03-21 19:29:37.154 25867 25936 I DEBUG LOG: [03-21 19:29:37.154] [jni_timer.cpp] [jni_timer_start] [line 91] jni timer statr id = 0 ms = 3000
+03-21 19:29:37.154 25867 25936 I DEBUG LOG: [03-21 19:29:37.154] [protocol_write.c] [send_timer_handle] [line 161] warn:evt:422,cmd 0x2 0x8 response timeout,resend(resend time:2)
+03-21 19:29:37.154 25867 25936 I DEBUG LOG: [03-21 19:29:37.154] [protocol.c] [protocol_write_data] [line 235]   TX : 02 08 
+03-21 19:29:37.154 25867 25936 I DEBUG LOG: [03-21 19:29:37.154] [jni_protocol.cpp] [jni_notice_app_tx_data] [line 345] jni send tx data to app data len:2
+03-21 19:29:38.073 25867 27772 I DEBUG LOG: [03-21 19:29:38.073] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 29
+03-21 19:29:38.073 25867 27772 I DEBUG LOG: [03-21 19:29:38.073] [voice_file_tran_to_ble.c] [clean_state] [line 138] clean alexa voice tran state
+03-21 19:29:38.073 25867 27772 I DEBUG LOG: [03-21 19:29:38.073] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 10
+03-21 19:29:38.073 25867 27772 I DEBUG LOG: [03-21 19:29:38.073] [jni_timer.cpp] [jni_timer_stop] [line 127] jni timer stop id = 11

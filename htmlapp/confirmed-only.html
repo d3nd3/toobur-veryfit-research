@@ -703,6 +703,14 @@
     </div>
 
     <div class="section">
+        <h2>LEGACY HEALTH (cmd 0x08 — 0x0AF1 / 0x0AF2)</h2>
+        <p class="subsection-note">ID115 / Gadgetbridge <code>FetchActivityOperation</code> path: TX on <strong>write 0x0AF1</strong>, RX on <strong>notify 0x0AF2</strong>. Request <strong>08 03 01 00 00</strong>. <strong>Gadgetbridge TOOBUR</strong> does <strong>not</strong> send this (TOOBUR A200 tested: no response). Kept here for protocol experiments only.</p>
+        <div class="btns">
+            <button type="button" data-legacy-health-fetch="1" data-label="legacy_health_fetch_today">Fetch activity today (08 03)</button>
+        </div>
+    </div>
+
+    <div class="section">
         <h2>WEATHER (cmd 0x0A)</h2>
         <p class="subsection-note">Weather payload examples.</p>
         <div class="btns">
@@ -738,12 +746,24 @@
         </div>
 
         <p class="subsection-title">v3 health sizes (get_sync_health_v3.txt)</p>
-        <p class="subsection-note"><strong>Get sizes</strong> = v3 <strong>cmd 0x05</strong>: ask the watch how much health data exists. Then use <strong>cmd 0x04</strong> per data type: <strong>4 = workout/activity records</strong>, <strong>7 = sleep</strong>, <strong>8 = daily sport summary (steps / kcal / distance)</strong>. On this firmware, <strong>type 8</strong> is the useful path for day totals; <strong>type 7</strong> for sleep data.</p>
+        <p class="subsection-note"><strong>Get sizes</strong> = v3 <strong>cmd 0x05</strong> (same as “Get health sizes” below). Then <strong>cmd 0x04</strong> per type — TX bytes match <code>ui_watch_face_write_json.txt</code> / <code>TOOBUR.md</code>. <strong>Day data, save offset 0</strong>: types <strong>0x01</strong> SpO2, <strong>0x02</strong> pressure, <strong>0x03</strong> HR, <strong>0x08</strong> sport summary. <strong>Count data</strong>: <strong>0x04</strong> activity, <strong>0x06</strong> swim, <strong>0x07</strong> sleep (start sync; offset <code>00 00 00</code> in payload).</p>
         <div class="btns">
             <button data-sync-v3="1" data-label="get_sync_health_v3">Get health sizes</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 5B 01 00 04 00 00 00 35 D7" data-label="sync_activity_v3_health">Sync workout record</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 07 01 00 00 F5 05" data-label="sync_sleep_v3_health">Sync sleep</button>
-            <button data-tx="33 DA AD DA AD 01 10 00 04 00 61 01 00 08 01 00 00 F4 05" data-label="sync_sport_v3_health">Sync sport summary</button>
+        </div>
+        <p class="subsection-title">v3 health sync cmd 0x04 (start)</p>
+        <p class="subsection-note">After seq: <code>operate</code> (byte 12), <code>data_type</code> (byte 13), byte 14 from template (often <code>0x01</code> on day types), then <strong>save offset 16-bit LE</strong> at <strong>bytes 15–16</strong> (e.g. sport <code>01 4E 00</code> → offset <strong>78</strong> = <code>4E 00</code>). <strong>Leave empty</strong> for logcat-style defaults: <strong>1</strong> for 0x01–0x03 / 0x08, <strong>0</strong> for 0x04 / 0x06 / 0x07.</p>
+        <div class="form-row form-row-tight">
+            <label for="v3_health_save_offset">Save offset (0–65535, LE at bytes 15–16; empty = logcat per type)</label>
+            <input id="v3_health_save_offset" type="number" min="0" max="65535" class="input-xs" placeholder="empty" title="16-bit LE at bytes 15–16; byte 14 unchanged from template.">
+        </div>
+        <div class="btns">
+            <button type="button" data-v3-health-sync="1" data-label="sync_spo2_v3_health">0x01 SpO2 (day)</button>
+            <button type="button" data-v3-health-sync="2" data-label="sync_pressure_v3_health">0x02 Pressure (day)</button>
+            <button type="button" data-v3-health-sync="3" data-label="sync_hr_v3_health">0x03 HR (day)</button>
+            <button type="button" data-v3-health-sync="4" data-label="sync_activity_v3_health">0x04 Activity (count)</button>
+            <button type="button" data-v3-health-sync="6" data-label="sync_swim_v3_health">0x06 Swim (count)</button>
+            <button type="button" data-v3-health-sync="7" data-label="sync_sleep_v3_health">0x07 Sleep (count)</button>
+            <button type="button" data-v3-health-sync="8" data-label="sync_sport_v3_health">0x08 Sport (day)</button>
             <button id="btnSimulateActivity" data-simulate-activity="1" data-label="simulate_activity">Simulate activity (no device)</button>
         </div>
 
@@ -831,8 +851,13 @@
             const SERVICE_UUID = 0x0AF0;
             const TX_UUID = 0x0AF6;
             const RX_UUID = 0x0AF7;
+            /** Legacy ID115 health bulk sync (FetchActivityOperation) — not the normal command pipe. */
+            const TX_HEALTH_UUID = 0x0AF1;
+            const RX_HEALTH_UUID = 0x0AF2;
             let sendChar = null;
             let rxChar = null;
+            let healthSendChar = null;
+            let healthRxChar = null;
             let getActivityPending = false;
             let expectV3FunctionTable = false;
             let rx_buffer = null;
@@ -1549,6 +1574,13 @@
                     event_log(common.itemCount || common.dataSize
                         ? '[V3 heart rate] items=' + common.itemCount + ' head=' + common.headSize + ' data=' + common.dataSize
                         : 'No stored heart-rate day data in v3 health sync (type 3).');
+                    return;
+                }
+
+                if (common.dataType === 1 || common.dataType === 2 || common.dataType === 6) {
+                    event_log(common.itemCount || common.dataSize
+                        ? '[V3 health] ' + describeV3HealthType(common.dataType) + ' items=' + common.itemCount + ' head=' + common.headSize + ' data=' + common.dataSize
+                        : 'No stored ' + describeV3HealthType(common.dataType).toLowerCase() + ' data in v3 health sync (type ' + common.dataType + ').');
                     return;
                 }
 
@@ -2313,6 +2345,34 @@
                             ' | window=' + windowStr +
                             ' | showInterval=' + showInterval + 's' +
                             ' | raw=' + hex.slice(0, 80));
+                        return;
+                    }
+                    if (h1 === 0xA0 && arr.length >= 19) {
+                        // GET 0x02 0xA0 live data — TOOBUR A200 (see TOOBUR.md; not calories/active_time swap)
+                        const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+                        const steps = view.getUint32(2, true);
+                        const activeMinutes = view.getUint32(6, true);
+                        const distance = view.getUint32(10, true);
+                        const reservedU32 = view.getUint32(14, true);
+                        const hr = arr[18];
+                        console.log('[PARSE] GET 0x02 0xA0 live data | steps=' + steps +
+                            ' | activeMinutes(uptime)=' + activeMinutes +
+                            ' | distance(u32)=' + distance +
+                            ' | reserved_u32=0x' + reservedU32.toString(16) +
+                            ' | HR=' + hr + ' bpm' +
+                            ' | raw=' + hex);
+                        logDataParsing({
+                            Steps: steps,
+                            BPM: hr,
+                            Sports: '—',
+                            Sleep: '—',
+                            kcal: '—',
+                            SPO2: '—',
+                            Relax: '—',
+                            'Blood sugar': '—',
+                            Hydration: '—',
+                            Battery: '—'
+                        });
                         return;
                     }
                     if (h1 === 0xA7) {
@@ -3619,6 +3679,60 @@
                 log('[TX] ' + label + ' (137 B) ' + hex.slice(0, 90) + ' 00 x 109', 'tx');
             }
 
+            /** v3 cmd 0x04 health sync start — byte 12 operate, 13 data_type, 14 from template, 15–16 = 16-bit save offset LE; CRC-16 CCITT over bytes 1..len-3. */
+            const V3_HEALTH_SYNC_CMD04_BASE = {
+                1: '33 DA AD DA AD 01 10 00 04 00 57 01 00 01 01 00 00 2B 0E',
+                2: '33 DA AD DA AD 01 10 00 04 00 59 01 00 02 01 00 00 7F A7',
+                3: '33 DA AD DA AD 01 10 00 04 00 65 01 00 03 01 00 00 2D DA',
+                4: '33 DA AD DA AD 01 10 00 04 00 5B 01 00 04 00 00 00 35 D7',
+                6: '33 DA AD DA AD 01 10 00 04 00 5D 01 00 06 00 00 00 78 9B',
+                7: '33 DA AD DA AD 01 10 00 04 00 5F 01 00 07 00 00 00 2F 8D',
+                8: '33 DA AD DA AD 01 10 00 04 00 61 01 00 08 01 00 00 F4 05'
+            };
+
+            /** Default 16-bit save offset (bytes 15–16 LE) for empty field; byte 14 stays from template. */
+            const V3_HEALTH_LOGCAT_SAVE_OFFSET = { 1: 1, 2: 1, 3: 1, 4: 0, 6: 0, 7: 0, 8: 1 };
+
+            function sendV3HealthSyncCmd04(dataType, label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const baseHex = V3_HEALTH_SYNC_CMD04_BASE[dataType];
+                if (!baseHex) {
+                    log('V3 health sync: unknown data type ' + dataType, 'tx');
+                    return;
+                }
+                const offEl = document.getElementById('v3_health_save_offset');
+                const raw = offEl && typeof offEl.value === 'string' ? offEl.value.trim() : '';
+                let offset;
+                let offsetSource;
+                if (raw === '') {
+                    offset = V3_HEALTH_LOGCAT_SAVE_OFFSET[dataType] != null ? V3_HEALTH_LOGCAT_SAVE_OFFSET[dataType] : 0;
+                    offsetSource = 'logcat default';
+                } else {
+                    offset = parseInt(raw, 10);
+                    if (isNaN(offset) || offset < 0) offset = 0;
+                    offsetSource = 'manual';
+                }
+                offset = Math.min(0xffff, offset);
+                const buf = parseHex(baseHex);
+                if (!buf || buf.length !== 19) {
+                    log('V3 health sync: bad template length', 'tx');
+                    return;
+                }
+                if (buf[13] !== dataType) {
+                    log('V3 health sync: template type mismatch (expected byte 13 = 0x' + dataType.toString(16) + ')', 'tx');
+                }
+                // 16-bit LE save offset at bytes 15–16; byte 14 kept from template (see sync_example: sport 01 4E 00 → offset 78).
+                buf[15] = offset & 0xff;
+                buf[16] = (offset >> 8) & 0xff;
+                const crc = crc16Ccitt(buf, 1, buf.length - 3);
+                buf[buf.length - 2] = crc & 0xff;
+                buf[buf.length - 1] = (crc >> 8) & 0xff;
+                sendChar.writeValue(new Uint8Array(buf));
+                const hexStr = buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' ');
+                log('[TX] ' + label + ' (v3 0x04 type=0x' + dataType.toString(16) + ' save_offset=' + offset + ' ' + offsetSource + ') (' + buf.length + ' B) ' + hexStr, 'tx');
+                event_log('[V3 health sync TX] cmd 0x04 data_type=0x' + dataType.toString(16) + ' save_offset=' + offset + ' (' + offsetSource + ', bytes 15–16 LE)');
+            }
+
             /** Build SET 0x32 brightness packet from form.
              * Layout (matches IDOSetScreenBrightnessInfoBluetoothModel / GET 0x02 0x32):
              * 03 32 [levelValue] [isManual] [mode] [autoAdjustNight] [startHour] [startMinute] [endHour] [endMinute] [nightLevel] [showInterval]
@@ -3681,18 +3795,20 @@
                 if (!ok && bruteForceState.running) {
                     endBruteforceScan('Connection lost; bruteforce stopped.');
                 }
-                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList, .section button.vbus-mapped-btn').forEach(b => b.disabled = !ok);
+                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-v3-health-sync], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], .section button[data-legacy-health-fetch], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList, .section button.vbus-mapped-btn').forEach(b => b.disabled = !ok);
                 document.getElementById('btnConnect').textContent = ok ? 'Disconnect' : 'Connect (0x0AF0)';
                 setBruteforceButtonState(!!(ok && bruteForceState.running));
             }
             loadBruteforceIgnoreList();
 
             document.getElementById('btnConnect').addEventListener('click', function () {
-                if (sendChar) {
+                    if (sendChar) {
                     if (sendChar.service && sendChar.service.device && sendChar.service.device.gatt)
                         sendChar.service.device.gatt.disconnect();
                     sendChar = null;
                     rxChar = null;
+                    healthSendChar = null;
+                    healthRxChar = null;
                     setConnected(false);
                     log('Disconnected.');
                     return;
@@ -3706,11 +3822,15 @@
                     .then(server => server.getPrimaryService(SERVICE_UUID))
                     .then(service => Promise.all([
                         service.getCharacteristic(TX_UUID),
-                        service.getCharacteristic(RX_UUID)
+                        service.getCharacteristic(RX_UUID),
+                        service.getCharacteristic(TX_HEALTH_UUID),
+                        service.getCharacteristic(RX_HEALTH_UUID)
                     ]))
-                    .then(([tx, rx]) => {
+                    .then(([tx, rx, htx, hrx]) => {
                         sendChar = tx;
                         rxChar = rx;
+                        healthSendChar = htx;
+                        healthRxChar = hrx;
                         rxChar.addEventListener('characteristicvaluechanged', function (e) {
                             const arr = new Uint8Array(e.target.value.buffer);
                             const hex = Array.from(arr).map(b => ('0' + b.toString(16)).slice(-2)).join(' ');
@@ -3724,11 +3844,24 @@
                             }
                             parseRx(arr);
                         });
-                        return rxChar.startNotifications();
+                        healthRxChar.addEventListener('characteristicvaluechanged', function (e) {
+                            const arr = new Uint8Array(e.target.value.buffer);
+                            const hex = Array.from(arr).map(b => ('0' + b.toString(16)).slice(-2)).join(' ');
+                            log('[RX health 0x0AF2] ' + arr.length + ' B ' + hex, 'rx');
+                            markBruteforceResponse();
+                            if (handleV3ReplyReassembly(arr)) return;
+                            if (arr.length >= 2 && arr[0] === 0x08 && arr[1] === 0xee) {
+                                event_log('[Legacy 0x08] Transfer finished (08 EE).');
+                            } else if (arr.length >= 2 && arr[0] === 0x08) {
+                                event_log('[Legacy 0x08] Data chunk on health notify (see hex in console).');
+                            }
+                            parseRx(arr);
+                        });
+                        return Promise.all([rxChar.startNotifications(), healthRxChar.startNotifications()]);
                     })
                     .then(() => {
                         setConnected(true);
-                        log('Connected. Notifications on 0x0AF7.');
+                        log('Connected. Notifications on 0x0AF7 (normal) and 0x0AF2 (health).');
                     })
                     .catch(err => {
                         log('Error: ' + err.message);
@@ -3802,6 +3935,14 @@
                         sendMsgFromForm();
                         return;
                     }
+                    if (btn.getAttribute('data-legacy-health-fetch')) {
+                        if (!healthSendChar) { log('Not connected or health characteristic 0x0AF1 missing.'); return; }
+                        const buf = new Uint8Array([0x08, 0x03, 0x01, 0x00, 0x00]);
+                        healthSendChar.writeValue(buf);
+                        log('[TX health 0x0AF1] 08 03 01 00 00 — legacy fetch activity today', 'tx');
+                        event_log('Sent legacy health fetch (08 03 01 00 00). Replies on 0x0AF2; end = 08 EE.');
+                        return;
+                    }
                     if (getActivity) {
                         if (!sendChar) { log('Not connected.'); return; }
                         getActivityPending = true;
@@ -3823,6 +3964,13 @@
                     }
                     if (syncV3) {
                         sendSyncV3Health(label);
+                        return;
+                    }
+                    const v3HealthSyncType = btn.getAttribute('data-v3-health-sync');
+                    if (v3HealthSyncType !== null && v3HealthSyncType !== '') {
+                        const dt = parseInt(v3HealthSyncType, 10);
+                        if (isNaN(dt)) return;
+                        sendV3HealthSyncCmd04(dt, label);
                         return;
                     }
                     if (brightnessSend) {

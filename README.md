@@ -19,6 +19,7 @@ It also builds on the public [idoosmart/idowatch](https://github.com/idoosmart/i
 - Root docs and scripts  
   - [`TOOBUR.md`](TOOBUR.md) – protocol command table, behavior notes, and device compatibility details.
   - [`gadgetbridge_setup.md`](gadgetbridge_setup.md) – **clone, JDK/SDK, compile Gadgetbridge (mainline or Bangle.js flavor), install the APK**, and **run the app while streaming `adb logcat`** (see *Run on the phone and read debug logs at the same time*).
+  - [`GADGETBRIDGE-COLOROS-OPPO.md`](GADGETBRIDGE-COLOROS-OPPO.md) – **optional** ColorOS / OPPO (Android 10, API 29–30) BLE scan + reconnect tuning; **Gadgetbridge → Discovery and pairing** toggle, **default off** (see doc for behavior).
 
 ## Watches using the same protocol
 
@@ -32,15 +33,17 @@ It also builds on the public [idoosmart/idowatch](https://github.com/idoosmart/i
 
 ### Gadgetbridge fork (`gadgetbridge/`) — TOOBUR device support
 
+On **ColorOS / OPPO phones running Android 10 (API 29–30)**, BLE discovery and reconnect can be flaky. This fork adds an **optional** setting (**OEM BLE reconnect enhancements**) under **Gadgetbridge → Discovery and pairing** — **off by default** so stock behavior is unchanged unless you enable it. Full details: **[`GADGETBRIDGE-COLOROS-OPPO.md`](GADGETBRIDGE-COLOROS-OPPO.md)**.
+
 What **works today** (see [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md) for detail):
 
-- **Connection:** BLE service **0x0AF0**; writes **0x0AF6**, notifications **0x0AF7** and **0x0AF2** (health channel enabled for legacy fetch).
-- **Bind (optional):** On each connect, can send VeryFit-style bind start (**`04 01 F1…`**); toggle *Send bind on connect* in device settings.
+- **Connection:** BLE service **0x0AF0**; writes **0x0AF6**, notifications **0x0AF7** and **0x0AF2** (health notify for v3 sync replies).
+- **Bind (optional):** VeryFit-style bind start (**`04 01 F1…`**) is **manual** — device settings → *Send bind start* when you need app pairing (not sent on connect).
 - **Device info & battery:** GET **0x02 0x01** (firmware / device id on card) and **0x02 0x05** (level %, voltage mV, charging state).
 - **Time & basics:** Set time on init + Gadgetbridge sync; wrist side, screen orientation, step goal (ID115 base).
-- **Device settings (Toobur screens):** Music on watch, call/notification alert, DND, **raise-to-wake** (9-byte SET **0x28** per captures), one-key SOS, HR mode (SET **0x25**), realtime HR sensor (SET **0x52**), weather switch — each writes the mapped command when changed.
-- **Actions:** Find phone, find device, music control, alarms (slots), **reboot** (**`F0 01`**).
-- **Activity fetch:** Legacy health transfer (**CMD 0x08** / `FetchActivityOperation`) — **not** full VeryFit v3 health sync (sizes/offsets, multi-type sync) yet.
+- **Device settings (Toobur screens):** Music on watch, call/notification alert, DND, **raise-to-wake** (9-byte SET **0x28** per captures), HR mode (SET **0x25**) + **v3 cmd 0x09** continuous HR interval, weather switch — each writes the mapped command when changed.
+- **Actions:** Find phone, find device, music control, alarms (slots), **reboot** (**`F0 01`**), **shutdown** (**`F0 03`**) via Gadgetbridge power off when supported.
+- **Activity / health sync:** Pull / auto-fetch runs **v3 HR** only (**cmd 0x04** type **0x03**); periodic **v3 cmd 0x05** sizes probes while connected. Legacy ID115 **CMD 0x08** on **0x0AF1** is **not** used (TOOBUR does not respond). **Not** full multi-type v3 persistence yet. See **Sync, intervals & operation** below and [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md).
 
 For **protocol experiments** (many more GET/SET bytes in one place), use **`htmlapp/confirmed-only.html`** in a browser with Web Bluetooth — that panel is **not** the Gadgetbridge app.
 
@@ -48,6 +51,42 @@ For **protocol experiments** (many more GET/SET bytes in one place), use **`html
 
 - **[`TOOBUR.md`](TOOBUR.md)** — command tables, v3 vs legacy, logcat references, watch-face notes.
 - **`packetdumps/logcat/`**, **`bruteforce_results.txt`**, **`scripts/merge_vbus_tx_annotations.py`** — captures and TX labeling.
+
+## Sync, intervals & operation
+
+Two **independent** mechanisms affect how often data is requested: **Gadgetbridge-wide auto fetch** (activity sync hook) and **TOOBUR support code** (battery, v3 health probe, HR swipe timeout). Manual pull / sync in the UI is **not** limited by the global auto-fetch interval.
+
+### Gadgetbridge (global) — auto fetch
+
+| Setting (prefs key) | Role |
+|---------------------|------|
+| *Auto fetch activity data* (`auto_fetch_enabled` / `GBPrefs.PREF_AUTO_FETCH_ENABLED`) | Master switch. |
+| *Minimum time between fetches* (`auto_fetch_interval_limit` / `GBPrefs.PREF_AUTO_FETCH_INTERVAL_LIMIT`) | Minutes between allowed auto fetches **after** a successful trigger. |
+
+- **Trigger:** `GBAutoFetchReceiver` on **`USER_PRESENT`** (typically unlocking the phone). The in-app summary notes this only works sensibly when a **lock screen** is configured.
+- **Debounce:** Ignores further triggers for **2.5 s** after handling one (avoids burst syncs).
+- **Effect:** Calls `GBApplication.deviceService().onFetchRecordedData(RecordedDataTypes.TYPE_SYNC)` so each connected device that supports fetching can run its sync path — this is **separate** from TOOBUR’s internal **30 min** v3 probe below.
+
+Code: `gadgetbridge/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/receivers/GBAutoFetchReceiver.java`.
+
+### TOOBUR-specific (`TooburSupport` and related)
+
+| Constant / pref | Value | Purpose |
+|-----------------|-------|---------|
+| `BATTERY_POLL_INTERVAL_MS` | **15 min** | While connected, repeat GET **0x02 0x05** (battery). One read also runs at connect in `initializeDevice`. |
+| `V3_HEALTH_SIZES_PROBE_INTERVAL_MS` | **30 min** | While connected, repeat VeryFit v3 **cmd 0x05** (“sizes” / health sync prelude). **First** probe is queued on connect together with NOTIFY setup and live-data GETs. |
+| `HR_SWIPE_SYNC_TIMEOUT_MS` | **15 s** | v3 **cmd 0x04** HR pull: if no parsed HR reply, send STOP after this timeout. |
+| `toobur_hr_measurement_interval` (`PREF_TOOBUR_HR_INTERVAL`) | User-defined (seconds) | Continuous HR on the band: v3 **cmd 0x09**; `255` → smart/dynamic on the wire (`0x00FF`). |
+
+**Optional v3 sport probing:** `toobur_v3_health_sport_offset_probe` and `toobur_v3_health_last_sport_probe_total` alter how **cmd 0x05** is built when investigating sport offsets (see `TooburSupport`).
+
+### Connect / sync flow (high level)
+
+1. **BLE:** Enable **0x0AF7** (normal) and **0x0AF2** (health) notifications; v3 frames are written on **0x0AF6**; health notify receives v3 replies.
+2. **First packets:** Time / wrist / orientation / goal; optional bind; battery + device info + live data GETs; **first v3 cmd 0x05** sizes probe; on **first ever** connect, push all TOOBUR SET prefs + HR mode/interval once.
+3. **While connected:** Battery poll every **15 min**; v3 sizes probe every **30 min**; user-initiated sync still goes through Gadgetbridge’s normal fetch path (and is **not** throttled by `auto_fetch_interval_limit`).
+
+For **packet-level** examples (pull vs periodic behavior), see **`packetdumps/logcat/sync_example.txt`**. Feature status and file map: **`gadgetbridge/README_TOOBUR.md`** and **`TOOBUR.md`**.
 
 ## Fork and references
 
