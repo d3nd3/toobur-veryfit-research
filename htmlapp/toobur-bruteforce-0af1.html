@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOBUR — 0x0AF1 channel probe</title>
+    <style>
+        :root { --bg: #0f1419; --panel: #1a2332; --text: #e6edf3; --muted: #8b9cb3; --accent: #3fb950; --warn: #d29922; --hit: #79c0ff; }
+        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1.25rem; line-height: 1.45; max-width: 48rem; }
+        h1 { font-size: 1.3rem; margin-top: 0; }
+        .panel { background: var(--panel); border-radius: 8px; padding: 1rem 1.1rem; margin: 0.75rem 0; border: 1px solid #30363d; }
+        .warn { color: var(--warn); }
+        .ok { color: var(--accent); }
+        .hit { color: var(--hit); font-weight: 600; }
+        button { margin: 0.25rem 0.35rem 0.25rem 0; padding: 0.45rem 0.85rem; border-radius: 6px; border: 1px solid #444; background: #21262d; color: var(--text); cursor: pointer; }
+        button:hover:not(:disabled) { background: #30363d; }
+        button:disabled { opacity: 0.45; cursor: not-allowed; }
+        #log { font-family: ui-monospace, monospace; font-size: 11px; white-space: pre-wrap; max-height: 280px; overflow: auto; background: #0d1117; padding: 0.6rem; border-radius: 6px; color: #7ee787; }
+        code { background: #21262d; padding: 0.1em 0.35em; border-radius: 4px; font-size: 0.9em; }
+        label { display: inline-flex; flex-direction: column; gap: 0.2rem; font-size: 0.85rem; color: var(--muted); margin-right: 0.75rem; margin-bottom: 0.5rem; }
+        input[type="text"], input[type="number"], select { padding: 0.35rem 0.5rem; border-radius: 4px; border: 1px solid #444; background: #0d1117; color: var(--text); }
+        .row { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem; }
+        #status { font-weight: 600; }
+        ul { margin: 0.35rem 0; padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; }
+    </style>
+</head>
+<body>
+    <h1>TOOBUR — Bruteforce / probe <code>0x0AF1</code></h1>
+    <p class="warn"><strong>Chrome + Web Bluetooth.</strong> Serve over HTTP: <code>cd htmlapp && python3 -m http.server 8000</code> → <code>http://localhost:8000/toobur-bruteforce-0af1.html</code></p>
+    <ul>
+        <li><strong>0x0AF1</strong> = legacy ID115-style <em>health TX</em> (write). <strong>0x0AF2</strong> = matching notify RX.</li>
+        <li>This tool writes payloads to <strong>0x0AF1</strong> only and records notifications on <strong>0x0AF2</strong> within a timeout. Optional: also listen on <strong>0x0AF7</strong> to spot cross-channel replies.</li>
+        <li>Stop the scan if the watch misbehaves; keep delay reasonable (≥50&nbsp;ms).</li>
+    </ul>
+
+    <div class="panel">
+        <div id="status" class="warn">Disconnected</div>
+        <div class="row">
+            <button type="button" id="btnConnect">Connect</button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <strong>One-shot probes</strong>
+        <div class="row" style="margin-top:0.5rem;">
+            <button type="button" id="btnLegacy08" disabled>Send legacy <code>08 03 01 00 00</code></button>
+            <button type="button" id="btnPing00" disabled>Send single byte <code>00</code></button>
+        </div>
+    </div>
+
+    <div class="panel">
+        <strong>Bruteforce (writes to 0x0AF1)</strong>
+        <div class="row" style="margin-top:0.6rem;">
+            <label>Mode
+                <select id="bfMode">
+                    <option value="byte0">1-byte sweep (00–FF)</option>
+                    <option value="byte01">2-byte sweep (b0 × 100 + b1), 256×256</option>
+                    <option value="template">Template: increment last byte</option>
+                    <option value="template16">Template: increment last two bytes (LE range from 4 hex fields)</option>
+                </select>
+            </label>
+            <label>Start (first byte, hex)
+                <input type="text" id="bfStartB0" value="00" size="4" maxlength="2" placeholder="00">
+            </label>
+            <label>End inclusive (first byte)
+                <input type="text" id="bfEndB0" value="ff" size="4" maxlength="2" placeholder="ff">
+            </label>
+            <label id="lblB1Range" style="display:none;">Second byte range
+                <span class="row" style="margin:0;">
+                    <input type="text" id="bfStartB1" value="00" size="3" maxlength="2"> –
+                    <input type="text" id="bfEndB1" value="ff" size="3" maxlength="2">
+                </span>
+            </label>
+        </div>
+        <div class="row">
+            <label style="min-width:90%;">Template hex (for template modes; spaces optional)
+                <input type="text" id="bfTemplate" value="08 03 01 00 00" style="width:100%;max-width:36rem;font-family:ui-monospace,monospace;font-size:11px;">
+            </label>
+        </div>
+        <div class="row">
+            <label>Delay after each write (ms)
+                <input type="number" id="bfDelay" min="0" max="5000" value="80" class="input-narrow">
+            </label>
+            <label>Response window (ms)
+                <input type="number" id="bfTimeout" min="10" max="5000" value="300" class="input-narrow">
+            </label>
+            <label><input type="checkbox" id="bfListenAf7" checked> Also log 0x0AF7 during window</label>
+        </div>
+        <div class="row">
+            <button type="button" id="btnBfStart" disabled>Start bruteforce</button>
+            <button type="button" id="btnBfStop" disabled>Stop</button>
+        </div>
+        <p id="bfProgress" style="color:var(--muted);font-size:0.88rem;margin:0.5rem 0 0;">Idle.</p>
+    </div>
+
+    <div class="panel">
+        <strong>Session stats</strong>
+        <div id="stats" style="font-size:0.9rem;color:var(--muted);">—</div>
+    </div>
+
+    <div class="panel">
+        <strong>Log</strong> <span style="color:var(--muted);font-size:0.85rem;">(hits on 0x0AF2 highlighted)</span>
+        <div id="log"></div>
+    </div>
+
+    <script>
+(function () {
+    'use strict';
+
+    const SERVICE_UUID = 0x0AF0;
+    const RX_MAIN = 0x0AF7;
+    const TX_HEALTH = 0x0AF1;
+    const RX_HEALTH = 0x0AF2;
+
+    let gatt = null;
+    let healthTx = null;
+    let healthRx = null;
+    let mainRx = null;
+
+    let bfRunning = false;
+    let bfStopRequested = false;
+    let responseWindowTimer = null;
+    let pendingTag = null;
+    let pendingListenAf7 = false;
+
+    const stats = {
+        writes: 0,
+        hitAf2: 0,
+        hitAf7: 0,
+        errors: 0
+    };
+
+    const logEl = document.getElementById('log');
+    const statusEl = document.getElementById('status');
+    const bfProgressEl = document.getElementById('bfProgress');
+    const statsEl = document.getElementById('stats');
+
+    function log(line, cls) {
+        const t = new Date().toISOString().slice(11, 19);
+        const span = cls ? '<span class="' + cls + '">' : '';
+        const end = cls ? '</span>' : '';
+        logEl.innerHTML += '[' + t + '] ' + span + escapeHtml(line) + end + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function escapeHtml(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function hexOf(arr) {
+        return Array.from(arr).map(function (b) {
+            return ('0' + b.toString(16)).slice(-2);
+        }).join(' ');
+    }
+
+    function parseHexLine(str) {
+        var cleaned = str.replace(/[^0-9a-fA-F]/g, '');
+        if (cleaned.length % 2 !== 0) throw new Error('Odd hex length');
+        var out = new Uint8Array(cleaned.length / 2);
+        for (var i = 0; i < out.length; i++) {
+            out[i] = parseInt(cleaned.substr(i * 2, 2), 16);
+        }
+        return out;
+    }
+
+    function parseByteField(id, fallback) {
+        var el = document.getElementById(id);
+        var v = (el && el.value || fallback || '00').replace(/\s/g, '');
+        var n = parseInt(v, 16);
+        if (isNaN(n) || n < 0 || n > 255) throw new Error('Invalid hex byte: ' + id);
+        return n;
+    }
+
+    function clearResponseWindow() {
+        if (responseWindowTimer) {
+            clearTimeout(responseWindowTimer);
+            responseWindowTimer = null;
+        }
+        pendingTag = null;
+        pendingListenAf7 = false;
+    }
+
+    function onHealthNotify(e) {
+        var arr = new Uint8Array(e.target.value.buffer);
+        if (pendingTag !== null) {
+            stats.hitAf2++;
+            log('HIT 0x0AF2 after [' + pendingTag + '] len=' + arr.length + ' ' + hexOf(arr), 'hit');
+            updateStats();
+            clearResponseWindow();
+        } else {
+            log('[0x0AF2] (async) len=' + arr.length + ' ' + hexOf(arr));
+        }
+    }
+
+    function onMainNotify(e) {
+        if (!pendingListenAf7 || pendingTag === null) return;
+        var arr = new Uint8Array(e.target.value.buffer);
+        stats.hitAf7++;
+        log('NOTIFY 0x0AF7 during window [' + pendingTag + '] len=' + arr.length + ' ' + hexOf(arr));
+        updateStats();
+    }
+
+    function armWindow(tag, listenAf7) {
+        clearResponseWindow();
+        pendingTag = tag;
+        pendingListenAf7 = !!listenAf7;
+        var ms = parseInt(document.getElementById('bfTimeout').value, 10) || 300;
+        responseWindowTimer = setTimeout(function () {
+            responseWindowTimer = null;
+            pendingTag = null;
+            pendingListenAf7 = false;
+        }, ms);
+    }
+
+    function writeHealth(buf, tag) {
+        stats.writes++;
+        var listenAf7 = document.getElementById('bfListenAf7').checked;
+        armWindow(tag, listenAf7);
+        var ms = parseInt(document.getElementById('bfTimeout').value, 10) || 300;
+        return healthTx.writeValue(buf)
+            .then(function () { return sleep(ms); })
+            .catch(function (err) {
+                stats.errors++;
+                clearResponseWindow();
+                log('WRITE ERR [' + tag + '] ' + (err && err.message), 'warn');
+                updateStats();
+                return sleep(ms);
+            });
+    }
+
+    function updateStats() {
+        statsEl.textContent =
+            'writes=' + stats.writes +
+            ' | 0x0AF2 hits (in window)=' + stats.hitAf2 +
+            ' | 0x0AF7 during window=' + stats.hitAf7 +
+            ' | write errors=' + stats.errors;
+    }
+
+    function setConnected(on) {
+        statusEl.textContent = on ? 'Connected (0x0AF1 / 0x0AF2' + (mainRx ? ' + 0x0AF7' : '') + ')' : 'Disconnected';
+        statusEl.className = on ? 'ok' : 'warn';
+        ['btnLegacy08', 'btnPing00', 'btnBfStart'].forEach(function (id) {
+            var b = document.getElementById(id);
+            if (b) b.disabled = !on;
+        });
+    }
+
+    function sleep(ms) {
+        return new Promise(function (r) { setTimeout(r, ms); });
+    }
+
+    document.getElementById('bfMode').addEventListener('change', function () {
+        var m = document.getElementById('bfMode').value;
+        document.getElementById('lblB1Range').style.display =
+            (m === 'byte01' || m === 'template16') ? 'inline-flex' : 'none';
+    });
+
+    document.getElementById('btnConnect').addEventListener('click', function () {
+        if (gatt && gatt.connected) {
+            gatt.disconnect();
+            gatt = null;
+            healthTx = null;
+            healthRx = null;
+            mainRx = null;
+            setConnected(false);
+            log('Disconnected.');
+            return;
+        }
+        if (!navigator.bluetooth) {
+            log('Web Bluetooth not available.', 'warn');
+            return;
+        }
+        navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE_UUID] }] })
+            .then(function (d) { return d.gatt.connect(); })
+            .then(function (server) {
+                gatt = server;
+                return server.getPrimaryService(SERVICE_UUID);
+            })
+            .then(function (service) {
+                return Promise.all([
+                    service.getCharacteristic(TX_HEALTH),
+                    service.getCharacteristic(RX_HEALTH),
+                    service.getCharacteristic(RX_MAIN).catch(function () { return null; })
+                ]);
+            })
+            .then(function (chars) {
+                healthTx = chars[0];
+                healthRx = chars[1];
+                mainRx = chars[2];
+                healthRx.addEventListener('characteristicvaluechanged', onHealthNotify);
+                return healthRx.startNotifications();
+            })
+            .then(function () {
+                if (mainRx) {
+                    mainRx.addEventListener('characteristicvaluechanged', onMainNotify);
+                    return mainRx.startNotifications();
+                }
+            })
+            .then(function () {
+                stats.writes = 0;
+                stats.hitAf2 = 0;
+                stats.hitAf7 = 0;
+                stats.errors = 0;
+                updateStats();
+                setConnected(true);
+                log('Connected. Notifications: 0x0AF2 required' + (mainRx ? '; 0x0AF7 armed for correlation' : ' (0x0AF7 N/A)') + '.');
+            })
+            .catch(function (err) {
+                log('Error: ' + (err && err.message), 'warn');
+                setConnected(false);
+            });
+    });
+
+    document.getElementById('btnLegacy08').addEventListener('click', function () {
+        if (!healthTx) return;
+        var buf = new Uint8Array([0x08, 0x03, 0x01, 0x00, 0x00]);
+        writeHealth(buf, 'legacy 08 03 01 00 00').then(function () {
+            log('Done legacy probe.');
+        });
+    });
+
+    document.getElementById('btnPing00').addEventListener('click', function () {
+        if (!healthTx) return;
+        writeHealth(new Uint8Array([0x00]), 'single 00').then(function () {
+            log('Done single-byte probe.');
+        });
+    });
+
+    function runBruteforce() {
+        var mode = document.getElementById('bfMode').value;
+        var delayMs = Math.max(0, parseInt(document.getElementById('bfDelay').value, 10) || 0);
+        bfRunning = true;
+        bfStopRequested = false;
+        document.getElementById('btnBfStart').disabled = true;
+        document.getElementById('btnBfStop').disabled = false;
+
+        function step(msg) {
+            bfProgressEl.textContent = msg;
+        }
+
+        if (mode === 'byte0') {
+            var s = parseByteField('bfStartB0', '00');
+            var e = parseByteField('bfEndB0', 'ff');
+            if (s > e) {
+                log('Start > end', 'warn');
+                bfRunning = false;
+                document.getElementById('btnBfStart').disabled = false;
+                document.getElementById('btnBfStop').disabled = true;
+                return;
+            }
+            var total = e - s + 1;
+            var i = 0;
+            function nextB0() {
+                if (bfStopRequested || !bfRunning) {
+                    bfRunning = false;
+                    step('Stopped at b0=0x' + (s + i - 1).toString(16));
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                if (i >= total) {
+                    bfRunning = false;
+                    step('Finished 1-byte sweep.');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                var b = s + i;
+                var buf = new Uint8Array([b]);
+                var tag = '1b 0x' + ('0' + b.toString(16)).slice(-2);
+                step('1-byte sweep ' + (i + 1) + '/' + total + ' (' + tag + ')');
+                writeHealth(buf, tag).then(function () {
+                    i++;
+                    return sleep(delayMs);
+                }).then(nextB0);
+            }
+            nextB0();
+            return;
+        }
+
+        if (mode === 'byte01') {
+            var b0a = parseByteField('bfStartB0', '00');
+            var b0b = parseByteField('bfEndB0', 'ff');
+            var b1a = parseByteField('bfStartB1', '00');
+            var b1b = parseByteField('bfEndB1', 'ff');
+            if (b0a > b0b || b1a > b1b) {
+                log('Invalid range', 'warn');
+                bfRunning = false;
+                document.getElementById('btnBfStart').disabled = false;
+                document.getElementById('btnBfStop').disabled = true;
+                return;
+            }
+            var b0 = b0a;
+            var b1 = b1a;
+            var count = 0;
+            var approxTotal = (b0b - b0a + 1) * (b1b - b1a + 1);
+
+            function nextPair() {
+                if (bfStopRequested || !bfRunning) {
+                    bfRunning = false;
+                    step('Stopped after ' + count + ' pairs.');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                if (b0 > b0b) {
+                    bfRunning = false;
+                    step('Finished 2-byte sweep (' + count + ' writes).');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                var buf = new Uint8Array([b0, b1]);
+                var tag = '2b 0x' + ('0' + b0.toString(16)).slice(-2) + ' 0x' + ('0' + b1.toString(16)).slice(-2);
+                count++;
+                step('2-byte sweep ' + count + '/~' + approxTotal + ' (' + tag + ')');
+                writeHealth(buf, tag).then(function () {
+                    b1++;
+                    if (b1 > b1b) {
+                        b1 = b1a;
+                        b0++;
+                    }
+                    return sleep(delayMs);
+                }).then(nextPair);
+            }
+            nextPair();
+            return;
+        }
+
+        var tpl;
+        try {
+            tpl = parseHexLine(document.getElementById('bfTemplate').value);
+        } catch (err) {
+            log('Template: ' + err.message, 'warn');
+            bfRunning = false;
+            document.getElementById('btnBfStart').disabled = false;
+            document.getElementById('btnBfStop').disabled = true;
+            return;
+        }
+        if (tpl.length < 1) {
+            log('Template empty', 'warn');
+            bfRunning = false;
+            document.getElementById('btnBfStart').disabled = false;
+            document.getElementById('btnBfStop').disabled = true;
+            return;
+        }
+
+        if (mode === 'template') {
+            var last = tpl.length - 1;
+            var s = parseByteField('bfStartB0', '00');
+            var e = parseByteField('bfEndB0', 'ff');
+            var n = 0;
+            var total = e - s + 1;
+            function nextTpl() {
+                if (bfStopRequested || !bfRunning) {
+                    bfRunning = false;
+                    step('Stopped template byte sweep.');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                if (n >= total) {
+                    bfRunning = false;
+                    step('Finished template last-byte sweep.');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                var c = new Uint8Array(tpl);
+                c[last] = (s + n) & 0xff;
+                var tag = 'tpl last=0x' + ('0' + c[last].toString(16)).slice(-2);
+                step('Template last-byte ' + (n + 1) + '/' + total);
+                writeHealth(c, tag).then(function () {
+                    n++;
+                    return sleep(delayMs);
+                }).then(nextTpl);
+            }
+            nextTpl();
+            return;
+        }
+
+        if (mode === 'template16') {
+            if (tpl.length < 2) {
+                log('template16 needs at least 2 bytes', 'warn');
+                bfRunning = false;
+                document.getElementById('btnBfStart').disabled = false;
+                document.getElementById('btnBfStop').disabled = true;
+                return;
+            }
+            var lo = tpl.length - 2;
+            var s0 = parseByteField('bfStartB0', '00');
+            var s1 = parseByteField('bfStartB1', '00');
+            var e0 = parseByteField('bfEndB0', 'ff');
+            var e1 = parseByteField('bfEndB1', 'ff');
+            var startIdx = s0 + (s1 << 8);
+            var endIdx = e0 + (e1 << 8);
+            if (startIdx > endIdx) {
+                log('LE range invalid', 'warn');
+                bfRunning = false;
+                document.getElementById('btnBfStart').disabled = false;
+                document.getElementById('btnBfStop').disabled = true;
+                return;
+            }
+            var cur = startIdx;
+            var total = endIdx - startIdx + 1;
+            var done = 0;
+
+            function next16() {
+                if (bfStopRequested || !bfRunning) {
+                    bfRunning = false;
+                    step('Stopped template16.');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                if (cur > endIdx) {
+                    bfRunning = false;
+                    step('Finished template16 (' + done + ' writes).');
+                    document.getElementById('btnBfStart').disabled = false;
+                    document.getElementById('btnBfStop').disabled = true;
+                    return;
+                }
+                var c = new Uint8Array(tpl);
+                c[lo] = cur & 0xff;
+                c[lo + 1] = (cur >> 8) & 0xff;
+                var tag = 'tpl16 LE=0x' + ('000' + cur.toString(16)).slice(-4);
+                done++;
+                step('template16 ' + done + '/' + total + ' (' + tag + ')');
+                writeHealth(c, tag).then(function () {
+                    cur++;
+                    return sleep(delayMs);
+                }).then(next16);
+            }
+            next16();
+        }
+    }
+
+    document.getElementById('btnBfStart').addEventListener('click', function () {
+        if (!healthTx || bfRunning) return;
+        runBruteforce();
+    });
+
+    document.getElementById('btnBfStop').addEventListener('click', function () {
+        bfStopRequested = true;
+    });
+
+    document.getElementById('bfMode').dispatchEvent(new Event('change'));
+})();
+    </script>
+</body>
+</html>

@@ -38,18 +38,19 @@ On **ColorOS / OPPO phones running Android 10 (API 29–30)**, BLE discovery and
 What **works today** (see [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md) for detail):
 
 - **Connection:** BLE service **0x0AF0**; writes **0x0AF6**, notifications **0x0AF7** and **0x0AF2** (health notify for v3 sync replies).
-- **Bind (optional):** VeryFit-style bind start (**`04 01 F1…`**) is **manual** — device settings → *Send bind start* when you need app pairing (not sent on connect).
+- **Bind / unbind (manual):** VeryFit-style **bind start** (**`04 01 F1…`**) and **unbind** are **only** from device settings → *Send bind* / *Send unbind* (nothing is sent automatically on connect).
 - **Device info & battery:** GET **0x02 0x01** (firmware / device id on card) and **0x02 0x05** (level %, voltage mV, charging state).
 - **Time & basics:** Set time on init + Gadgetbridge sync; wrist side, screen orientation, step goal (ID115 base).
-- **Device settings (Toobur screens):** Music on watch, call/notification alert, DND, **raise-to-wake** (9-byte SET **0x28** per captures), HR mode (SET **0x25**) + **v3 cmd 0x09** continuous HR interval, weather switch — each writes the mapped command when changed.
+- **Device settings (Toobur screens):** Music on watch, call/notification alert, DND, **raise-to-wake** (9-byte SET **0x28** per captures), HR mode (SET **0x25** for compatibility) + **VeryFit v3 cmd `0x09`** on **`0x0AF1`** (chunked) for continuous HR / interval — aligned with **`htmlapp/toobur-hr-csv.html`**, weather switch — each writes the mapped command when changed.
 - **Actions:** Find phone, find device, music control, alarms (slots), **reboot** (**`F0 01`**), **shutdown** (**`F0 03`**) via Gadgetbridge power off when supported.
-- **Activity / health sync:** Pull / auto-fetch runs **v3 HR** only (**cmd 0x04** type **0x03**); periodic **v3 cmd 0x05** sizes probes while connected. Legacy ID115 **CMD 0x08** on **0x0AF1** is **not** used (TOOBUR does not respond). **Not** full multi-type v3 persistence yet. See **Sync, intervals & operation** below and [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md).
+- **Activity / health sync:** Pull / auto-fetch runs **`TooburV3FetchHealthOperation`**: **v3 cmd `0x05`** then **`0x04`** for each type (SpO₂ → … → sport); **writes on `0x0AF1`**, replies on **`0x0AF2`**. **Sport summary** (`dataType 0x08`) can be stored as **ID115** samples; other types are parsed/logged as implemented. Legacy **CMD `0x08`** fetch is **not** used for TOOBUR. Wire-level detail: **[`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md)** §11–13; packets: **`packetdumps/logcat/sync_example.txt`**. See also [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md).
 
 For **protocol experiments** (many more GET/SET bytes in one place), use **`htmlapp/confirmed-only.html`** in a browser with Web Bluetooth — that panel is **not** the Gadgetbridge app.
 
 ### Docs & tooling
 
 - **[`TOOBUR.md`](TOOBUR.md)** — command tables, v3 vs legacy, logcat references, watch-face notes.
+- **[`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md)** — v3 health **wire format**, HTML parsers, **Gadgetbridge sync route** (§11–13).
 - **`packetdumps/logcat/`**, **`bruteforce_results.txt`**, **`scripts/merge_vbus_tx_annotations.py`** — captures and TX labeling.
 
 ## Sync, intervals & operation
@@ -71,22 +72,24 @@ Code: `gadgetbridge/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/servi
 
 ### TOOBUR-specific (`TooburSupport` and related)
 
-| Constant / pref | Value | Purpose |
-|-----------------|-------|---------|
-| `BATTERY_POLL_INTERVAL_MS` | **15 min** | While connected, repeat GET **0x02 0x05** (battery). One read also runs at connect in `initializeDevice`. |
-| `V3_HEALTH_SIZES_PROBE_INTERVAL_MS` | **30 min** | While connected, repeat VeryFit v3 **cmd 0x05** (“sizes” / health sync prelude). **First** probe is queued on connect together with NOTIFY setup and live-data GETs. |
-| `HR_SWIPE_SYNC_TIMEOUT_MS` | **15 s** | v3 **cmd 0x04** HR pull: if no parsed HR reply, send STOP after this timeout. |
-| `toobur_hr_measurement_interval` (`PREF_TOOBUR_HR_INTERVAL`) | User-defined (seconds) | Continuous HR on the band: v3 **cmd 0x09**; `255` → smart/dynamic on the wire (`0x00FF`). |
+Battery and live GETs run **once** from `initializeDevice`; there is **no** built-in periodic battery poll or standalone **`0x05`** timer in the current tree unless you add one.
 
-**Optional v3 sport probing:** `toobur_v3_health_sport_offset_probe` and `toobur_v3_health_last_sport_probe_total` alter how **cmd 0x05** is built when investigating sport offsets (see `TooburSupport`).
+| Pref (device-specific) | Purpose |
+|------------------------|---------|
+| `toobur_hr_interval_seconds` | Continuous HR interval for v3 **cmd `0x09`** (**`0x0AF1`**); `255` → smart/dynamic (`0x00FF`). |
+| `toobur_v3_health_last_total` | Last aggregate size from v3 **`0x05`** — used to **skip `0x04`** when total has not increased. |
+| `toobur_v3_health_fetch_force_full` | If true, do not skip **`0x04`** when total unchanged. |
+| `toobur_v3_health_sport_offset_probe` / `toobur_v3_health_sport_offset` / `toobur_v3_health_last_sport_probe_total` | Optional **sport-stream** offset experiments for **`0x05`**. |
+
+Full Gadgetbridge sync route (GATT, classes, live GET vs v3): **[`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md)** §11–13.
 
 ### Connect / sync flow (high level)
 
-1. **BLE:** Enable **0x0AF7** (normal) and **0x0AF2** (health) notifications; v3 frames are written on **0x0AF6**; health notify receives v3 replies.
-2. **First packets:** Time / wrist / orientation / goal; optional bind; battery + device info + live data GETs; **first v3 cmd 0x05** sizes probe; on **first ever** connect, push all TOOBUR SET prefs + HR mode/interval once.
-3. **While connected:** Battery poll every **15 min**; v3 sizes probe every **30 min**; user-initiated sync still goes through Gadgetbridge’s normal fetch path (and is **not** throttled by `auto_fetch_interval_limit`).
+1. **BLE:** Enable **0x0AF7** (normal) and **0x0AF2** (health) notifications. **GET live data** and classic commands use **`0x0AF6`** → **`0x0AF7`**. **v3 health sync** (`0x05` / `0x04`) and **v3 HR mode** (`0x09`) use **`0x0AF1`** → **`0x0AF2`**.
+2. **First packets:** Time / wrist / orientation / goal; battery + device info + live data GETs; on **first ever** connect, push all TOOBUR SET prefs + HR mode/interval once. Use *Send bind* only when you need VeryFit-style pairing (not on every connect). **v3 `0x05`/`0x04`** runs when you **fetch activity data** (or auto-fetch), not automatically on every connect in the current code.
+3. **While connected:** User-initiated **fetch** / **Gadgetbridge auto-fetch** runs **`onFetchRecordedData`** (GET **`0x02` `0xA0`** + v3 health sync). Interval for auto-fetch is **`auto_fetch_interval_limit`** (minutes), not a fixed 15/30 unless you set that in Gadgetbridge.
 
-For **packet-level** examples (pull vs periodic behavior), see **`packetdumps/logcat/sync_example.txt`**. Feature status and file map: **`gadgetbridge/README_TOOBUR.md`** and **`TOOBUR.md`**.
+For **packet-level** examples, see **`packetdumps/logcat/sync_example.txt`**. Parsing + Gadgetbridge route: **`LATEST_SYNC_PARSING.md`**. Feature status / file map: **`gadgetbridge/README_TOOBUR.md`** and **`TOOBUR.md`**.
 
 ## Fork and references
 

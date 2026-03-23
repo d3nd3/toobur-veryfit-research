@@ -25,6 +25,8 @@
         .hr-form .input-narrow { width: 5rem; max-width: 5rem; }
         .hr-form .input-tiny { width: 3.2rem; max-width: 3.5rem; }
         .hr-presets { margin-top: 0.5rem; font-size: 0.85rem; color: var(--muted); }
+        .hr-deprecated-panel { margin-top: 0.35rem; padding: 0.45rem 0.6rem; border-radius: 6px; border: 1px dashed #6e7681; background: rgba(210, 153, 34, 0.08); font-size: 0.82rem; color: var(--warn); }
+        .hr-deprecated-panel .hr-form label { color: var(--muted); }
         #hr24ExtHex { width: 100%; max-width: 36rem; font-family: ui-monospace, monospace; font-size: 11px; padding: 0.45rem; border-radius: 4px; border: 1px solid #444; background: #0d1117; color: var(--text); }
     </style>
 </head>
@@ -43,9 +45,9 @@
             <li><strong>Unified TX <code>0x09</code>:</strong> <code>UPDATE_TIMESTAMP(4)</code> + <code>ON_OFF(2)</code> + <code>START-END(4)</code> + <code>INTERVAL(2 LE)</code> + CRC. Two checkboxes can force timestamp/start-end bytes to all zero.</li>
         </ul>
         <p style="margin:0.1rem 0 0;font-size:0.86rem;color:var(--muted);">The matching <strong>RX replies</strong> always contain <code>NULL_COMMAND</code> + <code>ON_OFF</code> (state byte: <code>CC</code> = ON, <code>AA</code> = OFF, <code>99</code> = legacy ON, …) + <code>INTERVAL</code> (echoed, usually 300&nbsp;s) + <code>UNKNOWN</code> + <code>MODE?/reply</code> (<code>04 00 00 00</code>) + CRC. `toobur-hr-csv.html` logs this block as <code>state</code>, <code>interval</code> and <code>reply_code</code>.</p>
-        <p style="margin:0.25rem 0 0;font-size:0.86rem;color:var(--muted);">This page exposes one <strong>v3 HR mode</strong> path plus legacy <code>03 25</code>. For v3, <strong>HR on</strong> and <strong>HR off</strong> each can send either <strong>two</strong> <code>0x09</code> frames (2-stage) or a <strong>single</strong> <code>0x09</code> frame (manual single). Which one is sent is controlled by the checkboxes below. The SDK model fields such as <code>modeType</code> and notification flags are reference only and are <strong>not</strong> fully mapped onto the bytes we transmit here.</p>
+        <p style="margin:0.25rem 0 0;font-size:0.86rem;color:var(--muted);">This page exposes one <strong>v3 HR mode</strong> path plus legacy <code>03 25</code>. <strong>Canonical behaviour</strong> is a <strong>single unified</strong> <code>0x09</code> frame (Gadgetbridge and current tooling). The SDK model fields such as <code>modeType</code> and notification flags are reference only and are <strong>not</strong> fully mapped onto the bytes we transmit here.</p>
         <div class="hr-form">
-            <span style="font-size:0.85rem;color:var(--muted);">0x09 Apply: <strong>2-stage</strong> (step1+step2) OR <strong>manual single</strong> frame, depending on the checkboxes.</span>
+            <span style="font-size:0.85rem;color:var(--muted);">0x09 Apply: use <strong>single unified</strong> frame (default). The old two-packet path is <strong>deprecated</strong> — see below.</span>
             <label>Action
                 <select id="hrModeAction">
                     <option value="v3_off">v3 HR off</option>
@@ -56,15 +58,18 @@
                 </select>
             </label>
             <label id="hrIntervalLabel">Interval (seconds, LE — bytes 22–23)
-                <input type="number" id="hrIntervalSec" class="input-narrow" min="5" max="3600" value="300" title="LE bytes 22–23 of v3 0x09. In 2-stage mode it is used in step 1 only; step 2 uses interval 0. In manual single mode it is used in the one packet.">
+                <input type="number" id="hrIntervalSec" class="input-narrow" min="5" max="3600" value="300" title="LE bytes 22–23 of v3 0x09 unified packet. Deprecated 2-stage mode uses this only in step 1.">
             </label>
-            <div class="hr-form" style="gap:0.25rem;margin:0.1rem 0 0;align-items:flex-start;">
-                <label style="font-size:0.83rem;color:var(--muted);margin:0;">
-                    <input type="checkbox" id="v3OnUseDualStage" checked> v3 HR on: send 2-stage (step1+step2)
-                </label>
-                <label style="font-size:0.83rem;color:var(--muted);margin:0;">
-                    <input type="checkbox" id="v3OffUseDualStage" checked> v3 HR off: send 2-stage (step1+step2)
-                </label>
+            <div class="hr-deprecated-panel">
+                <strong>Deprecated — 2-stage <code>0x09</code> (two writes)</strong>: older experiment only; do not use for new work. Prefer <strong>single unified</strong> above. Kept for comparing against historical captures.
+                <div class="hr-form" style="gap:0.25rem;margin:0.35rem 0 0;align-items:flex-start;">
+                    <label style="font-size:0.83rem;margin:0;">
+                        <input type="checkbox" id="v3OnUseDualStage"> v3 HR on: deprecated 2-stage (step1+step2)
+                    </label>
+                    <label style="font-size:0.83rem;margin:0;">
+                        <input type="checkbox" id="v3OffUseDualStage"> v3 HR off: deprecated 2-stage (step1+step2)
+                    </label>
+                </div>
             </div>
             <label style="font-size:0.8rem;color:var(--muted);max-width:15rem;">Hidden u16 before interval (experimental)
                 <input type="number" id="v3HiddenU16" class="input-narrow" min="0" max="65535" value="0" title="Legacy control; unified mode uses START-END bytes instead.">
@@ -139,7 +144,7 @@
         </div>
         <p style="margin:0.35rem 0 0;font-size:0.82rem;color:var(--muted);">All controls here are still <strong>v3 HR cmd <code>0x09</code></strong>. The custom box expects a <strong>full packet</strong> including <code>33 DA AD DA AD</code>; CRC is recomputed before send.</p>
         <ul style="margin-top:0.35rem;">
-            <li><strong>Apply HR mode (v3 on/off):</strong> If the relevant “send 2-stage” checkbox is checked, sends <em>two</em> packets — (1) <code>TS + CC/AA + null range + INTERVAL</code>; (2) <code>null TS + 00 01 + START-END (form) + 0 interval</code>. If unchecked, sends a <em>single</em> unified <code>0x09</code> packet. “Empty timestamp” applies to step 1 only in 2-stage mode.</li>
+            <li><strong>Apply HR mode (v3 on/off):</strong> Default sends one <strong>unified</strong> <code>0x09</code> packet (<code>UPDATE_TIMESTAMP</code> + <code>ON_OFF</code> + start/end + <code>INTERVAL</code> per form). The deprecated 2-stage checkboxes, if enabled, send two packets for legacy comparison only.</li>
             <li><strong>Single zeroed payload:</strong> seen later in <code>app_fresh_launch.txt</code> during <code>protocol_sync_config</code> table sync for evt <code>5010</code>. It is almost all zeros and gets a normal <code>0x09</code> reply. Best guess: this is a <strong>default / HR-mode table refresh</strong>, not an explicit “turn continuous on/off” command.</li>
             <li><strong>Low-level replay buttons:</strong> keep the older captured packet experiments for comparison against the unified builder.</li>
         </ul>
@@ -479,10 +484,8 @@
     }
 
     /**
-     * v3 HR ON/OFF — packet 1 of 2 (app-style):
-     *   UPDATE_TIMESTAMP(4) // state 00 (CC=ON, AA=OFF) // NULL time-range(4) // interval(2 LE) // CRC
-     * Time-range is forced 00 00 00 00. Interval from hrIntervalSec.
-     * Timestamp respects "zero timestamp" checkbox when set.
+     * @deprecated Two-packet HR apply — use buildV3HrUnifiedPacket (single unified 0x09) instead.
+     * Packet 1 of 2: UPDATE_TIMESTAMP // CC|AA // null range // interval LE // CRC
      */
     function buildV3HrDualStep1(stateByte, intervalSec) {
         const p = new Uint8Array(26);
@@ -513,8 +516,8 @@
     }
 
     /**
-     * v3 HR ON/OFF — packet 2 of 2 (reset-style schedule):
-     *   NULL timestamp // 00 01 // START-END from form // 0 interval // CRC
+     * @deprecated Two-packet HR apply — use buildV3HrUnifiedPacket (single unified 0x09) instead.
+     * Packet 2 of 2: null TS // 00 01 // START-END from form // interval 0 // CRC
      */
     function buildV3HrDualStep2() {
         const p = new Uint8Array(26);
@@ -793,8 +796,9 @@
 
         if (action === 'v3_off') {
             const dualEl = document.getElementById('v3OffUseDualStage');
-            const dual = dualEl ? !!dualEl.checked : true;
+            const dual = dualEl ? !!dualEl.checked : false;
             if (dual) {
+                log('[deprecated] 2-stage v3 HR off — prefer single unified 0x09'); 
                 const a = buildV3HrDualStep1(0xAA, sec);
                 const b = buildV3HrDualStep2();
                 if (!a || a.length !== 26 || !b || b.length !== 26) {
@@ -818,8 +822,9 @@
         }
         if (action === 'v3_on') {
             const dualEl = document.getElementById('v3OnUseDualStage');
-            const dual = dualEl ? !!dualEl.checked : true;
+            const dual = dualEl ? !!dualEl.checked : false;
             if (dual) {
+                log('[deprecated] 2-stage v3 HR on — prefer single unified 0x09');
                 const a = buildV3HrDualStep1(0xCC, sec);
                 const b = buildV3HrDualStep2();
                 if (!a || a.length !== 26 || !b || b.length !== 26) {
@@ -869,7 +874,7 @@
         if (!applies) {
             labelEl.title = 'Legacy 03 25 actions do not use this interval field.';
         } else {
-            labelEl.title = 'v3 HR on/off uses hrIntervalSec as LE bytes 22–23. In 2-stage mode, that interval is sent in step 1 only; in single mode, it is sent in the one unified packet.';
+            labelEl.title = 'v3 HR on/off: unified packet uses hrIntervalSec as LE bytes 22–23. Deprecated 2-stage sends that interval in step 1 only.';
         }
 
         const actionSel = document.getElementById('hrModeAction');

@@ -178,6 +178,14 @@ On some watches (e.g. TOOBUR A200 / same firmware as in the dumps), the **standa
 
 **Practical takeaway:** If “Get Activity (02 01 + v3)” returns empty or version‑0 activity, try **Start sync V3 health** (cmd 0x05) then **Sync activity (v3 health type 4)** (cmd 0x04, data_type 4). Replies are v3 multi‑packet; reassembly is the same as for other v3 (33 00 continuation). Parsing the health-sync reply format (head_size, item_count, payload) is device-specific and can be added once you capture a full reply.
 
+### Gadgetbridge fork (`gadgetbridge/`) — TOOBUR behavior
+
+This repo’s Gadgetbridge build implements TOOBUR-specific behavior in `service/devices/toobur/`. **Canonical** GATT + class flow: **`LATEST_SYNC_PARSING.md`** §11 (avoid duplicating details here).
+
+- **Bind / unbind:** **Manual** actions in device settings (*Send bind* / *Send unbind*). **No** automatic bind on BLE connect.
+- **Heart rate (continuous):** **VeryFit v3 cmd `0x09`** written on characteristic **`0x0AF1`** (chunked), with SET **`0x03 0x25`** still applied for compatibility — see **`htmlapp/toobur-hr-csv.html`** for the unified HR payload layout and interval semantics.
+- **Recorded-data sync:** Uses **`TooburV3FetchHealthOperation`**: **`0x05`** (sizes) then **`0x04`** per health data type, with **v3 writes on `0x0AF1`** and **notify on `0x0AF2`** (GET **`0x02` `0xA0`** live data stays on **`0x0AF6`/`0x0AF7`**). Aligns with **`packetdumps/logcat/sync_example.txt`**. Sport summary samples are persisted to **ID115** activity when parsed.
+
 ### Sending a notification to the watch
 
 **Is it practical?** Yes. The app already writes to **0x0AF6** for Get Info and Get Activity; sending a notification is just writing a different command to the same characteristic (or possibly **0x0AF1** for bulk data). So it's the same mechanism.

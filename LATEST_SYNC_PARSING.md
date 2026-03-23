@@ -1,6 +1,26 @@
 # LATEST_SYNC_PARSING.md
+
+## Where to read what (canonical split — avoid duplicating stale details)
+
+| Location | Use for |
+|----------|---------|
+| **`LATEST_SYNC_PARSING.md` (this file)** | **Wire layout**, v3 BLE reassembly rules, HTML tool parsers, and **§11–13** = exact **Gadgetbridge** sync route (classes + GATT + prefs). Prefer this for “how bytes work.” |
+| [`README.md`](README.md) | Short **user-facing** feature list, global Gadgetbridge auto-fetch, links to deeper docs. |
+| [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md) | Gadgetbridge **file map** + feature table (keep in sync with §11 here; do not re-spec full packet layouts there). |
+| [`TOOBUR.md`](TOOBUR.md) | Protocol background, VeryFit vs angelfit, long logcat narratives. |
+
+If anything disagrees, **this file + `TooburV3HealthSync` / `TooburV3FetchHealthOperation` / `TooburSupport`** win for Gadgetbridge behavior.
+
+---
+
 ## Scope
-Documenting what we currently know (from the HTML implementations we have created under `htmlapp/`) about parsing TOOBUR/VeryFit **v3 health sync** replies, specifically **v3 cmd `0x04`** (“health data sync”), including:
+Documenting what we currently know (from the HTML implementations under `htmlapp/` and from **`gadgetbridge/` TOOBUR support**) about TOOBUR / VeryFit **v3 health** sync — **not** “v5” (there is no separate v5 health layer in this repo; native logs sometimes refer to **protocol v3** families). This file covers:
+
+- **v3 cmd `0x04`** (“health data sync”) replies and parsing
+- **v3 cmd `0x05`** (“health sizes by offset”) requests and replies
+- How **Gadgetbridge** triggers sync vs **GET live data** (`0x02` `0xA0`)
+
+Topics covered from HTML:
 - v3 BLE reassembly rules
 - the shared “health common header” inside `0x04` replies
 - per-`dataType` parsing we implemented:
@@ -100,10 +120,9 @@ It constructs a 19-byte v3 packet:
 - `seq` is taken from `nextV3Seq()` and written into `packet[10..11]` (LE)
 - `operate` is written into `packet[12]`
 - `dataType` is written into `packet[13]`
-- remaining fixed bytes:
-  - `packet[14] = 0x01`
-  - `packet[15] = 0x00`
-  - `packet[16] = 0x00`
+- remaining bytes:
+  - `packet[14]` — in **`toobur-hr-csv.html`** this is hard-coded **`0x01`** for all types; native/VeryFit-style clients use **`0x01` for “day data” types and `0x00` for “count data” types** (activity / swim / sleep). See **§3.1.1a**.
+  - `packet[15..16]` — **save offset** LE (`saveOffset16`; often `0` for a full baseline sync).
 - CRC-16 CCITT FALSE:
   - computed over `packet` bytes `[1 .. packet.length-3]`
   - stored into the last two bytes `packet[17..18]` as LE.
@@ -143,6 +162,34 @@ Those lines show the firmware’s sync scheduler enumerating these health sync t
 
 So for this firmware/build, these are the core v3 health sync IDs that the native code considers during the sync run.
 
+### 3.1.1a) Day data vs count data (vendor log labels; incremental sync semantics)
+
+Native scheduler logs sometimes tag each type in one of two ways, for example:
+
+- `v3 health sync type:0x01 … [day data, save data offset:0]`
+- `v3 health sync type:0x04 … [count data]`
+
+This is **about how the firmware keys incremental sync for that stream**, not about whether a **`0x04` reply** “returns days” or “returns counts.” Replies still carry whatever that type’s layout defines (including `itemCount`, dates, etc., as in §2).
+
+**Day data** (`[day data, save data offset:…]`)
+
+- Storage is **organized by calendar day** (day-oriented stream).
+- The **save data offset** in the log is **where to resume** in that day-oriented stream: the same field as **bytes 15–16 LE** (`saveOffset16`) on **cmd `0x04`** requests, and the **per-type 32-bit offset** in **`0x05`** “sizes” queries (`typeId` + 4-byte LE offset per entry).
+
+**Count data** (`[count data]`)
+
+- Storage is **not** framed as “one logical row per calendar day” in the same way; it is **record-oriented** (discrete records: activity chunks, swim sessions, sleep segments, etc.).
+- The **same** offset fields still mean **position in the stored byte stream** for that type, but the firmware treats the stream as **count-indexed** (record-ordered) rather than **day-indexed**.
+
+**Types (typical vendor mapping)**
+
+| Label | Health `dataType` values |
+|--------|---------------------------|
+| Day data | `0x01` SpO2, `0x02` pressure, `0x03` HR, `0x08` sport |
+| Count data | `0x04` activity, `0x06` swim, `0x07` sleep |
+
+**Wire note (cmd `0x04`, byte 14):** In Gadgetbridge, `TooburV3HealthSync.defaultByte14ForDataType` sets **`0x00`** for activity / swim / sleep (`0x04`, `0x06`, `0x07`) and **`0x01`** for the day-data types above. That matches VeryFit TX examples in `TOOBUR.md` (e.g. activity `… 04 00 …`, sport `… 08 01 …`). The HTML tool `toobur-hr-csv.html` historically hard-codes `packet[14] = 0x01` for all types; a full client should follow the day/count split for firmware compatibility.
+
 ### 3.1.2) Observed `0x05` request payload shape
 Immediately after those scheduler lines, the same capture shows the outgoing `cmd 0x05` frame:
 - `reinstall_app_bind_full.txt` line `1948`
@@ -164,37 +211,38 @@ So the observed payload begins as:
 - `03 00 00 00 ...` -> type `3`, offset `0`
 
 This matches the nearby scheduler log wording:
+
 - `v3 health sync type:0x.. [day data,save data offset:..]`
+
+See **§3.1.1a** for what **day data** vs **count data** means (incremental sync addressing — not the same as `itemCount` in a reply).
 
 It also matches an older capture pattern where some entries had non-zero saved offsets (for example type `2` and `8`), which would naturally fit a `type + offset` record encoding.
 
 ### 3.1.3) Current interpretation of the `0x05` request list
 Current best interpretation from this capture:
 - the `0x05` request is **not simply a blank probe**
-- it appears to contain an explicit list of health records to be counted
+- it contains an explicit list of health records to be counted
 - each record is best interpreted as:
   - `typeId` (1 byte)
-  - `savedOffset` (4 bytes)
-- the observed records in this run are:
-  - type `1` (`SpO2`) with offset `0`
-  - type `2` (`Pressure / stress`) with offset `0`
-  - type `8` (`Sport summary`) with offset `0`
-  - type `3` (`HR`) with offset `0`
+  - `savedOffset` (4 bytes LE)
+- the **observed** records in that run are a **subset** (types `1`, `2`, `8`, `3` only in the snippet)
 
 Important nuance:
-- even though the scheduler lines show support for `4`, `6`, and `7`, the observed `0x05` payload list in this capture does **not** include those IDs
-- therefore, the `0x05` request payload seems to be a **selected query list**, not a full “all supported types” dump
+- even though the scheduler lines show support for `4`, `6`, and `7`, that particular `0x05` TX **did not** include those IDs
+- therefore, on the wire, `0x05` is a **selectable query list** — the app can ask for any subset and pass non-zero offsets per type for incremental “bytes since last sync” style queries
+
+**Gadgetbridge (`TooburV3HealthSync.buildV3HealthSizesRequest`)** uses a **fixed full list** of seven types in VeryFit order:  
+`0x01, 0x02, 0x03, 0x04, 0x06, 0x07, 0x08`  
+(all offsets `0` for a full baseline, or sport-only offset mode via prefs — see §11). That matches the “efficient sync” design (count aggregate bytes, then `0x04` start/stop per type) even when a one-off phone capture shows a shorter list.
 
 This means:
 - `sync_timer_handles` lines tell us what the firmware health sync machinery supports / schedules
-- the `0x05` request payload tells us which subset of those types the app is currently asking the watch to count for size estimation
+- a given `0x05` TX shows **which types + offsets** that client chose to include in the size sum
 
-### 3.1.4) Sleep and extending the size query
-Because `0x07` (sleep) is present in `sync_timer_handles` but absent from the observed `0x05` query list, a plausible extension is:
-- if we want the size calculation to explicitly include sleep, we would likely add another 5-byte record:
-  - `07 00 00 00 00`
+### 3.1.4) Sleep and the `0x05` query list
+Some **phone captures** show a **short** `0x05` list (e.g. only types `1`, `2`, `8`, `3`) while the native scheduler still *mentions* types `4`, `6`, `7` — see §3.1.3. Adding sleep to a minimal list would be a **5-byte record** `07 00 00 00 00`.
 
-This is currently a capture-backed hypothesis, not yet implemented as a dynamic builder in the HTML pages.
+**Gadgetbridge** does not use a short list: `TooburV3HealthSync.buildV3HealthSizesRequest` always emits **all seven** types in `V3_HEALTH_SYNC_DATA_TYPES` order (`0x01` … `0x08` including **`0x07` sleep**), with per-type offsets (default `0`, optional sport offset via prefs). The HTML tools may still use HR-only or partial lists for experiments.
 
 ---
 ## 4) dataType mapping implemented in the HTML apps
@@ -451,4 +499,59 @@ If we later add parsing for `dataType != {3,4,7,8}`:
 3. Add to the dispatcher in the relevant HTML app:
    - `toobur-hr-csv.html` if we want HR-like CSV export
    - `confirmed-only.html` if we want console log decoding
+
+---
+
+## 11) Gadgetbridge TOOBUR: what runs in the app (not the HTML tools)
+
+Code lives under `gadgetbridge/.../service/devices/toobur/`.
+
+### GATT routing (important — do not confuse with GET live data)
+
+| UUID | Role in this fork |
+|------|-------------------|
+| **`0x0AF6` write** / **`0x0AF7` notify** | **Normal** ID115 pipe: GET/SET (`0x02` / `0x03`), including **GET `0x02` `0xA0` live data** (steps, calories, HR snapshot on card). |
+| **`0x0AF1` write** / **`0x0AF2` notify** | **Health / bulk** pipe: VeryFit **v3** frames (`0x33…`) for **health sync** (`0x05` / `0x04`) and **v3 HR mode** (`0x09`) — see `ID115Constants.UUID_CHARACTERISTIC_WRITE_HEALTH`. |
+
+`TooburV3FetchHealthOperation` extends `AbstractID115Operation` with `isHealthOperation() == true`, so it uses **`WRITE_HEALTH` (`0x0AF1`)** and **`NOTIFY_HEALTH` (`0x0AF2`)**, not `0x0AF6`.
+
+### Classes
+
+| Piece | Role |
+|-------|------|
+| `TooburV3HealthSync` | Builds **v3 `0x05`** (137 B + CRC; seven type+offset records) and **`0x04`** (19 B + CRC). **Reassembly** (`V3ReassemblyBuffer`): strips leading `0x33` per chunk so completed frames start with **`DA AD DA AD…`**. Parses **`0x05`** reply: aggregate **`totalBytes` = u32 LE at **byte offset 11** in that reassembled buffer (first four bytes of v3 payload after `cmd`/`seq`). Dispatches **`0x04`**: HR (`dataType==3`) via `TooburV3HrParser`, sport summary (`dataType==8`) via `parseV3SportSummary`; other types are logged/skipped for persistence. |
+| `TooburV3FetchHealthOperation` | **Recorded-data sync** operation (all types in `V3_HEALTH_SYNC_DATA_TYPES`: SpO₂, pressure, HR, activity, swim, sleep, sport): chunked **write on `0x0AF1`**, **notify on `0x0AF2`**. Sequence: send **`0x05`** → on reply, optionally **skip** all **`0x04`** if total unchanged (prefs: `toobur_v3_health_last_total` / sport-probe keys, `toobur_v3_health_fetch_force_full`); else for each type **START (`operate=0`)** then **STOP (`operate=1`)** on **`0x04`**, advancing phases on complete **`0x04`** frames. **DB:** persists **`V3SportSummary`** only (`ID115ActivitySample`); HR and other types are parsed for logs only unless extended later. |
+| `TooburSupport.onFetchRecordedData` | Queues **GET `0x02` `0xA0`** on **`0x0AF6`** first, then runs `new TooburV3FetchHealthOperation(this).perform()` (see §13). |
+
+**Not** the same as legacy ID115 **`FetchActivityOperation`** (CMD **`0x08`**): TOOBUR recorded sync uses **v3 `0x05`/`0x04` on `0x0AF1`/`0x0AF2`**.
+
+---
+
+## 12) Scheduling policy: is multi-type v3 sync “expensive”?
+
+Yes. A full run does **one `0x05`** plus **up to seven** type rounds of **`0x04` START + `0x04` STOP**, each potentially multi-packet on BLE, with large replies for HR/sleep/sport. That is **much heavier** than a single **GET live data** (`0x02` `0xA0`).
+
+**Recommended split:**
+
+| Trigger | Suggested behaviour |
+|---------|----------------------|
+| **User** — device card *Fetch activity data* | Full v3 path (or skip `0x04` if prefs say totals unchanged). User expects completeness. |
+| **Background** — Gadgetbridge *auto fetch* (`GBAutoFetchReceiver`, unlock / `USER_PRESENT`) | Respect **minimum minutes** (`auto_fetch_interval_limit`). **30 minutes** is a reasonable default for **full** v3 sync if you want fewer long radio sessions; alternatively rely on **`0x05`-only** or “skip `0x04` when total unchanged” (already in `TooburV3FetchHealthOperation`) to make auto-fetch cheap. |
+| **Cheap freshness** — steps / current HR on UI | **GET `0x02` `0xA0`** (live data) only; keep this on **every** fetch and optionally add a **separate** short interval if you implement periodic live polls (not the same as v3 history sync). |
+
+The HTML pages do not enforce this policy; **Gadgetbridge prefs** (`toobur_v3_health_fetch_force_full`, sport offset probe keys) and global **auto fetch** prefs do.
+
+---
+
+## 13) GET live data (`0x02` `0xA0`) vs v3 sync — confirmed behaviour
+
+| Question | Answer |
+|----------|--------|
+| Is **live data** the same protocol as v3 **`0x04`/`0x05`**? | **No.** Live data is **legacy GET** — write **`0x02` `0xA0`** on **`0x0AF6`**, reply on **`0x0AF7`**. v3 health history sync uses **`0x33`** framing — write on **`0x0AF1`**, reply on **`0x0AF2`**. |
+| On **connect** | `TooburSupport.initializeDevice` sends GET **battery**, **device info**, and **live data** once. |
+| On **Fetch activity data** (card button) | `onFetchRecordedData` sends **GET live data** first, then starts **`TooburV3FetchHealthOperation`**. |
+| On **Gadgetbridge auto fetch** (interval + unlock) | Same `onFetchRecordedData` → **live GET + v3 fetch** for connected devices that support fetching. Interval is **`auto_fetch_interval_limit`** (minutes), not fixed at 30 unless the user sets that. |
+| On **swipe refresh** in the device list | **In upstream Gadgetbridge**, “refresh on swipe” is a **preference** (`pref_refresh_on_swipe` / `GBPrefs.refreshOnSwipe()`). **This fork may or may not wire the UI to `onFetchRecordedData`**; if swipe only refreshes the list UI, it does **not** hit the band. **Card “Fetch activity data”** always calls `onFetchRecordedData` in `GBDeviceAdapterv2`. |
+
+**High-frequency live steps/HR** without full v3 history: use **GET `0x02` `0xA0`** on a timer (e.g. every 1–5 minutes when connected) **if** you add that in `TooburSupport`; it is **not** enabled by default in the tree at the time of writing except **on connect** and **whenever sync/fetch runs** (after the `onFetchRecordedData` change above).
 

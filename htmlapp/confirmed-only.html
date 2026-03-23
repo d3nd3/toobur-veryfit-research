@@ -379,6 +379,7 @@
 
     <div class="section">
         <h2>Connect</h2>
+        <p class="subsection-note">Subscribes to <strong>notify 0x0AF7</strong> and <strong>0x0AF2</strong>; both stay active while connected. Returning to this tab re-arms notifications. Incoming frames (including watch-initiated <code>0x06</code> control) are logged and passed to the console parser.</p>
         <div class="btns">
             <button id="btnConnect">Connect (0x0AF0)</button>
         </div>
@@ -451,6 +452,9 @@
             <button data-tx="02 04" data-label="get_mac">MAC (02 04)</button>
             <button data-tx="02 05" data-label="get_battery">Battery (02 05)</button>
             <button data-tx="02 07" data-label="get_func_table_ex">Func table ex (02 07)</button>
+            <button data-tx="02 11" data-label="get_unit">Unit (02 11)</button>
+            <button data-tx="02 20" data-label="get_hr_sensor_param">HR sensor param (02 20)</button>
+            <button data-tx="02 21" data-label="get_gsensor_param">G-sensor param (02 21)</button>
             <button data-tx="02 30" data-label="get_dnd">DND (02 30)</button>
             <button data-tx="02 A7" data-label="get_flashbin_info">Flashbin info (02 A7)</button>
             <button data-tx="02 B0" data-label="get_02_b0">GET 02 B0</button>
@@ -544,11 +548,105 @@
             <button data-tx="03 2D AA 00 00 00" data-label="set_weather_on">On (03 2D AA)</button>
         </div>
 
+        <p class="subsection-title">Angelfit sensor / motor (SET 0x50–0x53, VBUS 120–123)</p>
+        <p class="subsection-note">Payloads match <code>protocol.h</code>: <code>protocol_heart_rate_sensor_param</code> (0x50), <code>protocol_gsensor_param</code> (0x51), <code>protocol_set_real_time_health_data_status</code> (0x52), <code>protocol_set_start_motor</code> (0x53). <code>uint16_t</code> fields are <strong>little-endian</strong>. <strong>Gadgetbridge</strong> <code>ID115Constants</code> also uses GET <strong>0x02 0x20</strong> / <strong>0x02 0x21</strong> and SET <strong>0x03 0x24</strong> / <strong>0x03 0x25</strong> (see below).</p>
+
+        <p class="subsection-title">0x24 / 0x25 HR interval &amp; mode — <code>ID115Constants</code></p>
+        <p class="subsection-note"><code>protocol_heart_rate_interval</code> (SET 0x24): <code>burn_fat_threshold</code>, <code>aerobic_threshold</code>, <code>limit_threshold</code> (1–255 BPM). <code>protocol_heart_rate_mode</code> (SET 0x25): one byte — <code>CMD_ARG_HR_MODE_OFF=0x55</code>, <code>AUTO=0x88</code>, <code>MANUAL=0xAA</code>.</p>
+        <div class="form-row">
+            <label>burn_fat <input type="number" id="hr_interval_burn" min="1" max="255" value="96" class="input-xs"></label>
+            <label>aerobic <input type="number" id="hr_interval_aerobic" min="1" max="255" value="160" class="input-xs"></label>
+            <label>limit <input type="number" id="hr_interval_limit" min="1" max="255" value="180" class="input-xs"></label>
+            <button type="button" data-id115-set="hr_interval" data-label="set_hr_interval_03_24">Send 03 24</button>
+        </div>
+        <div class="form-row">
+            <label>mode
+                <select id="hr_mode_byte" class="input-s" title="protocol_heart_rate_mode.mode">
+                    <option value="85">0x55 OFF</option>
+                    <option value="136" selected>0x88 AUTO</option>
+                    <option value="170">0xAA MANUAL</option>
+                </select>
+            </label>
+            <button type="button" data-id115-set="hr_mode" data-label="set_hr_mode_03_25">Send 03 25</button>
+        </div>
+
+        <p class="subsection-title">0x50 HR sensor param — <code>protocol_heart_rate_sensor_param</code></p>
+        <div class="form-row">
+            <label>rate (u16 LE) <input type="number" id="hr_param_rate" min="0" max="65535" value="300" class="input-s"></label>
+            <label>led_select <input type="number" id="hr_param_led" min="0" max="255" value="0" class="input-xs"></label>
+            <button type="button" data-angelfit-set="hr_param" data-label="set_hr_sensor_param">Send 03 50</button>
+        </div>
+
+        <p class="subsection-title">0x51 G-sensor param — <code>protocol_gsensor_param</code></p>
+        <div class="form-row">
+            <label>rate (u16 LE) <input type="number" id="gs_param_rate" min="0" max="65535" value="100" class="input-s"></label>
+            <label>range <input type="number" id="gs_param_range" min="0" max="255" value="8" class="input-xs"></label>
+            <label>threshold (u16 LE) <input type="number" id="gs_param_threshold" min="0" max="65535" value="500" class="input-s"></label>
+            <button type="button" data-angelfit-set="gsensor_param" data-label="set_gsensor_param">Send 03 51</button>
+        </div>
+
+        <p class="subsection-title">0x52 Realtime health status — <code>protocol_set_real_time_health_data_status</code> (form)</p>
+        <div class="form-row">
+            <label>gsensor_status <input type="number" id="rt_status_gs" min="0" max="255" value="1" class="input-xs" title="Often 0x01/0xAA/0x55"></label>
+            <label>heart_rate_sensor_status <input type="number" id="rt_status_hr" min="0" max="255" value="1" class="input-xs"></label>
+            <button type="button" data-angelfit-set="rt_health_status" data-label="set_rt_health_status_form">Send 03 52 (from fields)</button>
+        </div>
+
+        <p class="subsection-title">0x53 Start motor — <code>protocol_set_start_motor</code></p>
+        <div class="form-row">
+            <label>status <input type="number" id="motor_status" min="0" max="255" value="1" class="input-xs"></label>
+            <label>timeout (u16 LE, e.g. ms) <input type="number" id="motor_timeout" min="0" max="65535" value="3000" class="input-s"></label>
+            <button type="button" data-angelfit-set="start_motor" data-label="set_start_motor">Send 03 53</button>
+        </div>
+
+        <p class="subsection-title">0x52 Realtime sensor (G-sensor + HR) — preset buttons</p>
+        <p class="subsection-note">SET <code>03 52</code> = <strong>cmd</strong> + <strong>key</strong> + 2 payload bytes (protocol: gsensor status, HR sensor status). Below: <strong>four variants</strong> of ON/OFF byte pairs. Each variant sends the same value for <em>both</em> payload bytes (typical when mirroring ID115-style toggles). Use <strong>Isolate G</strong> to set only byte&nbsp;0 (gsensor) with byte&nbsp;1 fixed to <code>01</code> / <code>55</code>.</p>
+        <div class="form-row form-row-tight" style="align-items:flex-start;">
+            <div style="min-width:100%; margin-bottom:0.35rem;"><strong>Variant A — ON=0x01 / OFF=0x00</strong> (numeric)</div>
+            <div class="btns">
+                <button type="button" data-tx="03 52 01 01" data-label="set_rt_sensor_v1_on">ON (03 52 01 01)</button>
+                <button type="button" data-tx="03 52 00 00" data-label="set_rt_sensor_v1_off">OFF (03 52 00 00)</button>
+                <button type="button" data-tx="03 52 01 55" data-label="set_rt_sensor_v1_on_iso" title="G ON (0x01), HR byte 0x55">Isolate G · ON (03 52 01 55)</button>
+                <button type="button" data-tx="03 52 00 01" data-label="set_rt_sensor_v1_off_iso" title="G only: first byte OFF (0x00), second fixed 0x01">Isolate G · OFF (03 52 00 01)</button>
+            </div>
+        </div>
+        <div class="form-row form-row-tight" style="align-items:flex-start;">
+            <div style="min-width:100%; margin-bottom:0.35rem;"><strong>Variant B — ON=0xAA / OFF=0x55</strong> (ID115-style AA/55)</div>
+            <div class="btns">
+                <button type="button" data-tx="03 52 AA AA" data-label="set_rt_sensor_v2_on">ON (03 52 AA AA)</button>
+                <button type="button" data-tx="03 52 55 55" data-label="set_rt_sensor_v2_off">OFF (03 52 55 55)</button>
+                <button type="button" data-tx="03 52 AA 01" data-label="set_rt_sensor_v2_on_iso">Isolate G · ON (03 52 AA 01)</button>
+                <button type="button" data-tx="03 52 55 01" data-label="set_rt_sensor_v2_off_iso" title="G only: first byte OFF (0x55), second 0x01">Isolate G · OFF (03 52 55 01)</button>
+            </div>
+        </div>
+        <div class="form-row form-row-tight" style="align-items:flex-start;">
+            <div style="min-width:100%; margin-bottom:0.35rem;"><strong>Variant C — ON=0xCC / OFF=0x55</strong></div>
+            <div class="btns">
+                <button type="button" data-tx="03 52 CC CC" data-label="set_rt_sensor_v3_on">ON (03 52 CC CC)</button>
+                <button type="button" data-tx="03 52 55 55" data-label="set_rt_sensor_v3_off">OFF (03 52 55 55)</button>
+                <button type="button" data-tx="03 52 CC 01" data-label="set_rt_sensor_v3_on_iso">Isolate G · ON (03 52 CC 01)</button>
+                <button type="button" data-tx="03 52 55 01" data-label="set_rt_sensor_v3_off_iso" title="G only: first byte OFF (0x55), second 0x01">Isolate G · OFF (03 52 55 01)</button>
+            </div>
+        </div>
+        <div class="form-row form-row-tight" style="align-items:flex-start;">
+            <div style="min-width:100%; margin-bottom:0.35rem;"><strong>Variant D — ON=0x01 / OFF=0x55</strong> (Gadgetbridge-style first byte; same as paired A/D)</div>
+            <div class="btns">
+                <button type="button" data-tx="03 52 01 01" data-label="set_rt_sensor_v4_on">ON (03 52 01 01)</button>
+                <button type="button" data-tx="03 52 55 55" data-label="set_rt_sensor_v4_off">OFF (03 52 55 55)</button>
+                <button type="button" data-tx="03 52 01 55" data-label="set_rt_sensor_v4_on_iso" title="G ON (0x01), HR byte 0x55">Isolate G · ON (03 52 01 55)</button>
+                <button type="button" data-tx="03 52 55 01" data-label="set_rt_sensor_v4_off_iso" title="First byte OFF (0x55), second 0x01">Isolate G · OFF (03 52 55 01)</button>
+            </div>
+        </div>
+        <p class="subsection-note"><strong>Isolate G</strong>: byte&nbsp;0 = gsensor trial value; byte&nbsp;1 fixed to <code>01</code> (except full-pair OFF rows where both bytes use the OFF value). Tweak hex if your watch expects HR byte <code>55</code> when off.</p>
+
         <p class="subsection-title warning">0x30 Notice / call alert</p>
-        <p class="subsection-note">Enable is <code>AA</code>, disable is <code>55</code>.</p>
+        <p class="subsection-note">Wire matches Angelfit <code>protocol.h</code>: <strong><code>struct protocol_set_notice</code></strong> after <code>protocol_head</code> (<code>cmd=0x03</code>, <code>key=0x30</code>) — fields in order <code>notify_switch</code>, <code>notify_itme1</code>, <code>notify_itme2</code>, <code>call_switch</code>, <code>call_delay</code> (five <code>uint8_t</code>). VeryFit pads to <strong>20 bytes</strong> (15×<code>00</code>). OEM example: <code>TX 03 30 88 00 00 AA 00 …</code> (<code>app_fresh_launch</code>). <strong>ACK</strong> is <code>struct protocol_set_notice_ack</code>: same <code>03 30</code> head, then <code>notify_switch</code> (echo of what you set), <code>status_code</code> (often <code>0x01</code>), <code>err_code</code> — e.g. <code>03 30 88 01 00 00 …</code>. Values are often band tokens (<code>0x55</code>/<code>0x88</code>/<code>0xAA</code>) or small integers depending on stack; Flutter JSON “modes” are not the same as raw byte values.</p>
+        <p class="subsection-title">Quick presets</p>
         <div class="btns">
-            <button data-tx="03 30 88 00 00 55 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_off">Off (03 30)</button>
-            <button data-tx="03 30 88 00 00 AA 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_on">On (03 30)</button>
+            <button data-tx="03 30 88 00 00 AA 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_oem_sync">OEM sync (88 / AA)</button>
+            <button data-tx="03 30 55 00 00 55 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_both_55">Both 55</button>
+            <button data-tx="03 30 AA 00 00 AA 00 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_both_aa">Both AA</button>
+            <button data-tx="03 30 01 00 00 01 03 00 00 00 00 00 00 00 00 00 00 00 00 00" data-label="set_notice_gb_shape">Gadgetbridge shape (1/0/1/3)</button>
         </div>
 
         <p class="subsection-title">0x32 Brightness / screen</p>
@@ -623,13 +721,31 @@
             <button data-tx="03 60 01 09 00 12 00 3F 1E 00 01 00 00 00 00 00" data-label="set_drinking_on">On (03 60)</button>
         </div>
 
-        <p class="subsection-title">Angelfit 5-byte payload</p>
+        <p class="subsection-title"><code>protocol_set_notice</code> + 15 pad (20&nbsp;B)</p>
         <div class="form-row">
-            <label>notify_switch <input type="number" id="notice_notify_switch" min="0" max="255" value="1" class="input-s"></label>
-            <label>notify_itme1 <input type="number" id="notice_notify_itme1" min="0" max="255" value="0" class="input-s"></label>
-            <label>notify_itme2 <input type="number" id="notice_notify_itme2" min="0" max="255" value="0" class="input-s"></label>
-            <label>call_switch <input type="number" id="notice_call_switch" min="0" max="255" value="1" class="input-s"></label>
-            <label>call_delay <input type="number" id="notice_call_delay" min="0" max="255" value="3" class="input-s"></label>
+            <label><code>notify_switch</code>
+                <select id="notice_notify_switch" class="input-s" title="protocol_set_notice.notify_switch — OEM sync 0x88">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="99">99 (VeryFit)</option>
+                    <option value="85">0x55</option>
+                    <option value="136" selected>0x88 (OEM)</option>
+                    <option value="170">0xAA</option>
+                </select>
+            </label>
+            <label><code>notify_itme1</code> <input type="number" id="notice_notify_itme1" min="0" max="255" value="0" class="input-xs" title="Sub-app bitmask"></label>
+            <label><code>notify_itme2</code> <input type="number" id="notice_notify_itme2" min="0" max="255" value="0" class="input-xs" title="Sub-app bitmask"></label>
+            <label><code>call_switch</code>
+                <select id="notice_call_switch" class="input-s" title="protocol_set_notice.call_switch — OEM sync 0xAA">
+                    <option value="0">0</option>
+                    <option value="1">1</option>
+                    <option value="99">99 (VeryFit)</option>
+                    <option value="85">0x55</option>
+                    <option value="136">0x88</option>
+                    <option value="170" selected>0xAA (OEM)</option>
+                </select>
+            </label>
+            <label><code>call_delay</code> <input type="number" id="notice_call_delay" min="0" max="255" value="0" class="input-xs" title="Seconds; GB often 3"></label>
             <span id="notice_5b_hex"></span>
         </div>
         <div class="btns">
@@ -716,6 +832,19 @@
         <div class="btns">
             <button data-tx="0A 01 02 08 09 07 5B 00 00 02 0E 08 02 10 09 02 0F 09" data-label="weatcher_data">Weather data (0A 01)</button>
             <button data-tx="0A 02 06 4C 6F 6E 64 6F 6E 00 00 00 00 00 00 00 00 00 00 00" data-label="weatcher_city">Weather city London (0A 02)</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Experimental (cmd 0x0F)</h2>
+        <p class="subsection-note">Not in Angelfit <code>protocol.h</code> as a named opcode here. Hypothesis: <strong>0x0F 0x02</strong> or <strong>0x0F 0x04</strong> may be <strong>factory reset</strong> or similar — verify on a disposable pairing only.</p>
+        <p class="subsection-title warning">0x02 — factory reset candidate</p>
+        <div class="btns">
+            <button type="button" data-tx="0F 02" data-label="exp_0f_02_factory_reset_candidate">Send 0F 02 (2 B)</button>
+        </div>
+        <p class="subsection-title warning">0x04 — factory reset candidate</p>
+        <div class="btns">
+            <button type="button" data-tx="0F 04" data-label="exp_0f_04_factory_reset_candidate">Send 0F 04 (2 B)</button>
         </div>
     </div>
 
@@ -1950,31 +2079,38 @@
             }
 
             function getNotice5ByteValues() {
-                const v = (id) => { const el = document.getElementById(id); return el ? Math.max(0, Math.min(255, parseInt(el.value, 10) || 0)) : 0; };
-                return { notify_switch: v('notice_notify_switch'), notify_itme1: v('notice_notify_itme1'), notify_itme2: v('notice_notify_itme2'), call_switch: v('notice_call_switch'), call_delay: v('notice_call_delay') };
+                const v = (id) => {
+                    const el = document.getElementById(id);
+                    if (!el) return 0;
+                    const raw = String(el.value).trim();
+                    if (/^0x/i.test(raw)) return Math.max(0, Math.min(255, parseInt(raw, 16) || 0));
+                    return Math.max(0, Math.min(255, parseInt(raw, 10) || 0));
+                };
+                return {
+                    notify_switch: v('notice_notify_switch'),
+                    notify_itme1: v('notice_notify_itme1'),
+                    notify_itme2: v('notice_notify_itme2'),
+                    call_switch: v('notice_call_switch'),
+                    call_delay: v('notice_call_delay')
+                };
             }
             function sendNotice5Byte(label) {
                 if (!sendChar) { log('Not connected.'); return; }
-                const v = getNotice5ByteValues();
-                const bool = (n) => (n === 0 ? 0x55 : n === 1 ? 0x88 : (n & 0xff));
-                const b0 = bool(v.notify_switch);
-                const b1 = v.notify_itme1 & 0xff, b2 = v.notify_itme2 & 0xff;
-                const b3 = bool(v.call_switch);
-                const b4 = v.call_delay & 0xff;
+                const o = getNotice5ByteValues();
+                const b0 = o.notify_switch & 0xff, b1 = o.notify_itme1 & 0xff, b2 = o.notify_itme2 & 0xff, b3 = o.call_switch & 0xff, b4 = o.call_delay & 0xff;
                 const buf = [0x03, 0x30, b0, b1, b2, b3, b4];
                 for (var i = 0; i < 15; i++) buf.push(0);
                 sendChar.writeValue(new Uint8Array(buf));
                 const hexStr = buf.slice(0, 7).map(b => ('0' + b.toString(16)).slice(-2)).join(' ') + ' (+' + (buf.length - 7) + ' padding)';
                 log('[TX] ' + (label || 'set_notice_5b') + ' (20 B) ' + hexStr, 'tx');
-                event_log('Sent SET 0x30: notify_switch=' + b0.toString(16) + ' itme1=' + b1.toString(16) + ' itme2=' + b2.toString(16) + ' call_switch=' + b3.toString(16) + ' call_delay=' + b4.toString(16) + ' + 15 zero padding');
+                event_log('Sent SET 0x30 protocol_set_notice: notify_switch=' + b0 + ' notify_itme1=' + b1 + ' notify_itme2=' + b2 + ' call_switch=' + b3 + ' call_delay=' + b4 + ' + 15×0 pad');
             }
             function updateNotice5bHexPreview() {
                 const el = document.getElementById('notice_5b_hex');
                 if (!el) return;
-                const v = getNotice5ByteValues();
-                const bool = (n) => (n === 0 ? 0x55 : n === 1 ? 0x88 : (n & 0xff));
-                const b = [bool(v.notify_switch), v.notify_itme1 & 0xff, v.notify_itme2 & 0xff, bool(v.call_switch), v.call_delay & 0xff];
-                el.textContent = '03 30 ' + b.map(x => ('0' + x.toString(16)).slice(-2)).join(' ') + ' (switches: 0→55, 1→88)';
+                const o = getNotice5ByteValues();
+                const b = [o.notify_switch & 0xff, o.notify_itme1 & 0xff, o.notify_itme2 & 0xff, o.call_switch & 0xff, o.call_delay & 0xff];
+                el.textContent = '03 30 ' + b.map(x => ('0' + x.toString(16)).slice(-2)).join(' ') + ' → ACK protocol_set_notice_ack: notify_switch echo, status_code, err_code';
             }
 
             function renderAlarmList() {
@@ -2016,6 +2152,26 @@
 
             // Byte 1 is a combined bitfield (e.g. 10 = 0x0a = 0b1010): bit 1 = alarm_count, bit 2 = is_need_sync_v2, bit 3 = version_info.
             const BYTE1_FLAGS = ['alarm_count', 'is_need_sync_v2', 'version_info'];
+
+            // Angelfit protocol.h struct protocol_set_uint — dist_uint / weight_uint / temp comments on wire.
+            function decodeProtocolDistUint(d) {
+                if (d === 0) return 'invalid (0)';
+                if (d === 1) return 'km';
+                if (d === 2) return 'mi';
+                return 'raw 0x' + d.toString(16);
+            }
+            function decodeProtocolWeightUint(w) {
+                if (w === 0) return 'invalid (0)';
+                if (w === 1) return 'kg';
+                if (w === 2) return 'lb';
+                return 'raw 0x' + w.toString(16);
+            }
+            function decodeProtocolTempUint(t) {
+                if (t === 0) return 'invalid (0)';
+                if (t === 1) return '°C';
+                if (t === 2) return '°F';
+                return 'raw 0x' + t.toString(16);
+            }
 
             (function loadIdoFuncTables() {
                 const url = 'function_table_output.json';
@@ -2268,6 +2424,50 @@
                         parseFuncTableEx(arr.subarray(2));
                         return;
                     }
+                    if (h1 === 0x11) {
+                        // GET unit — payload matches Angelfit protocol.h struct protocol_set_uint after head (02 11):
+                        // dist_uint, weight_uint, temp, stride (cm), language, is_12hour_format
+                        // PROTOCOL_KEY_SET_UNIT 0x11; VBUS_EVT_APP_GET_UNIT evt 342
+                        if (arr.length >= 8) {
+                            const dist_uint = arr[2];
+                            const weight_uint = arr[3];
+                            const temp = arr[4];
+                            const stride = arr[5];
+                            const language = arr[6];
+                            const is12 = arr[7];
+                            const fmt12 = (is12 === 1) ? '12h' : (is12 === 0 ? '24h' : 'raw 0x' + is12.toString(16));
+                            console.log('[PARSE] GET unit (0x02 0x11) protocol_set_uint | dist_uint=' + dist_uint + ' (' + decodeProtocolDistUint(dist_uint) + ')' +
+                                ' | weight_uint=' + weight_uint + ' (' + decodeProtocolWeightUint(weight_uint) + ')' +
+                                ' | temp=' + temp + ' (' + decodeProtocolTempUint(temp) + ')' +
+                                ' | stride_cm=' + stride +
+                                ' | language=0x' + language.toString(16) +
+                                ' | is_12hour_format=' + is12 + ' (' + fmt12 + ')' +
+                                ' | VBUS 342 | raw=' + hex.slice(0, 56));
+                        } else {
+                            const body = arr.length > 2 ? Array.from(arr.slice(2)).map(b => ('0' + b.toString(16)).slice(-2)).join(' ') : '';
+                            console.log('[PARSE] GET unit (0x02 0x11) short/unknown len=' + arr.length +
+                                (body ? ' | payload=' + body : '') +
+                                ' | expected ≥8 B for protocol_set_uint | raw=' + hex);
+                        }
+                        return;
+                    }
+                    if (h1 === 0x20 && arr.length >= 5) {
+                        // GET 0x02 0x20 — ID115Constants.CMD_KEY_GET_HR_SENSOR_PARAM; reply protocol_heart_rate_sensor_param
+                        const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+                        const rate = view.getUint16(2, true);
+                        const led = arr[4];
+                        console.log('[PARSE] GET 0x02 0x20 protocol_heart_rate_sensor_param | rate=' + rate + ' | led_select=' + led + ' | ID115Constants | raw=' + hex.slice(0, 40));
+                        return;
+                    }
+                    if (h1 === 0x21 && arr.length >= 8) {
+                        // GET 0x02 0x21 — ID115Constants.CMD_KEY_GET_GSENSOR_PARAM; reply protocol_gsensor_param
+                        const view = new DataView(arr.buffer, arr.byteOffset, arr.byteLength);
+                        const rate = view.getUint16(2, true);
+                        const range = arr[4];
+                        const threshold = view.getUint16(5, true);
+                        console.log('[PARSE] GET 0x02 0x21 protocol_gsensor_param | rate=' + rate + ' | range=' + range + ' | threshold=' + threshold + ' | ID115Constants | raw=' + hex.slice(0, 40));
+                        return;
+                    }
                     if (h1 === 0x28 && arr.length >= 9) {
                         // Get hand-up (raise-to-wake) gesture (IDOGetHandUpGestureFunction / IDOSetHandUpInfoBuletoothModel)
                         // Layout (bytes 2–8) matches SetHandUp model:
@@ -2504,8 +2704,15 @@
                         0x29: 'DND',
                         0x2A: 'music',
                         0x2D: 'weather',
+                        0x30: 'notice',
                         0x32: 'brightness',
                         0x35: 'conn param',
+                        0x24: 'HR interval thresholds',
+                        0x25: 'HR mode',
+                        0x50: 'HR sensor param',
+                        0x51: 'G-sensor param',
+                        0x52: 'realtime health status',
+                        0x53: 'start motor',
                         0x45: 'stress/HR',
                         0x47: 'walk',
                         0x49: 'auto sport',
@@ -2515,6 +2722,18 @@
                     };
                     const name = keyNames[h1] || ('key 0x' + h1.toString(16));
                     const status = arr.length >= 3 ? arr[2] : null;
+                    // SET 0x30: protocol_set_notice_ack (notify_switch echo, status_code, err_code)
+                    if (h1 === 0x30 && arr.length >= 5) {
+                        const ackNs = arr[2];
+                        const statusCode = arr[3];
+                        const errCode = arr[4];
+                        console.log('[PARSE] SET notice ACK (protocol_set_notice_ack) | notify_switch=0x' + ackNs.toString(16) + ' (echo) | status_code=0x' + statusCode.toString(16) + ' | err_code=0x' + errCode.toString(16) + ' | raw=' + hex.slice(0, 48));
+                        return;
+                    }
+                    if (h1 === 0x30 && arr.length >= 4) {
+                        console.log('[PARSE] SET notice ACK (short) | raw=' + hex.slice(0, 48));
+                        return;
+                    }
                     // Special-case 0x35: status byte is the conn-param step we requested / that firmware reports.
                     if (h1 === 0x35) {
                         console.log('[PARSE] SET conn param ACK | raw=' + hex.slice(0, 60));
@@ -2583,9 +2802,13 @@
                     return;
                 }
 
-                // 06 01 — seen after music on/off
-                if (h0 === 0x06 && h1 === 0x01) {
-                    console.log('[PARSE] 0x06 0x01 | GUESS: Control reply (music control?)');
+                // Control cmd 0x06 — watch may send anytime (music, bind side, etc.)
+                if (h0 === 0x06) {
+                    if (h1 === 0x01) {
+                        console.log('[PARSE] Control 0x06 0x01 | GUESS: music / control ack | raw=' + hex.slice(0, 64));
+                    } else {
+                        console.log('[PARSE] Control 0x06 | sub=0x' + h1.toString(16) + ' | len=' + arr.length + ' | raw=' + hex.slice(0, 64));
+                    }
                     return;
                 }
 
@@ -2610,6 +2833,15 @@
                         return;
                     }
                     console.log('[PARSE] D1 0x' + sub.toString(16) + ' | GUESS: chunked transfer (D1 01/02/05 in watch face flow)');
+                    return;
+                }
+
+                // Standalone cmd 0x0F (not v3) — e.g. trial TX 0F 02 / 0F 04
+                if (h0 === 0x0F) {
+                    let guess = '';
+                    if (h1 === 0x02) guess = ' | GUESS: reply to 0F 02 trial (factory reset?)';
+                    else if (h1 === 0x04) guess = ' | GUESS: reply to 0F 04 trial (factory reset?)';
+                    console.log('[PARSE] cmd 0x0F | sub=0x' + h1.toString(16) + ' | len=' + arr.length + guess + ' | raw=' + hex.slice(0, 64));
                     return;
                 }
 
@@ -3788,6 +4020,59 @@
                 log('[TX] ' + (label || 'set_brightness_03_32') + ' (12 B) ' + hexStr, 'tx');
             }
 
+            function u16LeBytes(n) {
+                const v = Math.max(0, Math.min(65535, parseInt(n, 10) || 0));
+                return [v & 0xff, (v >> 8) & 0xff];
+            }
+            function sendAngelfitHrParam(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const rate = Math.max(0, Math.min(65535, parseInt(document.getElementById('hr_param_rate') && document.getElementById('hr_param_rate').value, 10) || 0));
+                const led = Math.max(0, Math.min(255, parseInt(document.getElementById('hr_param_led') && document.getElementById('hr_param_led').value, 10) || 0));
+                const buf = [0x03, 0x50].concat(u16LeBytes(rate), [led & 0xff]);
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_hr_sensor_param') + ' protocol_heart_rate_sensor_param (7 B) rate=' + rate + ' led_select=' + led + ' | ' + buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+            function sendAngelfitGsensorParam(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const rate = Math.max(0, Math.min(65535, parseInt(document.getElementById('gs_param_rate') && document.getElementById('gs_param_rate').value, 10) || 0));
+                const range = Math.max(0, Math.min(255, parseInt(document.getElementById('gs_param_range') && document.getElementById('gs_param_range').value, 10) || 0));
+                const th = Math.max(0, Math.min(65535, parseInt(document.getElementById('gs_param_threshold') && document.getElementById('gs_param_threshold').value, 10) || 0));
+                const buf = [0x03, 0x51].concat(u16LeBytes(rate), [range & 0xff], u16LeBytes(th));
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_gsensor_param') + ' protocol_gsensor_param (9 B) | ' + buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+            function sendAngelfitRtHealthStatus(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const g = Math.max(0, Math.min(255, parseInt(document.getElementById('rt_status_gs') && document.getElementById('rt_status_gs').value, 10) || 0));
+                const h = Math.max(0, Math.min(255, parseInt(document.getElementById('rt_status_hr') && document.getElementById('rt_status_hr').value, 10) || 0));
+                const buf = [0x03, 0x52, g & 0xff, h & 0xff];
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_rt_health_status_form') + ' protocol_set_real_time_health_data_status (4 B) | ' + buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+            function sendAngelfitStartMotor(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const st = Math.max(0, Math.min(255, parseInt(document.getElementById('motor_status') && document.getElementById('motor_status').value, 10) || 0));
+                const to = Math.max(0, Math.min(65535, parseInt(document.getElementById('motor_timeout') && document.getElementById('motor_timeout').value, 10) || 0));
+                const buf = [0x03, 0x53, st & 0xff].concat(u16LeBytes(to));
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_start_motor') + ' protocol_set_start_motor (5 B) | ' + buf.map(b => ('0' + b.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+
+            function sendId115HrInterval(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const b = (id) => Math.max(1, Math.min(255, parseInt(document.getElementById(id) && document.getElementById(id).value, 10) || 1));
+                const buf = [0x03, 0x24, b('hr_interval_burn'), b('hr_interval_aerobic'), b('hr_interval_limit')];
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_hr_interval_03_24') + ' protocol_heart_rate_interval (5 B) | ' + buf.map(x => ('0' + x.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+            function sendId115HrMode(label) {
+                if (!sendChar) { log('Not connected.'); return; }
+                const m = Math.max(0, Math.min(255, parseInt(document.getElementById('hr_mode_byte') && document.getElementById('hr_mode_byte').value, 10) || 0));
+                const buf = [0x03, 0x25, m & 0xff];
+                sendChar.writeValue(new Uint8Array(buf));
+                log('[TX] ' + (label || 'set_hr_mode_03_25') + ' protocol_heart_rate_mode (3 B) mode=0x' + (m & 0xff).toString(16) + ' | ' + buf.map(x => ('0' + x.toString(16)).slice(-2)).join(' '), 'tx');
+            }
+
             function setConnected(ok) {
                 statusEl.textContent = ok ? 'Connected' : 'Disconnected';
                 statusEl.classList.toggle('connected', ok);
@@ -3795,7 +4080,7 @@
                 if (!ok && bruteForceState.running) {
                     endBruteforceScan('Connection lost; bruteforce stopped.');
                 }
-                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-v3-health-sync], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], .section button[data-legacy-health-fetch], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList, .section button.vbus-mapped-btn').forEach(b => b.disabled = !ok);
+                document.querySelectorAll('.section button[data-tx], .section button[data-seq], .section button[data-sync-v3], .section button[data-v3-health-sync], .section button[data-brightness-send], .section button[data-get-activity], .section button[data-simulate-activity], .section button[data-set-sport-sort-v3], .section button[data-msg-send], .section button[data-notice-5b], .section button[data-legacy-health-fetch], .section button[data-angelfit-set], .section button[data-id115-set], #btnNotice5bPresetOn, #btnNotice5bPresetOff, #btnAddAlarmToList, #btnSyncAlarmsToWatch, #btnClearAlarmList, .section button.vbus-mapped-btn').forEach(b => b.disabled = !ok);
                 document.getElementById('btnConnect').textContent = ok ? 'Disconnect' : 'Connect (0x0AF0)';
                 setBruteforceButtonState(!!(ok && bruteForceState.running));
             }
@@ -3867,6 +4152,22 @@
                         log('Error: ' + err.message);
                         setConnected(false);
                     });
+            });
+
+            function ensureNotificationsActive() {
+                if (!rxChar || !healthRxChar) return Promise.resolve();
+                return Promise.all([
+                    rxChar.startNotifications().catch(function (e) { console.warn('[BT] 0x0AF7 notifications', e); }),
+                    healthRxChar.startNotifications().catch(function (e) { console.warn('[BT] 0x0AF2 notifications', e); })
+                ]);
+            }
+            document.addEventListener('visibilitychange', function () {
+                if (document.visibilityState === 'visible' && rxChar && healthRxChar) {
+                    ensureNotificationsActive();
+                }
+            });
+            window.addEventListener('focus', function () {
+                if (rxChar && healthRxChar) ensureNotificationsActive();
             });
 
             const btnSetTime = document.getElementById('btnSetTime');
@@ -3975,6 +4276,32 @@
                     }
                     if (brightnessSend) {
                         sendBrightnessFromForm(label);
+                        return;
+                    }
+                    const angelfitSet = btn.getAttribute('data-angelfit-set');
+                    if (angelfitSet === 'hr_param') {
+                        sendAngelfitHrParam(label);
+                        return;
+                    }
+                    if (angelfitSet === 'gsensor_param') {
+                        sendAngelfitGsensorParam(label);
+                        return;
+                    }
+                    if (angelfitSet === 'rt_health_status') {
+                        sendAngelfitRtHealthStatus(label);
+                        return;
+                    }
+                    if (angelfitSet === 'start_motor') {
+                        sendAngelfitStartMotor(label);
+                        return;
+                    }
+                    const id115Set = btn.getAttribute('data-id115-set');
+                    if (id115Set === 'hr_interval') {
+                        sendId115HrInterval(label);
+                        return;
+                    }
+                    if (id115Set === 'hr_mode') {
+                        sendId115HrMode(label);
                         return;
                     }
                     if (btn.getAttribute('data-notice-5b')) {
@@ -4181,24 +4508,27 @@
             (function initNotice5bForm() {
                 ['notice_notify_switch', 'notice_notify_itme1', 'notice_notify_itme2', 'notice_call_switch', 'notice_call_delay'].forEach(function(id) {
                     var el = document.getElementById(id);
-                    if (el) el.addEventListener('input', updateNotice5bHexPreview);
+                    if (el) {
+                        el.addEventListener('input', updateNotice5bHexPreview);
+                        el.addEventListener('change', updateNotice5bHexPreview);
+                    }
                 });
                 var presetOn = document.getElementById('btnNotice5bPresetOn');
                 var presetOff = document.getElementById('btnNotice5bPresetOff');
                 if (presetOn) presetOn.addEventListener('click', function () {
-                    document.getElementById('notice_notify_switch').value = 1;
-                    document.getElementById('notice_notify_itme1').value = 0;
-                    document.getElementById('notice_notify_itme2').value = 0;
-                    document.getElementById('notice_call_switch').value = 1;
-                    document.getElementById('notice_call_delay').value = 3;
+                    var ns = document.getElementById('notice_notify_switch'); if (ns) ns.value = '136';
+                    var cs = document.getElementById('notice_call_switch'); if (cs) cs.value = '170';
+                    var n1 = document.getElementById('notice_notify_itme1'); if (n1) n1.value = 0;
+                    var n2 = document.getElementById('notice_notify_itme2'); if (n2) n2.value = 0;
+                    var d = document.getElementById('notice_call_delay'); if (d) d.value = 0;
                     updateNotice5bHexPreview();
                 });
                 if (presetOff) presetOff.addEventListener('click', function () {
-                    document.getElementById('notice_notify_switch').value = 0;
-                    document.getElementById('notice_notify_itme1').value = 0;
-                    document.getElementById('notice_notify_itme2').value = 0;
-                    document.getElementById('notice_call_switch').value = 0;
-                    document.getElementById('notice_call_delay').value = 0;
+                    var ns = document.getElementById('notice_notify_switch'); if (ns) ns.value = '85';
+                    var cs = document.getElementById('notice_call_switch'); if (cs) cs.value = '85';
+                    var n1 = document.getElementById('notice_notify_itme1'); if (n1) n1.value = 0;
+                    var n2 = document.getElementById('notice_notify_itme2'); if (n2) n2.value = 0;
+                    var d = document.getElementById('notice_call_delay'); if (d) d.value = 0;
                     updateNotice5bHexPreview();
                 });
                 updateNotice5bHexPreview();
