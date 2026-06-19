@@ -47,7 +47,7 @@ issues/
 | [007](./007-hr-day-v3-type-03/) | HR day history → GB HR chart | 002, 006, 026 | closed |
 | [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | closed |
 | [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | closed |
-| [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | `ready-for-agent` |
+| [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | closed |
 | [010](./010-device-info-card/) | Full device info card | — | `closed` |
 | [011](./011-notifications-msg-verify/) | Verify MSG `05` notifications | 002, 003, 022 | closed |
 | [017](./017-watch-ble-events-07/) | Watch BLE events `07 40` + call/music | — | closed |
@@ -66,9 +66,9 @@ issues/
 | [023](./023-spo2-stress-full-set-payloads/) | SpO₂/stress full SET `44`/`45` schedules | 002, 024 | `ready-for-agent` |
 | [025](./025-per-app-notification-switches/) | Per-app notify GET `02 10` + item bytes | 003, 024 | `ready-for-agent` |
 | [027](./027-units-user-profile-set-03-11/) | Units SET `03 11` + user profile | 018, 024 | `ready-for-agent` |
-| [029](./029-tabbed-device-settings/) | Tabbed device settings (DeviceSpecificSettingsScreen) | — | `ready-for-agent` |
-| [030](./030-coordinator-ui-capability-flags/) | Coordinator flags — unlock stock GB UI | — | `ready-for-agent` |
-| [031](./031-settings-customizer-wiring/) | Settings customizer — wire prefs on change | — | `ready-for-agent` |
+| [029](./029-tabbed-device-settings/) | Tabbed device settings (DeviceSpecificSettingsScreen) | — | closed |
+| [030](./030-coordinator-ui-capability-flags/) | Coordinator flags — unlock stock GB UI | — | closed |
+| [031](./031-settings-customizer-wiring/) | Settings customizer — wire prefs on change | — | closed |
 | [032](./032-device-card-ui-polish/) | Device card icons + quick toggles | 010 | `ready-for-agent` |
 
 ### P3 — advanced
@@ -97,9 +97,9 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer).
 
-SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings** are **not** fully polished — see 003, 023, 029.
+SpO₂/stress **continuous SET schedules** and notice alert are **not** fully polished — see 003, 023.
 
 ## Explicitly out of scope (no issue until captured)
 
