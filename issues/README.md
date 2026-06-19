@@ -97,9 +97,9 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather).
 
-SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings / coordinator UI flags** are **not** fully polished — see 003, 023, 029–032.
+SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings** are **not** fully polished — see 003, 023, 029.
 
 ## Explicitly out of scope (no issue until captured)
 
