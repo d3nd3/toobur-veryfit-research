@@ -36,6 +36,10 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `ble-notify-07-40` | CMD `0x07 0x40` data-update notify + phone ACK + GET readback | `gb-wired` | `TooburBleEventPacketsTest` | `packetdumps/logcat/set_dnd_on.txt`, `set_hand_gesture_wake_on.txt` |
 | `ble-control-music-next-07-01` | CMD `0x07 0x01` cmd1=5 → music next (VBUS 555) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |
 | `ble-control-call-reject-07-01` | CMD `0x07 0x01` cmd1=13 → call reject (VBUS 563) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |
+| `ble-control-camera-open-07-01` | CMD `0x07 0x01` cmd1=10 → open phone camera (VBUS 560) | `gb-wired` | `TooburBleEventPacketsTest` | IDO `vbus_evt_app.h` |
+| `ble-control-camera-shot-07-01` | CMD `0x07 0x01` cmd1=6 → camera shutter (VBUS 556) | `gb-wired` | `TooburBleEventPacketsTest` | IDO `vbus_evt_app.h` |
+| `app-camera-06-02` | APP `0x06 0x02` camera remote start/stop | `gb-wired` | `TooburAppControlPacketsTest` | `bruteforce_results.txt` VALID |
+| `set-sleep-period-03-31` | SET `0x03 0x31` sleep/bedtime window (7 B) | `gb-wired` | `TooburSleepPeriodPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` probe ACK |
 | `get-func-table-02-02` | GET `0x02 0x02` base func table | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
 | `get-func-table-ex-02-07` | GET `0x02 0x07` extended func table | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
 | `v3-func-table-1a` | v3 GET `0x1A` func table extension | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_bind-v3.json` |

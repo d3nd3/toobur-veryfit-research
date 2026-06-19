@@ -164,7 +164,7 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `30` | Call / notice alert | 111 | HUH | 🔧 | **20 B** = 5-field struct + 15× `00` pad — GB sends **5 B** legacy (see [struct](#set-03-30--protocol_set_notice)) |
 | `2A` | Music on watch | 117 | VALID | ✅ | **4 B**: `03 2A AA 55` |
 | `2D` | Weather push enable | 150 | VALID | ✅ | **6 B**: `03 2D AA 00 00 00`; weather **data** TX → issue 013 |
-| `31` | Sleep period | 152 | VALID | ❌ | — |
+| `31` | Sleep period | 152 | VALID | ✅ | `03 31` probe + 7 B schedule (`onOff` + start/end); GB `devicesettings_sleep_time` |
 
 ### Health measurement toggles
 
@@ -479,7 +479,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 56 | Firmware status | GET `02 48` | ❌ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 48 — no RX on A200 |
 | 57 | Reboot / shutdown | `F0 01`/`03` | ⏸ | `—` | F0 01/03 skipped |
 | 58 | OTA firmware | `01` + bulk | ⏸ | `—` | OTA not attempted |
-| 59 | Camera shutter (phone) | APP `06 02` | ⏸ | `—` | APP 06 02 not sent |
+| 59 | Camera shutter (phone) | APP `06 02` + `07 01` 556–561 | ✅ | `TooburAppControlPacketsTest` | `devicesettings_camera_remote` + watch→phone `GBDeviceEventCameraRemote` |
 | 60 | Conn param tune | SET `03 35` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 35 step 01 ACK |
 
 **Audit progress:** 43 verified · 4 partial · 12 blocked · 1 rejected
