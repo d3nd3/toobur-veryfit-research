@@ -30,3 +30,6 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-sport-goal-03-03` | SET `0x03 0x03` sport step goal (17 B) | `gb-wired` | `TooburGoalPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
 | `set-sleep-goal-03-04` | SET `0x03 0x04` sleep duration (hour + minute) | `gb-wired` | `TooburGoalPacketsTest` | IDO `protocol_set_sleep_goal`; live ACK `packetdumps/live/2026-06-19_batch-audit.json` |
 | `set-calorie-distance-03-43` | SET `0x03 0x43` calorie + distance goals (20 B) | `gb-wired` | `TooburGoalPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
+| `ble-notify-07-40` | CMD `0x07 0x40` data-update notify + phone ACK + GET readback | `gb-wired` | `TooburBleEventPacketsTest` | `packetdumps/logcat/set_dnd_on.txt`, `set_hand_gesture_wake_on.txt` |
+| `ble-control-music-next-07-01` | CMD `0x07 0x01` cmd1=5 → music next (VBUS 555) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |
+| `ble-control-call-reject-07-01` | CMD `0x07 0x01` cmd1=13 → call reject (VBUS 563) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |

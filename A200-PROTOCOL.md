@@ -268,26 +268,25 @@ Example: after SET DND → `RX : 07 40 00 00 10 00 …` → phone `TX : 07 40 �
 
 ### Control events (evt 551–591)
 
-Map incoming `07` sub-packets to Android actions (GB today: **none**):
+Map incoming `07 01` / `07 02` sub-packets to Android actions via `TooburSupport.dispatchWatchAction()`:
 
-| Evt | Action |
-|-----|--------|
-| 551–555 | Music play / pause / prev / next |
-| 556–561 | Camera shutter / preview |
-| **562** | **Answer phone call** |
-| **563** | **Reject phone call** |
-| 570 / 572 | Find phone start / stop |
-| 578 | Request version check |
-| 579 | Request OTA |
-| 580 | SMS info to app |
+| Evt | Wire (`07 01` cmd1) | GB action |
+|-----|---------------------|-----------|
+| 551–555 | 1–5 | Music play / pause / prev / next |
+| 556–561 | — | Camera (not wired) |
+| **562** | 12 | **Answer phone call** |
+| **563** | 13 | **Reject phone call** |
+| 570 / 572 | `07 02` / — | Find phone start (GB `GBDeviceEventFindPhone`) |
+| 578 | — | Version check (not wired) |
+| 579 | — | OTA request (not wired) |
+| 580 | — | SMS info (not wired) |
 
 | Key | Name | Probe | GB | Notes |
 |-----|------|-------|-----|-------|
-| `40` | Data updated notify | VALID | ❌ | See [notifyType](#07-40--data-update-notify-evt-577) |
-| `01` | Photo preview | — | ❌ | VBUS |
+| `40` | Data updated notify | VALID | ✅ | ACK + GET readback by notifyType — `TooburBleEventPackets` |
+| `01` | Control evt | — | ✅ | Music prev/next + call reject/accept — IDO `protocol_cmd.cmd1` |
+| `02` | Find phone | — | ✅ | `GBDeviceEventFindPhone.START` |
 | `03` | SOS | — | ❌ | VBUS |
-
-Issue: [017](./issues/017-watch-ble-events-07/). Hive detail: [`HIVE-A200-NOTES.md`](docs/external-notes/HIVE-A200-NOTES.md).
 
 ---
 
@@ -468,7 +467,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 48 | Watch face list | v3 `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 06 dial list |
 | 49 | Watch face set active | v3 `08` | ⏸ | `ui_select_watch_face.txt` | v3 08 not probed live |
 | 50 | Watch face upload | v3 `07` + bulk | ⏸ | `ui_watch_face_write_json.txt` | v3 07 + bulk not probed |
-| 51 | BLE data-update notify | `07 40` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | 07 40 seen on SET 29/32; phone ACK not sent |
+| 51 | BLE data-update notify | `07 40` | ✅ | `packetdumps/logcat/set_dnd_on.txt` | ACK 18 B + GET 02 30/ B1/ B0 by notifyType |
 | 52 | Answer / reject call (watch) | `07` evt 562/563 | ⏸ | `—` | needs incoming call on watch |
 | 53 | Watch music / camera keys | `07` evt 551–561 | ⏸ | `—` | press watch music/camera buttons |
 | 54 | MAC address | GET `02 04` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 04 F9:24:12:2E:0C:32 |
