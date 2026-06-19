@@ -101,11 +101,11 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | Key | Name | VBUS evt | Probe | GB | Capture |
 |-----|------|----------|-------|-----|---------|
 | `01` | Device info | 301 GET_DEVICE_INFO | VALID | ✅ | `get_device_info.txt`, `app_fresh_launch.txt`; **live** `packetdumps/live/2026-06-19_get-device-info.txt` |
-| `02` | Func table | 302 GET_FUNC_TABLE | VALID | ✅ | Queued on connect; raw bytes stored — UI gating issue [024](./issues/024-func-table-ui-gating/) |
+| `02` | Func table | 302 GET_FUNC_TABLE | VALID | ✅ | Parsed on connect — `TooburFuncTableCapabilities`; UI gating issue [024](./issues/024-func-table-ui-gating/) closed |
 | `03` | Time | — | VALID | ⚠️ | Rarely needed; GB sets time via SET `03 01` |
 | `04` | MAC address | 300 GET_MAC | VALID | ✅ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
 | `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → level %, voltage mV, charge state |
-| `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ✅ | Extended bits stored on connect — parse/UI issue [024](./issues/024-func-table-ui-gating/) |
+| `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ✅ | Extended bits parsed — UI gating issue [024](./issues/024-func-table-ui-gating/) closed |
 | `10` | Notice status | 306 | VALID | ❌ | Readback for SET `03 30` — issue [025](./issues/025-per-app-notification-switches/) |
 | `11` | Unknown | — | VALID | ❌ | — |
 | `15` | Exercise settings | 345 | — | ❌ | VBUS only |
@@ -347,7 +347,7 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 | `0E` | Set alarms (+ sport order) | VALID | 🔧 | **355 B**, 10 slots — GB uses legacy SET `03 02` |
 | `0F` | Get alarms | VALID | ❌ | `get_alarm.txt` |
 | `10` | Fast message | VALID | ❌ | — |
-| `1A` | Func table v3 | VALID | ✅ | GET on connect; raw reply stored — parse issue [024](./issues/024-func-table-ui-gating/) |
+| `1A` | Func table v3 | VALID | ✅ | GET on connect; parsed — issue [024](./issues/024-func-table-ui-gating/) closed |
 | `12`–`14`, `31` | Misc / sport | VALID | ❌ | — |
 
 ### V3 health sync data types (`0x04` / `0x05`)

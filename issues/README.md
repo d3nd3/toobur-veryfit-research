@@ -62,7 +62,7 @@ issues/
 | [015](./015-health-reminders/) | Long sit, drink, walk, menstrual reminders | 002, 024 | `ready-for-agent` |
 | [016](./016-auto-brightness-set-32/) | Auto brightness SET `32` | 002, 024 | `ready-for-agent` |
 | [018](./018-connect-time-func-table-sync/) | Connect-time GET/SET sequence | 010 | closed |
-| [024](./024-func-table-ui-gating/) | Parse func table + gate GB UI | 018 | `ready-for-agent` |
+| [024](./024-func-table-ui-gating/) | Parse func table + gate GB UI | 018 | closed |
 | [023](./023-spo2-stress-full-set-payloads/) | SpO₂/stress full SET `44`/`45` schedules | 002, 024 | `ready-for-agent` |
 | [025](./025-per-app-notification-switches/) | Per-app notify GET `02 10` + item bytes | 003, 024 | `ready-for-agent` |
 | [027](./027-units-user-profile-set-03-11/) | Units SET `03 11` + user profile | 018, 024 | `ready-for-agent` |
