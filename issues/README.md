@@ -64,7 +64,7 @@ issues/
 | [018](./018-connect-time-func-table-sync/) | Connect-time GET/SET sequence | 010 | closed |
 | [024](./024-func-table-ui-gating/) | Parse func table + gate GB UI | 018 | closed |
 | [023](./023-spo2-stress-full-set-payloads/) | SpO₂/stress full SET `44`/`45` schedules | 002, 024 | closed |
-| [025](./025-per-app-notification-switches/) | Per-app notify GET `02 10` + item bytes | 003, 024 | `ready-for-agent` |
+| [025](./025-per-app-notification-switches/) | Per-app notify GET `02 10` + item bytes | 003, 024 | closed |
 | [027](./027-units-user-profile-set-03-11/) | Units SET `03 11` + user profile | 018, 024 | closed |
 | [029](./029-tabbed-device-settings/) | Tabbed device settings (DeviceSpecificSettingsScreen) | — | closed |
 | [030](./030-coordinator-ui-capability-flags/) | Coordinator flags — unlock stock GB UI | — | closed |
@@ -97,9 +97,9 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`), **SpO₂/stress continuous SET schedules** (`03 44`/`03 45` full payloads + Health tab window prefs), **units & user profile** (SET `03 10`/`11` on connect; timeformat pref; GB unit/profile push).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`), **SpO₂/stress continuous SET schedules** (`03 44`/`03 45` full payloads + Health tab window prefs), **units & user profile** (SET `03 10`/`11` on connect; timeformat pref; GB unit/profile push), **per-app notification channels** (SET `03 30` item1/item2 for SMS/WeChat/WhatsApp; GET `02 10` readback; func-table gated on Notifications tab).
 
-Notice alert is **not** fully polished — see 003.
+Notice alert is **not** fully polished — see 003 (base 20 B done; per-app bits closed in 025).
 
 ## Explicitly out of scope (no issue until captured)
 

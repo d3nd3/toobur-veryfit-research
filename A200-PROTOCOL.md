@@ -106,7 +106,7 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | `04` | MAC address | 300 GET_MAC | VALID | ✅ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
 | `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → level %, voltage mV, charge state |
 | `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ✅ | Extended bits parsed — UI gating issue [024](./issues/024-func-table-ui-gating/) closed |
-| `10` | Notice status | 306 | VALID | ❌ | Readback for SET `03 30` — issue [025](./issues/025-per-app-notification-switches/) |
+| `10` | Notice status | 306 | VALID | ✅ | Readback for SET `03 30` — `TooburNoticeAlertPackets.parseGetNoticeStatus` |
 | `11` | Unknown | — | VALID | ❌ | — |
 | `15` | Exercise settings | 345 | — | ❌ | VBUS only |
 | `22` | Units | 342 | — | ❌ | VBUS only |
@@ -452,7 +452,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 29 | Raise to wake | SET `03 28` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 28 key ACK |
 | 30 | Screen orientation | SET `03 2B` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 2B key ACK |
 | 31 | Do not disturb | SET `03 29` + GET `02 30` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 30 + SET 03 29 + 07 40 notify |
-| 32 | Call / notice alert | SET `03 30` + GET `02 10` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 10 OK; SET 03 30 20 B not sent |
+| 32 | Call / notice alert | SET `03 30` + GET `02 10` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | 20 B SET + item1/item2 prefs; GET 02 10 on connect |
 | 33 | Music on watch toggle | SET `03 2A` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 2A 4 B ACK |
 | 34 | Weather push enable | SET `03 2D` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 B1 + SET 03 2D 6 B |
 | 35 | Weather data | `0A 01` + `0A 02` city | ✅ | `packetdumps/logcat/set_push_weather_on.txt` | 18 B forecast + 20 B city; GET 02 B1 after SET 2D |

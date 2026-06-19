@@ -11,6 +11,8 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | Feature id | Wire | Stage | Test class | Capture source |
 |------------|------|-------|------------|----------------|
 | `set-notice-03-30` | SET `0x03 0x30` call/notice alert (20 B) | `gb-wired` | `TooburNoticeAlertPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
+| `set-notice-items-03-30` | SET `0x03 0x30` per-app notify_item1/item2 bytes | `gb-wired` | `TooburNoticeAlertPacketsTest` | IDO `IDOV2NoticeItemInfo` bit map |
+| `get-notice-02-10` | GET `0x02 0x10` notice status readback | `gb-wired` | `TooburNoticeAlertPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
 | `set-dnd-03-29` | SET `0x03 0x29` + GET `0x02 0x30` scheduled DND (14 B) | `gb-wired` | `TooburDndPacketsTest` | `packetdumps/logcat/set_dnd_on.txt`, `set_dnd_off.txt` |
 | `set-auto-brightness-03-32` | SET `0x03 0x32` scheduled night brightness (12 B) | `gb-wired` | `TooburAutoBrightnessPacketsTest` | `packetdumps/logcat/set_auto_brightness_on_19pm_to_6am.txt`, `set_auto_brightness_off.txt` |
 | `v3-alarms-0e-0f` | v3 GET `0x0F` / SET `0x0E` (10 slots, 353 B) | `gb-wired` | `TooburV3AlarmPacketsTest` | `packetdumps/logcat/get_alarm.txt`, `set_alarms_and_sports.txt` |
