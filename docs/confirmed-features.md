@@ -10,4 +10,5 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 
 | Feature id | Wire | Stage | Test class | Capture source |
 |------------|------|-------|------------|----------------|
+| `set-notice-03-30` | SET `0x03 0x30` call/notice alert (20 B) | `gb-wired` | `TooburNoticeAlertPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
 | `sleep-sync-v3-07` | v3 cmd `0x04` dataType `0x07` | `rx-confirmed` | `TooburV3SleepParserTest` | `packetdumps/logcat/sync_example.txt` + synthetic sample fixture |
