@@ -496,9 +496,9 @@ Your Gadgetbridge wish list mapped to this reference:
 | HR history | v3 type `03` + v3 `09` | ✅ / ⚠️ | chart [007](./issues/007-hr-day-v3-type-03/) closed; schedule [026](./issues/026-v3-hr-09-full-schedule/) |
 | SpO₂ / stress | v3 `01`/`02` + SET `44`/`45` | ⚠️ | P2 — full schedule [023](./issues/023-spo2-stress-full-set-payloads/) |
 | Sport / sleep / calorie goals | SET `03`/`04`/`43` | partial | P2 |
-| Notifications | MSG `05 03` | ✅ | Verify A200 chunks |
-| Message center | MSG `05 03` | ✅ | Same as notify |
-| Calls + dismiss | MSG `05 01`/`02` | ✅ | Answer/reject: watch `07` evt 562/563 — ❌ [017](./issues/017-watch-ble-events-07/) |
+| Notifications | MSG `05 03` | ✅ | Fixture: `TooburMsgPacketsTest` (issue [011](./issues/011-notifications-msg-verify/)) |
+| Message center | MSG `05 03` | ✅ | Same wire as notify — issue [011](./issues/011-notifications-msg-verify/) |
+| Calls + dismiss | MSG `05 01`/`02` | ✅ | TX fixtures issue [011](./issues/011-notifications-msg-verify/); answer/reject watch `07` — ❌ [017](./issues/017-watch-ble-events-07/) |
 | Wrist L/R | SET `22` | ✅ | — |
 | Battery | GET `05` | ✅ | — |
 | Bind | BIND `04 01`/`02` | ✅ | Manual only |

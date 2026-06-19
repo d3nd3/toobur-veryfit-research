@@ -49,7 +49,7 @@ issues/
 | [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | closed |
 | [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | `ready-for-agent` |
 | [010](./010-device-info-card/) | Full device info card | — | `closed` |
-| [011](./011-notifications-msg-verify/) | Verify MSG `05` notifications | 002, 003, 022 | `ready-for-agent` |
+| [011](./011-notifications-msg-verify/) | Verify MSG `05` notifications | 002, 003, 022 | closed |
 | [017](./017-watch-ble-events-07/) | Watch BLE events `07 40` + call/music | — | `ready-for-agent` |
 
 ### P2 — settings & capability gating
