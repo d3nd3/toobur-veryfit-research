@@ -180,11 +180,11 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 
 | Key | Name | VBUS | Probe | GB | A200 payload (example) |
 |-----|------|------|-------|-----|------------------------|
-| `20` | Long sit | 101 | VALID | ❌ | — |
-| `47` | Walk reminder | 165 | VALID | ❌ | `03 47 01 64 00 09 00 15…` (17 B) — `set_walkaround_cont_*.txt` |
-| `60` | Drink water | 168 | VALID | ❌ | `03 60 00 09 00 12 00 3E 1E…` (16 B) — `set_drinking_cont_*.txt` |
-| `41` | Menstruation data | 159 | VALID | ❌ | `03 41…` — `set_woman_health_remind_*.txt` |
-| `42` | Menstruation remind | 160 | VALID | ❌ | `03 42…` — often **42 then 41** in dumps |
+| `20` | Long sit | 101 | VALID | ✅ | `protocol_long_sit` / probe `03 20` — `TooburHealthReminderPackets` |
+| `47` | Walk reminder | 165 | VALID | ✅ | `03 47 01 64 00 09 00 15…` (17 B) — `set_walkaround_cont_*.txt` |
+| `60` | Drink water | 168 | VALID | ✅ | `03 60 00 09 00 12 00 3E 1E…` (16 B) — `set_drinking_cont_*.txt` |
+| `41` | Menstruation data | 159 | VALID | ✅ | `03 41…` — `set_woman_health_remind_*.txt` |
+| `42` | Menstruation remind | 160 | VALID | ✅ | `03 42…` — often **42 then 41** in dumps |
 
 ### Phone ↔ watch utilities
 
@@ -502,7 +502,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Battery | GET `05` | ✅ | — |
 | Bind | BIND `04 01`/`02` | ✅ | Manual only |
 | Watch face | v3 `06`/`07`/`08` + bulk | ❌ | P3 |
-| HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | partial | P2 |
+| HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | drink/walk/menstrual/long-sit ✅; stress schedule partial | P2 |
 | Auto sport | SET `49` | ✅ | — |
 | Music | SET `2A` + APP `01` | ✅ / ✅ | — |
 | Weather | SET `2D` + `0A 01` data + `0A 02` city | ✅ | issue 013 closed |

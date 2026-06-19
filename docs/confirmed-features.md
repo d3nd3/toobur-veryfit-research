@@ -42,3 +42,7 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-conn-param-03-35` | SET `0x03 0x35` conn param steps 01/02 (12 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/set_conn_param.txt` |
 | `set-misc-e3-03-e3` | SET `0x03 0xE3 0x10 0x02` connect misc | `gb-wired` | `TooburConnectSyncPacketsTest` | `app_fresh_launch.txt` |
 | `connect-auto-fetch-v3` | v3 `05`/`04` auto on connect when func table auto-sync bit set | `gb-wired` | `TooburConnectAutoFetchTest` | `packetdumps/live/2026-06-19_bind-v3.json` |
+| `set-long-sit-03-20` | SET `0x03 0x20` long-sit (probe header; full `protocol_long_sit` on enable) | `gb-wired` | `TooburHealthReminderPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
+| `set-drink-water-03-60` | SET `0x03 0x60` drink-water reminder (16 B) | `gb-wired` | `TooburHealthReminderPacketsTest` | `packetdumps/logcat/set_drinking_cont_*.txt` |
+| `set-walk-reminder-03-47` | SET `0x03 0x47` walk-around reminder (17 B) | `gb-wired` | `TooburHealthReminderPacketsTest` | `packetdumps/logcat/set_walkaround_cont_*.txt` |
+| `set-menstruation-03-41-42` | SET `0x03 0x42` remind + `0x03 0x41` data | `gb-wired` | `TooburHealthReminderPacketsTest` | `set_woman_health_remind_*.txt`, `reinstall_app_bind_stripped.txt` |
