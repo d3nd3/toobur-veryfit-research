@@ -26,7 +26,7 @@ issues/
 
 | ID | Title | Status |
 |----|-------|--------|
-| [001](./001-complete-toobur-gadgetbridge-driver/) | Complete Toobur VeryFit Gadgetbridge driver (PRD) | `ready-for-agent` |
+| [001](./001-complete-toobur-gadgetbridge-driver/) | Complete Toobur VeryFit Gadgetbridge driver (PRD) | closed |
 
 ### P0 — infrastructure & wrong wire
 
@@ -75,7 +75,7 @@ issues/
 
 | ID | Title | Depends | Status |
 |----|-------|---------|--------|
-| [019](./019-watch-faces-v3/) | Watch faces v3 + bulk | 002, 024 | `ready-for-agent` |
+| [019](./019-watch-faces-v3/) | Watch faces v3 + bulk | 002, 024 | closed |
 | [020](./020-firmware-ota/) | Firmware OTA + GET `48` | 010 | closed |
 | [021](./021-extra-app-controls/) | Camera remote + sleep period | 002, 024 | closed |
 
@@ -97,11 +97,13 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`), **SpO₂/stress continuous SET schedules** (`03 44`/`03 45` full payloads + Health tab window prefs), **units & user profile** (SET `03 10`/`11` on connect; timeformat pref; GB unit/profile push), **per-app notification channels** (SET `03 30` item1/item2 for SMS/WeChat/WhatsApp; GET `02 10` readback; func-table gated on Notifications tab), **camera remote** (APP `06 02` + watch `07 01` 556–561 → `GBDeviceEventCameraRemote`; Notifications tab pref), **sleep period** (SET `03 31` + stock `devicesettings_sleep_time` on Health tab; func-table `ex_main2.sleep_period` gated).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`), **SpO₂/stress continuous SET schedules** (`03 44`/`03 45` full payloads + Health tab window prefs), **units & user profile** (SET `03 10`/`11` on connect; timeformat pref; GB unit/profile push), **per-app notification channels** (SET `03 30` item1/item2 for SMS/WeChat/WhatsApp; GET `02 10` readback; func-table gated on Notifications tab), **camera remote** (APP `06 02` + watch `07 01` 556–561 → `GBDeviceEventCameraRemote`; Notifications tab pref), **sleep period** (SET `03 31` + stock `devicesettings_sleep_time` on Health tab; func-table `ex_main2.sleep_period` gated), **watch faces** (v3 `06` list + `08` select via App Manager when `multi_dial`; upload not shipped — issue 019 closed).
 
 Notice alert is **not** fully polished — see 003 (base 20 B done; per-app bits closed in 025).
 
 **Firmware OTA:** GET **`02 48`** queued on connect + Developer action; device card **Firmware OTA** row when RX present (A200 returns none). OTA transfer **`01` + bulk** not shipped — see [`docs/firmware_ota.md`](../docs/firmware_ota.md) (issue 020 closed).
+
+**Epic [001](./001-complete-toobur-gadgetbridge-driver/) closed 2026-06-19** — all slices 002–032 done; no `ready-for-agent` issues remain. Phase C upload/OTA gaps stay documented above until new captures.
 
 ## Explicitly out of scope (no issue until captured)
 
@@ -113,6 +115,8 @@ Notice alert is **not** fully polished — see 003 (base 20 B done; per-app bits
 | GPS GET `A3`–`A5` | A200 has no GPS (`gps_platform=0`) |
 | Device language GET `02 31` | Bruteforce not validated; defer to probe |
 | Full VeryFit app parity | PRD completion bar = stock GB charts |
+| Watch face `.iwf` upload (v3 `07` + bulk `D1`) | No live A200 capture; needs mkIwfFile — [`docs/watch_faces_v3.md`](../docs/watch_faces_v3.md) |
+| Firmware OTA transfer (`01` + bulk) | A200 GET `48` silent; confirm on OTA-capable unit — [`docs/firmware_ota.md`](../docs/firmware_ota.md) |
 
 ## External research
 
