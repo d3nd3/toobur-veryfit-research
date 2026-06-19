@@ -43,7 +43,7 @@ issues/
 
 | ID | Title | Depends | Status |
 |----|-------|---------|--------|
-| [026](./026-v3-hr-09-full-schedule/) | v3 HR cmd `09` full schedule payloads | 002 | `ready-for-agent` |
+| [026](./026-v3-hr-09-full-schedule/) | v3 HR cmd `09` full schedule payloads | 002 | closed |
 | [007](./007-hr-day-v3-type-03/) | HR day history → GB HR chart | 002, 006, 026 | closed |
 | [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | closed |
 | [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | closed |
@@ -97,7 +97,7 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`).
 
 SpO₂/stress **continuous SET schedules** and notice alert are **not** fully polished — see 003, 023.
 

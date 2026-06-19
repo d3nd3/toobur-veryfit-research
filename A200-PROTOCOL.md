@@ -376,10 +376,14 @@ Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 
 | Field | Size | OFF example | ON example | Notes |
 |-------|------|-------------|------------|-------|
-| `updateTime` | 4 LE | `0E 3B BD 69` | `11 3B BD 69` | Unix timestamp (seconds) |
-| `state` | 2 | **`AA 00`** | **`CC 00`** | **Not** `99`/`55` — old captures/app toggle were wrong |
-| `timeStartEnd` | 4 | `00 00 00 00` | `00 00 00 00` | All-day / null window in tested config |
+| `updateTime` | 4 LE | `BA AD AC 69` | `D8 AD AC 69` | Unix timestamp (seconds) |
+| `mode` | 1 | **`AA`** | **`99`** | VeryFit logcat; legacy CC/AA single-frame also worked on A200 live test |
+| `modePad` | 1 | `00` | `00` | |
+| `timeStartEnd` | 4 | `00 00 00 00` | `00 00 00 00` | Schedule sent in pkt2 |
 | `measureInterval` | 2 LE | `2C 01` (=300) | `2C 01` | Seconds; see valid set below |
+
+**VeryFit apply sequence:** OFF → `[mode AA, schedule]`; ON → `[reset 00 01, mode 99, schedule 00:00–23:59]`.  
+GB builder: `TooburV3HrPackets.buildHrApplySequence()` — legacy SET `03 25` not sent on A200.
 
 **Valid `measureInterval` (seconds):** `5`, `60`, `180`, `300`, `600`, `900`, `1800`, **`255`** = smart / dynamic HR.  
 **Invalid:** e.g. `10` — watch snaps to another interval (~60 s observed).  
@@ -395,7 +399,7 @@ TX ON:  33 DA AD DA AD 01 17 00 09 00 8D 03  11 3B BD 69  CC 00  00 00 00 00  2C
 RX ON:  … CC 00 … 2C 01 … 04 00 00 00
 ```
 
-GB builder: `TooburV3HrPackets.buildHrUnified()` — same layout. Legacy SET `03 25` is redundant on A200.
+GB builder: `TooburV3HrPackets.buildHrApplySequence()` — 2–3 frames per toggle; legacy SET `03 25` not sent on A200.
 
 ### HR data — how to read measurements
 
@@ -428,7 +432,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 9 | Live steps + HR snapshot | GET `02 A0` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 A0 |
 | 10 | Daily sport summary sync | v3 type `08` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 08 start/stop after bind |
 | 11 | HR day history | v3 type `03` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 03 start/stop |
-| 12 | HR continuous schedule | v3 `09` + SET `25` | ✅ | user live 2026-03-20 + `TooburV3HrPackets` | CC/AA toggle + intervals 5…1800, 255 smart |
+| 12 | HR continuous schedule | v3 `09` (2–3 pkts) | ✅ | `TooburV3HrPacketsTest` + logcat | VeryFit `99`/`AA` mode + all-day schedule; no SET `25` |
 | 13 | SpO₂ day sync | v3 type `01` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 01 SpO₂ start/stop |
 | 14 | SpO₂ continuous toggle | SET `03 44` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 44 key ACK; 16 B schedule not sent |
 | 15 | Stress day sync | v3 type `02` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 02 stress start/stop |

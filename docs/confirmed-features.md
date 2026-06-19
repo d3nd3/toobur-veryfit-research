@@ -46,3 +46,5 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-drink-water-03-60` | SET `0x03 0x60` drink-water reminder (16 B) | `gb-wired` | `TooburHealthReminderPacketsTest` | `packetdumps/logcat/set_drinking_cont_*.txt` |
 | `set-walk-reminder-03-47` | SET `0x03 0x47` walk-around reminder (17 B) | `gb-wired` | `TooburHealthReminderPacketsTest` | `packetdumps/logcat/set_walkaround_cont_*.txt` |
 | `set-menstruation-03-41-42` | SET `0x03 0x42` remind + `0x03 0x41` data | `gb-wired` | `TooburHealthReminderPacketsTest` | `set_woman_health_remind_*.txt`, `reinstall_app_bind_stripped.txt` |
+| `v3-hr-09-mode-on` | v3 cmd `0x09` HR mode ON (`0x99`) + interval | `gb-wired` | `TooburV3HrPacketsTest` | `packetdumps/logcat/set_hr_cont_state_on.txt` |
+| `v3-hr-09-schedule` | v3 cmd `0x09` all-day schedule pkt2 (`00:00`–`23:59`) | `gb-wired` | `TooburV3HrPacketsTest` | `packetdumps/logcat/set_hr_cont_state_on.txt` |
