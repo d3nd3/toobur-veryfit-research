@@ -33,3 +33,10 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `ble-notify-07-40` | CMD `0x07 0x40` data-update notify + phone ACK + GET readback | `gb-wired` | `TooburBleEventPacketsTest` | `packetdumps/logcat/set_dnd_on.txt`, `set_hand_gesture_wake_on.txt` |
 | `ble-control-music-next-07-01` | CMD `0x07 0x01` cmd1=5 → music next (VBUS 555) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |
 | `ble-control-call-reject-07-01` | CMD `0x07 0x01` cmd1=13 → call reject (VBUS 563) | `gb-wired` | `TooburBleEventPacketsTest` | IDO SDK `protocol_exec_ble_control` |
+| `get-func-table-02-02` | GET `0x02 0x02` base func table | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
+| `get-func-table-ex-02-07` | GET `0x02 0x07` extended func table | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
+| `v3-func-table-1a` | v3 GET `0x1A` func table extension | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/live/2026-06-19_bind-v3.json` |
+| `set-user-info-03-10` | SET `0x03 0x10` user profile (10 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/get_sync_health_v3.txt` |
+| `set-units-03-11` | SET `0x03 0x11` units/locale (17 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/get_sync_health_v3.txt` |
+| `set-conn-param-03-35` | SET `0x03 0x35` conn param steps 01/02 (12 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/set_conn_param.txt` |
+| `set-misc-e3-03-e3` | SET `0x03 0xE3 0x10 0x02` connect misc | `gb-wired` | `TooburConnectSyncPacketsTest` | `app_fresh_launch.txt` |

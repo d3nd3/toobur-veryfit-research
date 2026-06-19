@@ -101,11 +101,11 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | Key | Name | VBUS evt | Probe | GB | Capture |
 |-----|------|----------|-------|-----|---------|
 | `01` | Device info | 301 GET_DEVICE_INFO | VALID | ✅ | `get_device_info.txt`, `app_fresh_launch.txt`; **live** `packetdumps/live/2026-06-19_get-device-info.txt` |
-| `02` | Func table | 302 GET_FUNC_TABLE | VALID | ⚠️ | Base capability bits — hive parse in [`HIVE-A200-NOTES.md`](docs/external-notes/HIVE-A200-NOTES.md); not gating GB UI |
+| `02` | Func table | 302 GET_FUNC_TABLE | VALID | ✅ | Queued on connect; raw bytes stored — UI gating issue [024](./issues/024-func-table-ui-gating/) |
 | `03` | Time | — | VALID | ⚠️ | Rarely needed; GB sets time via SET `03 01` |
 | `04` | MAC address | 300 GET_MAC | VALID | ✅ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
 | `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → level %, voltage mV, charge state |
-| `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ❌ | Extended bits — `v3_hr_data`, `v3_swim`, `multi_dial`, … |
+| `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ✅ | Extended bits stored on connect — parse/UI issue [024](./issues/024-func-table-ui-gating/) |
 | `10` | Notice status | 306 | VALID | ❌ | Readback for SET `03 30` — issue [025](./issues/025-per-app-notification-switches/) |
 | `11` | Unknown | — | VALID | ❌ | — |
 | `15` | Exercise settings | 345 | — | ❌ | VBUS only |
@@ -141,8 +141,8 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `01` | Set time | 104 | VALID | ✅ | `03 01 [Y LE] MM DD hh mm ss dow …` (16 B) — `set_time.txt` |
 | `03` | Sport step goal | 105 | VALID | ✅ | 17 B — `TooburGoalPackets` (issue [014](./issues/014-goals-set-03-43/)) |
 | `04` | Sleep goal | 106 | VALID | ✅ | `03 04 HH MM` — `TooburGoalPackets` |
-| `10` | User info | 107 | VALID | ❌ | `03 10 B4 40…` — `get_sync_health_v3.txt` |
-| `11` | Units / config | 108 | VALID | ❌ | 17 B — `app_fresh_launch.txt` |
+| `10` | User info | 107 | VALID | ✅ | `TooburConnectSyncPackets` on connect — full GB mapping issue [027](./issues/027-units-user-profile-set-03-11/) |
+| `11` | Units / config | 108 | VALID | ✅ | 17 B on connect — imperial/timeformat polish issue [027](./issues/027-units-user-profile-set-03-11/) |
 | `12` | Watch dial (legacy) | 124 | VALID | ❌ | Prefer v3 dial cmds |
 | `13` | Shortcut | 125 | VALID | ❌ | — |
 | `43` | Calorie + distance goals | 161 | VALID | ✅ | `03 43 F4 01…` (20 B) — `TooburGoalPackets` |
@@ -193,8 +193,8 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `26` | Find my phone | 103 | VALID | ✅ | `03 26 01 1E` (on + 30 s timeout) |
 | `21` | Lost find | 102 | VALID | ❌ | — |
 | `27` | Factory default | 115 | VALID | ❌ | Dangerous — do not expose casually |
-| `35` | Conn param | 157 | VALID | ❌ | Two-step `03 35 01…` / `03 35 02…` — `set_conn_param.txt` |
-| `E3` | Volume keys (deprecated) | — | VALID | ❌ | `03 E3 10 02` vol up / `10 01` vol down — superseded by `07 40` notifyType 32 |
+| `35` | Conn param | 157 | VALID | ✅ | Two-step `03 35 01…` / `03 35 02…` on connect — `TooburConnectSyncPackets` |
+| `E3` | Volume keys (deprecated) | — | VALID | ✅ | `03 E3 10 02` on connect — superseded by `07 40` notifyType 32 |
 | `52` | Real-time sensor | — | HUH | ❌ | SET `03 52` — purpose **unconfirmed** (hive: accel stream?) |
 
 ### Alarms (legacy SET)
@@ -347,7 +347,7 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 | `0E` | Set alarms (+ sport order) | VALID | 🔧 | **355 B**, 10 slots — GB uses legacy SET `03 02` |
 | `0F` | Get alarms | VALID | ❌ | `get_alarm.txt` |
 | `10` | Fast message | VALID | ❌ | — |
-| `1A` | Func table v3 | VALID | ⚠️ | Sent on connect in VeryFit; legacy short reply on A200 |
+| `1A` | Func table v3 | VALID | ✅ | GET on connect; raw reply stored — parse issue [024](./issues/024-func-table-ui-gating/) |
 | `12`–`14`, `31` | Misc / sport | VALID | ❌ | — |
 
 ### V3 health sync data types (`0x04` / `0x05`)
