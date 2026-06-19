@@ -162,8 +162,8 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 |-----|------|------|-------|-----|------------------------|
 | `29` | Do not disturb | 116 | VALID | 🔧 | **14 B** + schedule: `03 29 AA 17 00 07 00 02 FE 55…` — GB sends **6 B** only |
 | `30` | Call / notice alert | 111 | HUH | 🔧 | **20 B** = 5-field struct + 15× `00` pad — GB sends **5 B** legacy (see [struct](#set-03-30--protocol_set_notice)) |
-| `2A` | Music on watch | 117 | VALID | 🔧 | **4 B**: `03 2A AA 55` — GB sends **3 B** |
-| `2D` | Weather push enable | 150 | VALID | 🔧 | **6 B**: `03 2D AA 00 00 00` — GB sends **4 B**; no weather **data** TX yet |
+| `2A` | Music on watch | 117 | VALID | ✅ | **4 B**: `03 2A AA 55` |
+| `2D` | Weather push enable | 150 | VALID | ✅ | **6 B**: `03 2D AA 00 00 00`; weather **data** TX → issue 013 |
 | `31` | Sleep period | 152 | VALID | ❌ | — |
 
 ### Health measurement toggles
@@ -505,8 +505,8 @@ Your Gadgetbridge wish list mapped to this reference:
 | Watch face | v3 `06`/`07`/`08` + bulk | ❌ | P3 |
 | HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | partial | P2 |
 | Auto sport | SET `49` | ✅ | — |
-| Music | SET `2A` + APP `01` | 🔧 / ✅ | Fix `2A` length |
-| Weather | SET `2D` + `0A 01` data | 🔧 / ❌ | P2 |
+| Music | SET `2A` + APP `01` | ✅ / ✅ | — |
+| Weather | SET `2D` + `0A 01` data | ✅ / ❌ | issue 013 |
 | DND schedule | SET `29` + GET `30` | 🔧 | **P0** |
 | Raise to wake | SET `28` | ✅ | — |
 | Find phone / find device | SET `26` / APP `04` | ✅ | — |
