@@ -2,7 +2,7 @@
 
 > **Canonical source of truth** for this repo.  
 > Derived from live **bruteforce probing** on A200 firmware ([`bruteforce_results.txt`](bruteforce_results.txt)), cross-checked with **logcat captures** ([`packetdumps/logcat/`](packetdumps/logcat/)) and the **Gadgetbridge Toobur driver** ([`gadgetbridge/.../toobur/`](gadgetbridge/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/toobur/)).  
-> Use this document to plan GB improvements ([`issues/README.md`](issues/README.md) — issues **002–028**).  
+> Use this document to plan GB improvements ([`issues/README.md`](issues/README.md) — issues **002–032**).  
 > External vault notes: [`docs/external-notes/HIVE-A200-NOTES.md`](docs/external-notes/HIVE-A200-NOTES.md) (`/home/dinda/storage/hive/SmartHome/Toobur Veryfit a200`).
 
 ---
@@ -360,7 +360,7 @@ Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 | `01` | SpO₂ day | `01` | ✅ | ✅ SpO₂ chart |
 | `02` | Stress / pressure day | `01` | ✅ | ✅ Stress chart |
 | `03` | HR day series | `01` | ✅ | ⚠️ parsed, not stored |
-| `04` | Activity / **workout records** | `00` | ✅ | ❌ |
+| `04` | Activity / **workout records** | `00` | ✅ | ✅ |
 | `06` | Swim sessions | `00` | ✅ | ❌ |
 | `07` | **Sleep** | `00` | ✅ | ❌ — **priority fix** |
 | `08` | Daily sport summary (steps, kcal, distance) | `01` | ✅ | ✅ Activity sample |
@@ -451,7 +451,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Alarms get/set | v3 `0F` / `0E` | 🔧 | **P0** |
 | Sleep sync | v3 type `07` | ⚠️ | **P0** |
 | Steps / calories / distance | v3 type `08` + GET `A0` | ✅ / ⚠️ | P1 polish |
-| Workout sessions | v3 type `04` | ❌ | P1 |
+| Workout sessions | v3 type `04` | ✅ | P1 |
 | HR history | v3 type `03` + v3 `09` | ✅ / ⚠️ | chart [007](./issues/007-hr-day-v3-type-03/) closed; schedule [026](./issues/026-v3-hr-09-full-schedule/) |
 | SpO₂ / stress | v3 `01`/`02` + SET `44`/`45` | ⚠️ | P2 — full schedule [023](./issues/023-spo2-stress-full-set-payloads/) |
 | Sport / sleep / calorie goals | SET `03`/`04`/`43` | partial | P2 |

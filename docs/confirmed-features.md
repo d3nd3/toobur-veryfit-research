@@ -15,3 +15,4 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `v3-alarms-0e-0f` | v3 GET `0x0F` / SET `0x0E` (10 slots, 353 B) | `gb-wired` | `TooburV3AlarmPacketsTest` | `packetdumps/logcat/get_alarm.txt`, `set_alarms_and_sports.txt` |
 | `sleep-sync-v3-07` | v3 cmd `0x04` dataType `0x07` | `gb-wired` | `TooburSleepStoreTest` | `packetdumps/logcat/sync_example.txt` + synthetic sample fixture |
 | `hr-sync-v3-03` | v3 cmd `0x04` dataType `0x03` | `gb-wired` | `TooburHrStoreTest` | synthetic JNI-7003 fixture (`hr_v3_type03_sample.rx.hex`) |
+| `workout-sync-v3-04` | v3 cmd `0x04` dataType `0x04` | `gb-wired` | `TooburWorkoutStoreTest` | synthetic fixture (`workout_v3_type04_sample.rx.hex`; `sync_example.txt` empty) |

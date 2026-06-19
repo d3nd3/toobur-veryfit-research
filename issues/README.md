@@ -45,7 +45,7 @@ issues/
 |----|-------|---------|--------|
 | [026](./026-v3-hr-09-full-schedule/) | v3 HR cmd `09` full schedule payloads | 002 | `ready-for-agent` |
 | [007](./007-hr-day-v3-type-03/) | HR day history → GB HR chart | 002, 006, 026 | closed |
-| [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | `ready-for-agent` |
+| [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | closed |
 | [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | `ready-for-agent` |
 | [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | `ready-for-agent` |
 | [010](./010-device-info-card/) | Full device info card | — | `ready-for-agent` |
@@ -66,6 +66,10 @@ issues/
 | [023](./023-spo2-stress-full-set-payloads/) | SpO₂/stress full SET `44`/`45` schedules | 002, 024 | `ready-for-agent` |
 | [025](./025-per-app-notification-switches/) | Per-app notify GET `02 10` + item bytes | 003, 024 | `ready-for-agent` |
 | [027](./027-units-user-profile-set-03-11/) | Units SET `03 11` + user profile | 018, 024 | `ready-for-agent` |
+| [029](./029-tabbed-device-settings/) | Tabbed device settings (DeviceSpecificSettingsScreen) | — | `ready-for-agent` |
+| [030](./030-coordinator-ui-capability-flags/) | Coordinator flags — unlock stock GB UI | — | `ready-for-agent` |
+| [031](./031-settings-customizer-wiring/) | Settings customizer — wire prefs on change | — | `ready-for-agent` |
+| [032](./032-device-card-ui-polish/) | Device card icons + quick toggles | 010 | `ready-for-agent` |
 
 ### P3 — advanced
 
@@ -85,6 +89,7 @@ issues/
 002 → 008 → 009
 010 → 018 → 024
 024 → 013, 015, 016, 019, 021, 023, 025, 027
+029–032 (UI polish — parallel with P2 protocol work; 031 before 013 weather QA)
 003 → 011 (022 helps fixture gaps)
 017 (opportunistic — watch→phone; pair with 004 for DND readback)
 010 → 020
@@ -92,9 +97,9 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, step goal, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, partial device info GET `02 01`.
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, step goal, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, partial device info GET `02 01`, **device card quick actions** (HR/SpO₂/stress/auto-activity).
 
-SpO₂/stress **continuous SET schedules** and notice alert are **not** fully wired — see 003, 023.
+SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings / coordinator UI flags** are **not** fully polished — see 003, 023, 029–032.
 
 ## Explicitly out of scope (no issue until captured)
 
