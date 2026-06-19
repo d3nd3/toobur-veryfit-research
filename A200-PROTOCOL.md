@@ -141,8 +141,8 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `01` | Set time | 104 | VALID | ✅ | `03 01 [Y LE] MM DD hh mm ss dow …` (16 B) — `set_time.txt` |
 | `03` | Sport step goal | 105 | VALID | ✅ | 17 B — `TooburGoalPackets` (issue [014](./issues/014-goals-set-03-43/)) |
 | `04` | Sleep goal | 106 | VALID | ✅ | `03 04 HH MM` — `TooburGoalPackets` |
-| `10` | User info | 107 | VALID | ✅ | `TooburConnectSyncPackets` on connect — full GB mapping issue [027](./issues/027-units-user-profile-set-03-11/) |
-| `11` | Units / config | 108 | VALID | ✅ | 17 B on connect — imperial/timeformat polish issue [027](./issues/027-units-user-profile-set-03-11/) |
+| `10` | User info | 107 | VALID | ✅ | `TooburConnectSyncPackets.buildUserInfo` on connect + profile pref change |
+| `11` | Units / config | 108 | VALID | ✅ | 17 B — `buildUnitsFromGb` (metric/imperial, 12h/24h); Generic tab timeformat pref |
 | `12` | Watch dial (legacy) | 124 | VALID | ❌ | Prefer v3 dial cmds |
 | `13` | Shortcut | 125 | VALID | ❌ | — |
 | `43` | Calorie + distance goals | 161 | VALID | ✅ | `03 43 F4 01…` (20 B) — `TooburGoalPackets` |
