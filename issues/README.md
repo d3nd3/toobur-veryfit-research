@@ -69,7 +69,7 @@ issues/
 | [029](./029-tabbed-device-settings/) | Tabbed device settings (DeviceSpecificSettingsScreen) | — | closed |
 | [030](./030-coordinator-ui-capability-flags/) | Coordinator flags — unlock stock GB UI | — | closed |
 | [031](./031-settings-customizer-wiring/) | Settings customizer — wire prefs on change | — | closed |
-| [032](./032-device-card-ui-polish/) | Device card icons + quick toggles | 010 | `ready-for-agent` |
+| [032](./032-device-card-ui-polish/) | Device card icons + quick toggles | 010 | closed |
 
 ### P3 — advanced
 
@@ -97,7 +97,7 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer).
 
 SpO₂/stress **continuous SET schedules** and notice alert are **not** fully polished — see 003, 023.
 
