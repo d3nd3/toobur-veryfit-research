@@ -10,6 +10,7 @@ It also builds on the public [idoosmart/idowatch](https://github.com/idoosmart/i
 
 ## Repository layout
 
+- **[`A200-PROTOCOL.md`](A200-PROTOCOL.md)** — **canonical** TOOBUR A200 BLE command reference (bruteforce + logcat + Gadgetbridge status). Start here for wire bytes and GB backlog.
 - `gadgetbridge/`  
   Main work-in-progress for TOOBUR device support in the GadgetBridge app.  
   See [`gadgetbridge/README_TOOBUR.md`](gadgetbridge/README_TOOBUR.md) for **feature priority** (bind, health sync, battery, HR, raise-to-wake, etc.).
@@ -17,7 +18,8 @@ It also builds on the public [idoosmart/idowatch](https://github.com/idoosmart/i
   External reference repos kept as gitlink placeholders here for offline reference.  
   Use `research/repositories/README.md` to fetch them after clone.
 - Root docs and scripts  
-  - [`TOOBUR.md`](TOOBUR.md) – protocol command table, behavior notes, and device compatibility details.
+  - [`A200-PROTOCOL.md`](A200-PROTOCOL.md) – **canonical** command map (prefer over scattered tables below).
+  - [`TOOBUR.md`](TOOBUR.md) – background, angelfit vs A200 notes (wire tables superseded by A200-PROTOCOL).
   - [`gadgetbridge_setup.md`](gadgetbridge_setup.md) – **clone, JDK/SDK, compile Gadgetbridge (mainline or Bangle.js flavor), install the APK**, and **run the app while streaming `adb logcat`** (see *Run on the phone and read debug logs at the same time*).
   - [`GADGETBRIDGE-COLOROS-OPPO.md`](GADGETBRIDGE-COLOROS-OPPO.md) – **optional** ColorOS / OPPO (Android 10, API 29–30) BLE scan + reconnect tuning; **Gadgetbridge → Discovery and pairing** toggle, **default off** (see doc for behavior).
 
@@ -51,7 +53,8 @@ For **protocol experiments** (many more GET/SET bytes in one place), use **`html
 
 - **[`TOOBUR.md`](TOOBUR.md)** — command tables, v3 vs legacy, logcat references, watch-face notes.
 - **[`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md)** — v3 health **wire format**, HTML parsers, **Gadgetbridge sync route** (§11–13).
-- **`packetdumps/logcat/`**, **`bruteforce_results.txt`**, **`scripts/merge_vbus_tx_annotations.py`** — captures and TX labeling.
+- **`packetdumps/logcat/`**, **`packetdumps/live/`**, **`bruteforce_results.txt`**, **`scripts/merge_vbus_tx_annotations.py`** — captures and TX labeling.
+- **Live BLE probe** — `scripts/toobur_ble_probe.py` (Bleak or BlueZ D-Bus) for on-demand TX/RX captures when logcat is missing; see [When to probe vs logcat](#when-to-probe-vs-logcat) below.
 
 ## Sync, intervals & operation
 
@@ -90,6 +93,25 @@ Full Gadgetbridge sync route (GATT, classes, live GET vs v3): **[`LATEST_SYNC_PA
 3. **While connected:** User-initiated **fetch** / **Gadgetbridge auto-fetch** runs **`onFetchRecordedData`** (GET **`0x02` `0xA0`** + v3 health sync). Interval for auto-fetch is **`auto_fetch_interval_limit`** (minutes), not a fixed 15/30 unless you set that in Gadgetbridge.
 
 For **packet-level** examples, see **`packetdumps/logcat/sync_example.txt`**. Parsing + Gadgetbridge route: **`LATEST_SYNC_PARSING.md`**. Feature status / file map: **`gadgetbridge/README_TOOBUR.md`** and **`TOOBUR.md`**.
+
+### When to probe vs logcat
+
+| Use **logcat** (`adb logcat` + `scripts/extract_logcat_fixtures.py`) | Use **live probe** (`scripts/toobur_ble_probe.py`) |
+|----------------------------------------------------------------------|-----------------------------------------------------|
+| Gadgetbridge or VeryFit app already exercised the feature on phone | No capture exists yet (MSG verify, GET `02 11`, language, …) |
+| Full connect/bind/sync sequences with app context | Quick GET smoke test (battery, notice, DND readback) |
+| You need v3 bulk traffic on **`0x0AF2`** during a sync run | Host USB BT adapter; watch **disconnected from phone** during session |
+
+**Setup:** `pip install bleak` (optional — script falls back to BlueZ D-Bus on Linux). Pair the watch once via `bluetoothctl`, note the MAC.
+
+```bash
+python3 scripts/toobur_ble_probe.py --mac F9:24:12:2E:0C:32 battery
+python3 scripts/toobur_ble_probe.py --mac XX:XX --tx "02 10" --label notice
+python3 scripts/toobur_ble_probe.py --mac XX:XX notice   # preset → GET 02 10
+python3 scripts/toobur_ble_probe.py --mac XX:XX dnd      # preset → GET 02 30
+```
+
+Captures land in **`packetdumps/live/<timestamp>_<label>.txt`** (`TX :` / `RX :` lines). Import into JUnit fixtures with **`scripts/extract_logcat_fixtures.py`** (same line format). Offline tests: `python3 -m unittest scripts.test_toobur_ble_probe`.
 
 ## Fork and references
 

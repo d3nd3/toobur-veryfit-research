@@ -45,4 +45,5 @@ Agents need a repeatable path: capture hex → JUnit fixture test → manifest e
 - First `rx-confirmed` feature: `sleep-sync-v3-07` (`TooburV3SleepParserTest`); GB chart wiring deferred to issue 006.
 - Tests run via `./gradlew :app:testBanglejsDebugUnitTest --tests '…toobur.*'` (banglejs flavor).
 - Unblocked compile: `addGBActivitySamples` now takes `List` in Toobur fetch/activity sync.
-- Next: issue 022 live probe, then 003+ can add TX/RX rows to manifest.
+- **Live probe (optional stage 3):** when logcat lacks a feature, run `scripts/toobur_ble_probe.py` → `packetdumps/live/*.txt`, then `scripts/extract_logcat_fixtures.py` into JUnit fixtures. See README “When to probe vs logcat”.
+- Next: issue 011 MSG verify (probe unblocked), issue 003 notice alert.
