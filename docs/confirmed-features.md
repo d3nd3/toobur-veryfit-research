@@ -40,3 +40,4 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-units-03-11` | SET `0x03 0x11` units/locale (17 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/get_sync_health_v3.txt` |
 | `set-conn-param-03-35` | SET `0x03 0x35` conn param steps 01/02 (12 B) | `gb-wired` | `TooburConnectSyncPacketsTest` | `packetdumps/logcat/set_conn_param.txt` |
 | `set-misc-e3-03-e3` | SET `0x03 0xE3 0x10 0x02` connect misc | `gb-wired` | `TooburConnectSyncPacketsTest` | `app_fresh_launch.txt` |
+| `connect-auto-fetch-v3` | v3 `05`/`04` auto on connect when func table auto-sync bit set | `gb-wired` | `TooburConnectAutoFetchTest` | `packetdumps/live/2026-06-19_bind-v3.json` |

@@ -89,7 +89,7 @@ Full Gadgetbridge sync route (GATT, classes, live GET vs v3): **[`LATEST_SYNC_PA
 ### Connect / sync flow (high level)
 
 1. **BLE:** Enable **0x0AF7** (normal) and **0x0AF2** (health) notifications. **GET live data** and classic commands use **`0x0AF6`** → **`0x0AF7`**. **v3 health sync** (`0x05` / `0x04`) and **v3 HR mode** (`0x09`) use **`0x0AF1`** → **`0x0AF2`**.
-2. **First packets:** Time / wrist / orientation / goal; battery + device info + live data GETs; on **first ever** connect, push all TOOBUR SET prefs + HR mode/interval once. Use *Send bind* only when you need VeryFit-style pairing (not on every connect). **v3 `0x05`/`0x04`** runs when you **fetch activity data** (or auto-fetch), not automatically on every connect in the current code.
+2. **First packets:** Time / wrist / orientation / goal; battery + device info + live data GETs; connect sync (func table, profile). **v3 `0x05`/`0x04`** runs on manual fetch, Gadgetbridge unlock auto-fetch, or **automatically on connect** when the func-table `automatic_sync_v3_health_data` bit is set and debounce allows.
 3. **While connected:** User-initiated **fetch** / **Gadgetbridge auto-fetch** runs **`onFetchRecordedData`** (GET **`0x02` `0xA0`** + v3 health sync). Interval for auto-fetch is **`auto_fetch_interval_limit`** (minutes), not a fixed 15/30 unless you set that in Gadgetbridge.
 
 For **packet-level** examples, see **`packetdumps/logcat/sync_example.txt`**. Parsing + Gadgetbridge route: **`LATEST_SYNC_PARSING.md`**. Feature status / file map: **`gadgetbridge/README_TOOBUR.md`** and **`TOOBUR.md`**.

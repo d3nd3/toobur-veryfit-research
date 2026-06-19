@@ -514,7 +514,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Time / restart | SET `01` / `F0 01` | ✅ | — |
 | Firmware update | OTA `01` + bulk | ❌ | P3 |
 | Device info full | GET `01`/`04`/`A7`/`48`/`F0` | partial | P1 |
-| Health sync offsets | v3 `05` per-type u32 | ✅ | Auto fetch on connect [028](./issues/028-auto-health-fetch-on-connect/) |
+| Health sync offsets | v3 `05` per-type u32 | ✅ | Connect auto-fetch when v3 `1A` auto-sync bit set (issue 028) |
 
 ---
 

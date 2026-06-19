@@ -68,6 +68,226 @@ In both apps:
 
 Once `rx_written === rx_buffer.length`, the app calls `dispatchV3Reply(rx_buffer)` and resets rx state.
 
+### 1.4 Example: what triggers sync, and how received data is recorded
+
+**Important:** the watch does **not** push v3 health history on its own after connect. The **phone is always the client** — something on the phone must **connect, subscribe to notify, and write a request**; only then does the watch reply, and those replies are what get recorded as `RX :` lines.
+
+#### Who starts it (triggers)
+
+| Client | Typical trigger | Code that builds the wire bytes |
+|--------|-----------------|-----------------------------------|
+| **VeryFit app** | Pull-to-sync → `VBUS_EVT_FUNC_START_SYNC_V3_HEALTH` (log: `MANUAL SYNC`) | Native `protocol_v3_health_client.c` → same layout as below |
+| **Gadgetbridge** | *Fetch activity data* / auto-fetch | `TooburV3HealthSync.buildV3HealthSizesRequest()` then `buildHealthSync04()` |
+| **HTML tools** | Sync button | `buildV3HealthSizesRequest()` / `buildV3HealthSync04()` in `toobur-hr-csv.html` |
+| **Live probe** | `toobur_ble_probe.py --tx "02 05"` | Raw hex on **`0x0AF6`** (legacy GET, not v3) |
+
+Prerequisite: BLE connected; phone subscribed to **`0x0AF7`** (legacy notify) and **`0x0AF2`** (v3 bulk notify). **v3 health writes go to `0x0AF1`**; **v3 replies arrive on `0x0AF2`**.
+
+#### Wire layout shared by every v3 frame
+
+Every v3 **first BLE chunk** on the wire starts with chunk prefix **`0x33`**, then:
+
+| Byte(s) on wire | Hex (example) | Field |
+|-----------------|---------------|--------|
+| `[0]` | `33` | BLE chunk prefix — **stripped** before parsing (§1.3) |
+| `[1..4]` | `DA AD DA AD` | v3 preamble |
+| `[5]` | `01` | protocol version |
+| `[6..7]` | `10 00` or `88 00` | inner length **u16 LE** (excludes leading `33`; includes preamble through CRC) |
+| `[8..9]` | `04 00` or `05 00` | **cmd u16 LE** — **`0x0004`** = health sync, **`0x0005`** = health sizes |
+| `[10..11]` | `2F 00` | **seq (nseq) u16 LE** — must match between request and reply |
+| `[12..]` | *(cmd-specific)* | payload |
+| last 2 | `D5 E1` | **CRC-16 CCITT FALSE** over wire bytes `[1 .. len−3]` |
+
+Continuation chunks: **`33`** + payload only (no second preamble) — §1.1.
+
+---
+
+#### Step 1 — phone TX: v3 cmd **`0x0005`** (health sizes query)
+
+**Purpose:** ask the watch how many stored health bytes match the type+offset list. **Gadgetbridge** sends **seven** 5-byte records (all types, offsets usually `0`).
+
+Builder: `TooburV3HealthSync.buildV3HealthSizesRequest(seq, offsets32)` — **137 bytes** on wire.
+
+| Payload byte after seq | Meaning |
+|------------------------|---------|
+| `typeId` (1 B) | `0x01` SpO₂, `0x02` pressure, `0x03` HR, `0x04` activity, `0x06` swim, `0x07` sleep, `0x08` sport |
+| `offset` (4 B LE) | byte position in that type’s stored stream (`0x00000000` = from start) |
+
+**Full baseline request (Gadgetbridge / VeryFit “all types, offset 0”)** — inner fields only (after leading `33`):
+
+```text
+DA AD DA AD  01  88 00  05 00  [seq]  01 00 00 00 00   02 00 00 00 00   03 00 00 00 00
+       04 00 00 00 00   06 00 00 00 00   07 00 00 00 00   08 00 00 00 00   …pad…  [CRC]
+       ^^^^^^^^^^^^^ seven type+offset records (7×5 = 35 B)
+```
+
+**Captured TX** from [`sync_example.txt`](packetdumps/logcat/sync_example.txt) — **subset** of four types; sport uses incremental offset **`0x4E` (78)**:
+
+```text
+TX : 33  DA AD DA AD  01  88 00  05 00  2F 00
+         01 00 00 00 00          ← type 0x01 SpO₂,   offset 0
+         02 00 00 00 00          ← type 0x02 pressure, offset 0
+         08 4E 00 00 00          ← type 0x08 sport,   offset 0x4E (78)
+         03 00 00 00 00          ← type 0x03 HR,      offset 0
+         …zeros…  [CRC]
+```
+
+Note **`[6..7] = 88 00`** → inner length **0x0088 (136 B)** for this long `0x05` frame (vs **`10 00`** = 16 B for short `0x04` frames).
+
+---
+
+#### Step 2 — watch RX: v3 cmd **`0x0005`** reply
+
+One notification; **same `seq`** as the request (`2F 00` here):
+
+```text
+RX : 33  DA AD DA AD  01  10 00  05 00  2F 00  FD 03 00 00  10 73
+                              ^cmd    ^seq   ^^^^^^^^^^^^^^^^
+                              0x0005  0x002F  totalBytes u32 LE = 0x000003FD = 1021
+```
+
+After reassembly (drop `33`), parsers read **`totalBytes = payload[0..3]`** at buffer offset **11** (first four bytes after `cmd`/`seq`). Native log: `sync all size = 1021`.
+
+---
+
+#### Step 3 — phone TX: v3 cmd **`0x0004`** START / STOP (per data type)
+
+**Purpose:** pull one health stream. Each type needs **two** writes: **`operate = 0x00`** (START), then **`operate = 0x01`** (STOP).
+
+Builder: `TooburV3HealthSync.buildHealthSync04(operate, dataType, seq, byte14, saveOffset16)` — **19 bytes** on wire.
+
+| Wire `[12..16]` | Hex | Field |
+|-----------------|-----|--------|
+| `[12]` | `00` / `01` | **operate** — `0x00` START, `0x01` STOP |
+| `[13]` | `01`…`08` | **dataType** (see table in Step 1) |
+| `[14]` | `00` or `01` | **byte14** — `0x01` day-data types (`0x01`,`0x02`,`0x03`,`0x08`); **`0x00`** count-data (`0x04`,`0x06`,`0x07`) |
+| `[15..16]` | `4E 00` | **saveOffset16 u16 LE** — resume point in stream (often `00 00`) |
+
+**SpO₂ START** (`dataType=0x01`, `operate=0x00`, `seq=0x0030`) from `sync_example.txt`:
+
+```text
+TX : 33  DA AD DA AD  01  10 00  04 00  30 00  00  01  01  00 00  D5 E1
+                              ^0x0004  ^seq  ^ST ^typ^b14^off=0  ^CRC
+```
+
+**SpO₂ STOP** (`operate=0x01`, `seq=0x0031`):
+
+```text
+TX : 33  DA AD DA AD  01  10 00  04 00  31 00  01  01  01  00 00  E5 F3
+                                              ^STOP
+```
+
+**Sport START** with incremental offset **`0x004E`** (`dataType=0x08`, `seq=0x003A`):
+
+```text
+TX : 33  DA AD DA AD  01  10 00  04 00  3A 00  00  08  01  4E 00  2F CF
+                                              ^ST ^sport ^b14 ^off=78
+```
+
+**Activity START** (count-data — note **`byte14 = 0x00`**) from `TOOBUR.md` / native captures:
+
+```text
+TX : 33  DA AD DA AD  01  10 00  04 00  [seq]  00  04  00  00 00  [CRC]
+                                              ^ST ^0x04 activity ^0x00
+```
+
+Sync loop order (VeryFit + Gadgetbridge): **`0x01 → 0x02 → 0x03 → 0x04 → 0x06 → 0x07 → 0x08`**, each type: **START TX → RX… → STOP TX → RX**.
+
+---
+
+#### Step 4 — watch RX: v3 cmd **`0x0004`** reply
+
+Payload after reassembled `cmd`/`seq` begins with the **health common header** (§2): `operate`, `dataType`, flags, `itemCount`, `headSize`, `dataSize`, then type-specific header + item bytes.
+
+**SpO₂ START reply** (empty stream, one packet):
+
+```text
+RX : 33  DA AD DA AD  01  26 00  04 00  30 00  00  01  01 00 00  0D 00  00 00 00 00  …
+                              ^len=0x0026  ^cmd  ^seq  ^op ^typ     ^itemCnt ^headSize=13
+```
+
+Native decode: `data_type=1`, `head_size=13`, `data_size=0`, `item_count=0`.
+
+**Sport START reply** (`dataType=0x08`, **841 B** logical — seven `RX :` lines):
+
+```text
+RX : 33  DA AD DA AD  01  49 03  04 00  3A 00  00  08  01 00 00  4E 00  24 00  0C 03 00 00  …
+                              ^len=0x0349=841                              ^headSize=36 ^dataSize=780
+RX : 33  00 00 …   (×5 continuation chunks)
+RX : 33  00 00 … 01 00   (final tail)
+```
+
+---
+
+#### Legacy GET (not v3) — write **`0x0AF6`**, reply on **`0x0AF7`** / **`0x0AF2`**
+
+Two-byte requests; no `33` preamble:
+
+| TX (phone → watch) | Meaning |
+|--------------------|---------|
+| `02 05` | GET battery |
+| `02 A0` | GET live data (steps / HR snapshot on card) |
+| `02 01` | GET device info |
+
+Example from [`2026-06-19_gatt-transport.txt`](packetdumps/live/2026-06-19_gatt-transport.txt):
+
+```text
+TX : 02 05
+RX : 02 05  00  84 0E  00  09  00 00 00 …
+     ^GET  ^key  ^?  ^mV? ^?  ^charge state …
+```
+
+Gadgetbridge runs **`02 A0`** on fetch *before* the v3 `0x05`/`0x04` sequence (§13).
+
+---
+
+#### Full trigger → record sequence (annotated)
+
+From [`sync_example.txt`](packetdumps/logcat/sync_example.txt) after `MANUAL SYNC`:
+
+```text
+1. TX  cmd=0x0005  seq=0x002F  types [01,02,08@4E,03]     →  0x0AF1
+2. RX  cmd=0x0005  seq=0x002F  totalBytes=0x000003FD (1021) ←  0x0AF2
+
+3. TX  cmd=0x0004  seq=0x0030  START  dataType=0x01       →  0x0AF1
+4. RX  cmd=0x0004  seq=0x0030  SpO₂ payload (13 B head)    ←  0x0AF2
+5. TX  cmd=0x0004  seq=0x0031  STOP   dataType=0x01       →  0x0AF1
+6. RX  cmd=0x0004  seq=0x0031  SpO₂ tail                  ←  0x0AF2
+
+   … repeat START/STOP for 0x02, 0x03, 0x04, 0x06, 0x07 …
+
+N. TX  cmd=0x0004  seq=0x003A  START  dataType=0x08  offset=0x004E  →  0x0AF1
+N+1. RX cmd=0x0004  seq=0x003A  sport 841 B (7 notifications)         ←  0x0AF2
+```
+
+Each **`RX :` line = one BLE notification**; only step N+1 may span many lines.
+
+#### Where `RX :` lines come from (recording format)
+
+Watch → phone bytes arrive as **BLE GATT notifications**. Debug builds log each notification as:
+
+```text
+RX : <space-separated hex bytes>
+```
+
+| Source | Log hook | Notify char |
+|--------|----------|-------------|
+| VeryFit logcat | `[protocol.c] [protocol_receive_data]` | **`0x0AF2`** (v3), **`0x0AF7`** (legacy) |
+| Live probe | `packetdumps/live/*.txt` | same `TX :` / `RX :` format |
+| Fixtures | `gadgetbridge/.../fixtures/*.rx.hex` | `extract_logcat_fixtures.py` |
+
+Pair every **`RX :`** with the **`TX :`** above it in the capture — match **`cmd`** at bytes `[8..9]` and **`seq`** at `[10..11]` (after the leading `33` on wire).
+
+#### Recorded bytes vs parser input
+
+| Layer | First v3 packet | Continuation packets | After reassembly (§1.3, §2) |
+|-------|-----------------|----------------------|------------------------------|
+| **Logcat / probe `RX :`** | `33 DA AD DA AD …` | `33` + payload only | one line per BLE notify |
+| **Reassembly buffer** | drop `[0]` (`33`), append rest | same | starts with `DA AD DA AD …` |
+| **Fixtures** | leading `33` stripped on extract | unchanged | one logical frame per file |
+
+**Summary:** trigger = phone **write** of `0x0005` then repeated **`0x0004`** START/STOP on **`0x0AF1`**; recording = each watch **notify** on **`0x0AF2`** as `RX :`; parsing = reassemble (§1.1–1.3), match **`seq`**, decode §2 common header.
+
 ---
 ## 2) Shared v3 cmd `0x04` reply layout inside the payload
 After reassembly, the apps parse:
@@ -548,7 +768,7 @@ The HTML pages do not enforce this policy; **Gadgetbridge prefs** (`toobur_v3_he
 | Question | Answer |
 |----------|--------|
 | Is **live data** the same protocol as v3 **`0x04`/`0x05`**? | **No.** Live data is **legacy GET** — write **`0x02` `0xA0`** on **`0x0AF6`**, reply on **`0x0AF7`**. v3 health history sync uses **`0x33`** framing — write on **`0x0AF1`**, reply on **`0x0AF2`**. |
-| On **connect** | `TooburSupport.initializeDevice` sends GET **battery**, **device info**, and **live data** once. |
+| On **connect** | `initializeDevice` sends GET **battery**, **device info**, and **live data**; deferred connect sync (func table, profile). After v3 `1A` reply, **`TooburConnectAutoFetch`** may trigger **`TooburV3FetchHealthOperation`** when `automatic_sync_v3_health_data` is set and debounce allows. |
 | On **Fetch activity data** (card button) | `onFetchRecordedData` sends **GET live data** first, then starts **`TooburV3FetchHealthOperation`**. |
 | On **Gadgetbridge auto fetch** (interval + unlock) | Same `onFetchRecordedData` → **live GET + v3 fetch** for connected devices that support fetching. Interval is **`auto_fetch_interval_limit`** (minutes), not fixed at 30 unless the user sets that. |
 | On **swipe refresh** in the device list | **In upstream Gadgetbridge**, “refresh on swipe” is a **preference** (`pref_refresh_on_swipe` / `GBPrefs.refreshOnSwipe()`). **This fork may or may not wire the UI to `onFetchRecordedData`**; if swipe only refreshes the list UI, it does **not** hit the band. **Card “Fetch activity data”** always calls `onFetchRecordedData` in `GBDeviceAdapterv2`. |

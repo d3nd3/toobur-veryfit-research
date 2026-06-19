@@ -76,7 +76,7 @@ Parsed from user's watch — gate GB UI via `TooburFuncTableCapabilities`:
 | Ex `02 07` | `ex_table_main8` byte 12 | `v3_sync_alarm` bit 0, `v3_sleep` bit 7 |
 | v3 `1A` | table1 byte 2 bit 6 | `automatic_sync_v3_health_data` |
 
-**GB wiring:** connect logs `TOOBUR func table caps: …`; `TooburDeviceSpecificSettingsCustomizer` hides weather/swim/auto-fetch prefs when bits clear; `getAlarmSlotCount` → 0 without `v3_sync_alarm`.
+**GB wiring:** connect logs `TOOBUR func table caps: …`; `TooburDeviceSpecificSettingsCustomizer` hides weather/swim/auto-fetch prefs when bits clear; `getAlarmSlotCount` → 0 without `v3_sync_alarm`; connect + unlock auto-fetch gated by `automatic_sync_v3_health_data` via `TooburConnectAutoFetch`.
 
 Full 42-table bit reference: `FuncTables.md` in vault (also `func-tables/function_table.json` in repo).
 
