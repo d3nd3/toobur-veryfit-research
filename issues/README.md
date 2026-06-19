@@ -36,7 +36,7 @@ issues/
 | [022](./022-bleak-live-probe-tooling/) | Bleak live BLE probe for capture gaps | — | `ready-for-agent` |
 | [003](./003-fix-set-03-30-notice-alert/) | Fix SET `03 30` notice alert (20 B) | 002 | `ready-for-agent` |
 | [004](./004-fix-set-03-29-dnd-schedule/) | DND schedule SET `29` + GET `30` | 002 | closed |
-| [005](./005-v3-alarms-0e-0f/) | v3 alarms GET `0F` / SET `0E` (10 slots) | 002 | `ready-for-agent` |
+| [005](./005-v3-alarms-0e-0f/) | v3 alarms GET `0F` / SET `0E` (10 slots) | 002 | closed |
 | [006](./006-sleep-sync-v3-type-07/) | Sleep sync → GB sleep chart | 002 | `ready-for-agent` |
 
 ### P1 — charts, sync, device info, watch→phone
