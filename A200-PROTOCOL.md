@@ -154,7 +154,7 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `22` | Wrist L/R | 109 | VALID | ✅ | `03 22 00` left / `01` right |
 | `28` | Raise to wake | 114 | VALID | ✅ | `03 28 AA 05 01 00 00 17 3B` (9 B) — `set_hand_gesture_wake_*.txt` |
 | `2B` | Screen orientation | 118 | VALID | ✅ | `03 2B 00` horiz / `02` vertical |
-| `32` | Auto brightness | 154 | VALID | ❌ | `03 32 28 01 00 03 13 00 06 00 00 05` (12 B) — `set_auto_brightness_*.txt` |
+| `32` | Auto brightness | 154 | VALID | ✅ | `03 32 28 01 00 03 13 00 06 00 00 05` (12 B) — `set_auto_brightness_*.txt` |
 
 ### Alerts, DND, notifications enable
 
@@ -509,7 +509,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | DND schedule | SET `29` + GET `30` | 🔧 | **P0** |
 | Raise to wake | SET `28` | ✅ | — |
 | Find phone / find device | SET `26` / APP `04` | ✅ | — |
-| Auto brightness schedule | SET `32` | ❌ | P2 |
+| Auto brightness schedule | SET `32` | ✅ | issue 016 |
 | Device language | GET `31`? | ❌ | Unconfirmed |
 | Time / restart | SET `01` / `F0 01` | ✅ | — |
 | Firmware update | OTA `01` + bulk | ❌ | P3 |
