@@ -34,7 +34,7 @@ issues/
 |----|-------|---------|--------|
 | [002](./002-confirmed-feature-pipeline-scaffold/) | Confirmed-feature pipeline scaffold | — | closed |
 | [022](./022-bleak-live-probe-tooling/) | Bleak live BLE probe for capture gaps | — | closed |
-| [003](./003-fix-set-03-30-notice-alert/) | Fix SET `03 30` notice alert (20 B) | 002 | `ready-for-agent` |
+| [003](./003-fix-set-03-30-notice-alert/) | Fix SET `03 30` notice alert (20 B) | 002 | closed |
 | [004](./004-fix-set-03-29-dnd-schedule/) | DND schedule SET `29` + GET `30` | 002 | closed |
 | [005](./005-v3-alarms-0e-0f/) | v3 alarms GET `0F` / SET `0E` (10 slots) | 002 | closed |
 | [006](./006-sleep-sync-v3-type-07/) | Sleep sync → GB sleep chart | 002 | closed |
@@ -76,7 +76,7 @@ issues/
 | ID | Title | Depends | Status |
 |----|-------|---------|--------|
 | [019](./019-watch-faces-v3/) | Watch faces v3 + bulk | 002, 024 | `ready-for-agent` |
-| [020](./020-firmware-ota/) | Firmware OTA + GET `48` | 010 | `ready-for-agent` |
+| [020](./020-firmware-ota/) | Firmware OTA + GET `48` | 010 | closed |
 | [021](./021-extra-app-controls/) | Camera remote + sleep period | 002, 024 | closed |
 
 ## Suggested agent order
@@ -100,6 +100,8 @@ issues/
 Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/**DND** with themed icons), **coordinator stock-chart flags** (realtime, REM sleep, workouts, stress zones, HR intervals, weather), **tabbed device settings** (Generic/Display/Health/Notifications/Connection/Developer), **scheduled auto brightness** (SET `03 32` on Display tab, func-table gated), **health reminders** (long-sit `03 20`, drink `03 60`, walk `03 47`, menstrual `03 42`/`41` on Health tab), **v3 HR continuous schedule** (cmd `09` reset+mode+schedule; interval pref; no legacy SET `03 25`), **SpO₂/stress continuous SET schedules** (`03 44`/`03 45` full payloads + Health tab window prefs), **units & user profile** (SET `03 10`/`11` on connect; timeformat pref; GB unit/profile push), **per-app notification channels** (SET `03 30` item1/item2 for SMS/WeChat/WhatsApp; GET `02 10` readback; func-table gated on Notifications tab), **camera remote** (APP `06 02` + watch `07 01` 556–561 → `GBDeviceEventCameraRemote`; Notifications tab pref), **sleep period** (SET `03 31` + stock `devicesettings_sleep_time` on Health tab; func-table `ex_main2.sleep_period` gated).
 
 Notice alert is **not** fully polished — see 003 (base 20 B done; per-app bits closed in 025).
+
+**Firmware OTA:** GET **`02 48`** queued on connect + Developer action; device card **Firmware OTA** row when RX present (A200 returns none). OTA transfer **`01` + bulk** not shipped — see [`docs/firmware_ota.md`](../docs/firmware_ota.md) (issue 020 closed).
 
 ## Explicitly out of scope (no issue until captured)
 

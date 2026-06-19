@@ -23,6 +23,7 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `device-info-get-02-01` | GET `0x02 0x01` firmware + device id | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/live/2026-06-19_get-device-info.txt` |
 | `device-info-get-02-04` | GET `0x02 0x04` watch MAC | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/logcat/reinstall_app_bind_stripped.txt` |
 | `device-info-get-02-a7` | GET `0x02 0xA7` resource pack version | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/logcat/get_flashbin_info.txt` |
+| `get-firmware-status-02-48` | GET `0x02 0x48` firmware OTA status | `gb-wired` | `TooburFirmwareStatusPacketsTest` | synthetic fixture; A200 no RX — `docs/firmware_ota.md` |
 | `msg-notify-05-03` | MSG `0x05 0x03` notification (16 B chunks, 1-based serial) | `gb-wired` | `TooburMsgPacketsTest` | htmlapp encoding + `SendNotificationOperation` |
 | `msg-message-center-05-03` | Message center (same wire as MSG `05 03`) | `gb-wired` | `TooburMsgPacketsTest` | same as `msg-notify-05-03` |
 | `msg-call-05-01` | MSG `0x05 0x01` incoming call chunks | `tx-confirmed` | `TooburMsgPacketsTest` | htmlapp encoding (live probe skipped — rings watch) |

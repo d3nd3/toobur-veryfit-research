@@ -117,7 +117,7 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | `33` | BT notice | 352 | — | ❌ | VBUS only |
 | `40` | Error record | 320 | — | ❌ | VBUS only |
 | `46` | Other switches | 343 | — | ❌ | VBUS only |
-| `48` | Firmware status | 348 | — | ❌ | **Live 2026-06-19:** GET `02 48` — no RX (not on this A200) |
+| `48` | Firmware status | 348 | — | ⚠️ | **Live 2026-06-19:** GET `02 48` — no RX on A200; GB queues + parses when reply present ([020](./issues/020-firmware-ota/)) |
 | `59` | Device CMEI | 356 | — | ❌ | — |
 | `A0` | Live data | 304 GET_LIVE_DATA | VALID | ✅ | `02 A0` — steps + HR snapshot |
 | `A2` | HID info | 310 | — | ❌ | VBUS only |
@@ -476,9 +476,9 @@ Systematic joint audit of every capability we believe the A200 has.
 | 53 | Watch music / camera keys | `07` evt 551–561 | ⏸ | `—` | press watch music/camera buttons |
 | 54 | MAC address | GET `02 04` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 04 F9:24:12:2E:0C:32 |
 | 55 | Flash / resource info | GET `02 A7` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 A7 |
-| 56 | Firmware status | GET `02 48` | ❌ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 48 — no RX on A200 |
+| 56 | Firmware status | GET `02 48` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 48 — no RX on A200; GB wired (issue 020) |
 | 57 | Reboot / shutdown | `F0 01`/`03` | ⏸ | `—` | F0 01/03 skipped |
-| 58 | OTA firmware | `01` + bulk | ⏸ | `—` | OTA not attempted |
+| 58 | OTA firmware | `01` + bulk | ⏸ | `docs/firmware_ota.md` | OTA not shipped; `01 01` bruteforce VALID |
 | 59 | Camera shutter (phone) | APP `06 02` + `07 01` 556–561 | ✅ | `TooburAppControlPacketsTest` | `devicesettings_camera_remote` + watch→phone `GBDeviceEventCameraRemote` |
 | 60 | Conn param tune | SET `03 35` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 35 step 01 ACK |
 
