@@ -103,7 +103,7 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | `01` | Device info | 301 GET_DEVICE_INFO | VALID | ✅ | `get_device_info.txt`, `app_fresh_launch.txt`; **live** `packetdumps/live/2026-06-19_get-device-info.txt` |
 | `02` | Func table | 302 GET_FUNC_TABLE | VALID | ⚠️ | Base capability bits — hive parse in [`HIVE-A200-NOTES.md`](docs/external-notes/HIVE-A200-NOTES.md); not gating GB UI |
 | `03` | Time | — | VALID | ⚠️ | Rarely needed; GB sets time via SET `03 01` |
-| `04` | MAC address | 300 GET_MAC | VALID | ❌ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
+| `04` | MAC address | 300 GET_MAC | VALID | ✅ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
 | `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → level %, voltage mV, charge state |
 | `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ❌ | Extended bits — `v3_hr_data`, `v3_swim`, `multi_dial`, … |
 | `10` | Notice status | 306 | VALID | ❌ | Readback for SET `03 30` — issue [025](./issues/025-per-app-notification-switches/) |
@@ -122,7 +122,7 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | `A0` | Live data | 304 GET_LIVE_DATA | VALID | ✅ | `02 A0` — steps + HR snapshot |
 | `A2` | HID info | 310 | — | ❌ | VBUS only |
 | `A3`–`A5` | GPS info/status | 312–314 | — | ❌ | No GPS on A200 |
-| `A7` | Flash / resource pack | 322 GET_FLASH_BIN_INFO | VALID | ❌ | `get_flashbin_info.txt` |
+| `A7` | Flash / resource pack | 322 GET_FLASH_BIN_INFO | VALID | ✅ | `get_flashbin_info.txt` |
 | `B0` | Bright screen params | — | VALID | ❌ | — |
 | `B1` | Weather switch state | 317 area | VALID | ❌ | `set_dnd_on.txt` RX `02 B1 55…` |
 | `B2`–`B3` | Unknown | — | VALID | ❌ | — |

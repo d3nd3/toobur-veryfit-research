@@ -17,3 +17,6 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `hr-sync-v3-03` | v3 cmd `0x04` dataType `0x03` | `gb-wired` | `TooburHrStoreTest` | synthetic JNI-7003 fixture (`hr_v3_type03_sample.rx.hex`) |
 | `workout-sync-v3-04` | v3 cmd `0x04` dataType `0x04` | `gb-wired` | `TooburWorkoutStoreTest` | synthetic fixture (`workout_v3_type04_sample.rx.hex`; `sync_example.txt` empty) |
 | `swim-sync-v3-06` | v3 cmd `0x04` dataType `0x06` | `gb-wired` | `TooburSwimStoreTest` | `sync_example.txt` empty + synthetic `swim_v3_type06_sample.rx.hex` |
+| `device-info-get-02-01` | GET `0x02 0x01` firmware + device id | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/live/2026-06-19_get-device-info.txt` |
+| `device-info-get-02-04` | GET `0x02 0x04` watch MAC | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/logcat/reinstall_app_bind_stripped.txt` |
+| `device-info-get-02-a7` | GET `0x02 0xA7` resource pack version | `gb-wired` | `TooburDeviceInfoPacketsTest` | `packetdumps/logcat/get_flashbin_info.txt` |

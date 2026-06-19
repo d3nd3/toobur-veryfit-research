@@ -48,7 +48,7 @@ issues/
 | [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | closed |
 | [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | closed |
 | [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | `ready-for-agent` |
-| [010](./010-device-info-card/) | Full device info card | — | `ready-for-agent` |
+| [010](./010-device-info-card/) | Full device info card | — | `closed` |
 | [011](./011-notifications-msg-verify/) | Verify MSG `05` notifications | 002, 003, 022 | `ready-for-agent` |
 | [017](./017-watch-ble-events-07/) | Watch BLE events `07 40` + call/music | — | `ready-for-agent` |
 
@@ -97,7 +97,7 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, step goal, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, partial device info GET `02 01`, **device card quick actions** (HR/SpO₂/stress/auto-activity).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, step goal, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity).
 
 SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings / coordinator UI flags** are **not** fully polished — see 003, 023, 029–032.
 
