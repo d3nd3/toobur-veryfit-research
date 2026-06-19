@@ -172,8 +172,8 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 |-----|------|------|-------|-----|------------------------|
 | `24` | HR interval (legacy) | 112 | VALID | — | Superseded by v3 `09` on A200 |
 | `25` | HR mode (legacy) | 113 | VALID | ⚠️ | GB still sends for compat; **v3 `09` is primary** |
-| `44` | SpO₂ continuous | 162 | VALID | ⚠️ | Full **16 B** schedule: onOff, window, repeat, interval, thresholds, notifyFlag — GB templates flip byte 2 only |
-| `45` | Stress / pressure | 163 | VALID | ⚠️ | Full **16 B** schedule + remindOnOff + stressThreshold — GB templates flip byte 2 only — `set_stress_cont_*.txt` |
+| `44` | SpO₂ continuous | 162 | VALID | ✅ | **10 B** schedule: onOff, window, lowOnOff, lowValue, notifyFlag — `TooburHealthSwitchPacketsTest` |
+| `45` | Stress / pressure | 163 | VALID | ✅ | Full **16 B** schedule + remind/interval/thresholds — `set_stress_cont_*.txt`, `TooburHealthSwitchPacketsTest` |
 | `49` | Auto sport detect | 167 | VALID | ✅ | `03 49 01 01 00…` (11 B) — `set_auto_sport_detect_*.txt` |
 
 ### Reminders
@@ -434,9 +434,9 @@ Systematic joint audit of every capability we believe the A200 has.
 | 11 | HR day history | v3 type `03` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 03 start/stop |
 | 12 | HR continuous schedule | v3 `09` (2–3 pkts) | ✅ | `TooburV3HrPacketsTest` + logcat | VeryFit `99`/`AA` mode + all-day schedule; no SET `25` |
 | 13 | SpO₂ day sync | v3 type `01` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 01 SpO₂ start/stop |
-| 14 | SpO₂ continuous toggle | SET `03 44` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 44 key ACK; 16 B schedule not sent |
+| 14 | SpO₂ continuous toggle | SET `03 44` | ✅ | `TooburHealthSwitchPacketsTest` | 10 B schedule + Health tab window prefs |
 | 15 | Stress day sync | v3 type `02` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 02 stress start/stop |
-| 16 | Stress continuous toggle | SET `03 45` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 45 key ACK; 16 B schedule not sent |
+| 16 | Stress continuous toggle | SET `03 45` | ✅ | `TooburHealthSwitchPacketsTest` | 16 B schedule + Health tab window prefs |
 | 17 | Sleep sync | v3 type `07` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 07 sleep start/stop |
 | 18 | Workout sessions | v3 type `04` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 04 workouts start/stop |
 | 19 | Swim sessions | v3 type `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 06 swim start/stop |

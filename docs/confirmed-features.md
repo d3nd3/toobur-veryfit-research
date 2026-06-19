@@ -48,3 +48,5 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-menstruation-03-41-42` | SET `0x03 0x42` remind + `0x03 0x41` data | `gb-wired` | `TooburHealthReminderPacketsTest` | `set_woman_health_remind_*.txt`, `reinstall_app_bind_stripped.txt` |
 | `v3-hr-09-mode-on` | v3 cmd `0x09` HR mode ON (`0x99`) + interval | `gb-wired` | `TooburV3HrPacketsTest` | `packetdumps/logcat/set_hr_cont_state_on.txt` |
 | `v3-hr-09-schedule` | v3 cmd `0x09` all-day schedule pkt2 (`00:00`–`23:59`) | `gb-wired` | `TooburV3HrPacketsTest` | `packetdumps/logcat/set_hr_cont_state_on.txt` |
+| `set-pressure-03-45` | SET `0x03 0x45` stress continuous (16 B schedule) | `gb-wired` | `TooburHealthSwitchPacketsTest` | `packetdumps/logcat/set_stress_cont_on.txt`, `set_stress_cont_off.txt` |
+| `set-spo2-03-44` | SET `0x03 0x44` SpO₂ continuous (10 B schedule) | `gb-wired` | `TooburHealthSwitchPacketsTest` | vault `Toggle Switches Continuous.md` |
