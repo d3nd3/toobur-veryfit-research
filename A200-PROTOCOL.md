@@ -312,8 +312,8 @@ ACK reply echoes `notify_switch` + `status_code` + `err_code`. GET readback: **`
 
 | Key | Name | VBUS | Probe | GB | Notes |
 |-----|------|------|-------|-----|-------|
-| `01` | Weather payload | 153 | VALID | ❌ | Bulk forecast data — needs SET `03 2D` enable first |
-| `02`–`05` | City / realtime slots | 6500+ | — | ❌ | VBUS only |
+| `01` | Weather payload | 153 | VALID | ✅ | **18 B**: `0A 01` + 16 B forecast; SET `03 2D` enable first — `set_push_weather_on.txt` |
+| `02` | City name | 6500 | — | ✅ | **20 B**: `0A 02` len + UTF-8 (padded) — follows `0A 01` in capture |
 | `6C` | Unknown | — | VALID | ❌ | Bruteforce only |
 
 ---
@@ -452,7 +452,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 32 | Call / notice alert | SET `03 30` + GET `02 10` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 10 OK; SET 03 30 20 B not sent |
 | 33 | Music on watch toggle | SET `03 2A` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 2A 4 B ACK |
 | 34 | Weather push enable | SET `03 2D` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 B1 + SET 03 2D 6 B |
-| 35 | Weather data | `0A 01` | ⏸ | `—` | 0A 01 not sent |
+| 35 | Weather data | `0A 01` + `0A 02` city | ✅ | `packetdumps/logcat/set_push_weather_on.txt` | 18 B forecast + 20 B city; GET 02 B1 after SET 2D |
 | 36 | Notifications | MSG `05 03` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | MSG 05 03 1-chunk |
 | 37 | Incoming call | MSG `05 01` | ⏸ | `—` | MSG 05 01 not sent — would ring watch |
 | 38 | Call end | MSG `05 02` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | MSG 05 02 |
@@ -506,7 +506,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | partial | P2 |
 | Auto sport | SET `49` | ✅ | — |
 | Music | SET `2A` + APP `01` | ✅ / ✅ | — |
-| Weather | SET `2D` + `0A 01` data | ✅ / ❌ | issue 013 |
+| Weather | SET `2D` + `0A 01` data + `0A 02` city | ✅ | issue 013 closed |
 | DND schedule | SET `29` + GET `30` | 🔧 | **P0** |
 | Raise to wake | SET `28` | ✅ | — |
 | Find phone / find device | SET `26` / APP `04` | ✅ | — |

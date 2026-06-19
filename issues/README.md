@@ -57,7 +57,7 @@ issues/
 | ID | Title | Depends | Status |
 |----|-------|---------|--------|
 | [012](./012-fix-set-2a-2d-payloads/) | Fix SET `2A` / `2D` payload lengths | 002 | closed |
-| [013](./013-weather-push-0a-01/) | Weather push `0A 01` data | 012, 024 | `ready-for-agent` |
+| [013](./013-weather-push-0a-01/) | Weather push `0A 01` data | 012, 024 | closed |
 | [014](./014-goals-set-03-43/) | Goals SET `03`/`04`/`43` | 002 | `ready-for-agent` |
 | [015](./015-health-reminders/) | Long sit, drink, walk, menstrual reminders | 002, 024 | `ready-for-agent` |
 | [016](./016-auto-brightness-set-32/) | Auto brightness SET `32` | 002, 024 | `ready-for-agent` |

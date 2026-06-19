@@ -26,3 +26,4 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `msg-call-end-05-02` | MSG `0x05 0x02` call dismiss | `tx-confirmed` | `TooburMsgPacketsTest` | `packetdumps/live/2026-06-19_batch-audit.json` |
 | `set-music-03-2a` | SET `0x03 0x2A` music on watch (4 B) | `gb-wired` | `TooburMusicWeatherSwitchPacketsTest` | `packetdumps/logcat/set_music_on.txt`, `set_music_off.txt` |
 | `set-weather-03-2d` | SET `0x03 0x2D` weather push enable (6 B) | `gb-wired` | `TooburMusicWeatherSwitchPacketsTest` | `packetdumps/logcat/set_push_weather_on.txt`, `set_push_weather_off.txt` |
+| `weather-push-0a-01` | CMD `0x0A 0x01` forecast + optional `0A 02` city | `gb-wired` | `TooburWeatherPacketsTest` | `packetdumps/logcat/set_push_weather_on.txt` |
