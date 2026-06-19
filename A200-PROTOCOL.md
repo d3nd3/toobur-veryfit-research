@@ -139,13 +139,13 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | Key | Name | VBUS | Probe | GB | A200 payload (example) |
 |-----|------|------|-------|-----|------------------------|
 | `01` | Set time | 104 | VALID | ✅ | `03 01 [Y LE] MM DD hh mm ss dow …` (16 B) — `set_time.txt` |
-| `03` | Sport step goal | 105 | VALID | ✅ | Inherited ID115 `setGoal()` |
-| `04` | Sleep goal | 106 | VALID | ❌ | — |
+| `03` | Sport step goal | 105 | VALID | ✅ | 17 B — `TooburGoalPackets` (issue [014](./issues/014-goals-set-03-43/)) |
+| `04` | Sleep goal | 106 | VALID | ✅ | `03 04 HH MM` — `TooburGoalPackets` |
 | `10` | User info | 107 | VALID | ❌ | `03 10 B4 40…` — `get_sync_health_v3.txt` |
 | `11` | Units / config | 108 | VALID | ❌ | 17 B — `app_fresh_launch.txt` |
 | `12` | Watch dial (legacy) | 124 | VALID | ❌ | Prefer v3 dial cmds |
 | `13` | Shortcut | 125 | VALID | ❌ | — |
-| `43` | Calorie + distance goals | 161 | VALID | ❌ | `03 43 F4 01…` (20 B) — `app_fresh_launch.txt` |
+| `43` | Calorie + distance goals | 161 | VALID | ✅ | `03 43 F4 01…` (20 B) — `TooburGoalPackets` |
 
 ### Wear, display, gestures
 
@@ -495,7 +495,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Workout sessions | v3 type `04` | ✅ | P1 |
 | HR history | v3 type `03` + v3 `09` | ✅ / ⚠️ | chart [007](./issues/007-hr-day-v3-type-03/) closed; schedule [026](./issues/026-v3-hr-09-full-schedule/) |
 | SpO₂ / stress | v3 `01`/`02` + SET `44`/`45` | ⚠️ | P2 — full schedule [023](./issues/023-spo2-stress-full-set-payloads/) |
-| Sport / sleep / calorie goals | SET `03`/`04`/`43` | partial | P2 |
+| Sport / sleep / calorie goals | SET `03`/`04`/`43` | ✅ | issue [014](./issues/014-goals-set-03-43/) closed |
 | Notifications | MSG `05 03` | ✅ | Fixture: `TooburMsgPacketsTest` (issue [011](./issues/011-notifications-msg-verify/)) |
 | Message center | MSG `05 03` | ✅ | Same wire as notify — issue [011](./issues/011-notifications-msg-verify/) |
 | Calls + dismiss | MSG `05 01`/`02` | ✅ | TX fixtures issue [011](./issues/011-notifications-msg-verify/); answer/reject watch `07` — ❌ [017](./issues/017-watch-ble-events-07/) |

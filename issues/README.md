@@ -58,7 +58,7 @@ issues/
 |----|-------|---------|--------|
 | [012](./012-fix-set-2a-2d-payloads/) | Fix SET `2A` / `2D` payload lengths | 002 | closed |
 | [013](./013-weather-push-0a-01/) | Weather push `0A 01` data | 012, 024 | closed |
-| [014](./014-goals-set-03-43/) | Goals SET `03`/`04`/`43` | 002 | `ready-for-agent` |
+| [014](./014-goals-set-03-43/) | Goals SET `03`/`04`/`43` | 002 | closed |
 | [015](./015-health-reminders/) | Long sit, drink, walk, menstrual reminders | 002, 024 | `ready-for-agent` |
 | [016](./016-auto-brightness-set-32/) | Auto brightness SET `32` | 002, 024 | `ready-for-agent` |
 | [018](./018-connect-time-func-table-sync/) | Connect-time GET/SET sequence | 010 | `ready-for-agent` |
@@ -97,7 +97,7 @@ issues/
 
 ## Already working in GB (no issue needed)
 
-Bind, battery, time, restart, raise-to-wake, wrist, orientation, step goal, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity).
+Bind, battery, time, restart, raise-to-wake, wrist, orientation, **activity goals (steps/sleep/calorie+distance)**, v3 health fetch skeleton, SpO₂/stress **day sync + charts**, auto sport `49`, find phone/device, music APP control, sport summary chart (v3 type `08`), live data GET `A0`, **device card info** (GET `02 01`/`04`/`A7`, last sync), **device card quick actions** (HR/SpO₂/stress/auto-activity).
 
 SpO₂/stress **continuous SET schedules**, notice alert, and **tabbed settings / coordinator UI flags** are **not** fully polished — see 003, 023, 029–032.
 

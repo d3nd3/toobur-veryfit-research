@@ -27,3 +27,6 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `set-music-03-2a` | SET `0x03 0x2A` music on watch (4 B) | `gb-wired` | `TooburMusicWeatherSwitchPacketsTest` | `packetdumps/logcat/set_music_on.txt`, `set_music_off.txt` |
 | `set-weather-03-2d` | SET `0x03 0x2D` weather push enable (6 B) | `gb-wired` | `TooburMusicWeatherSwitchPacketsTest` | `packetdumps/logcat/set_push_weather_on.txt`, `set_push_weather_off.txt` |
 | `weather-push-0a-01` | CMD `0x0A 0x01` forecast + optional `0A 02` city | `gb-wired` | `TooburWeatherPacketsTest` | `packetdumps/logcat/set_push_weather_on.txt` |
+| `set-sport-goal-03-03` | SET `0x03 0x03` sport step goal (17 B) | `gb-wired` | `TooburGoalPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
+| `set-sleep-goal-03-04` | SET `0x03 0x04` sleep duration (hour + minute) | `gb-wired` | `TooburGoalPacketsTest` | IDO `protocol_set_sleep_goal`; live ACK `packetdumps/live/2026-06-19_batch-audit.json` |
+| `set-calorie-distance-03-43` | SET `0x03 0x43` calorie + distance goals (20 B) | `gb-wired` | `TooburGoalPacketsTest` | `packetdumps/logcat/app_fresh_launch.txt` |
