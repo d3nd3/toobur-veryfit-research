@@ -46,7 +46,7 @@ issues/
 | [026](./026-v3-hr-09-full-schedule/) | v3 HR cmd `09` full schedule payloads | 002 | `ready-for-agent` |
 | [007](./007-hr-day-v3-type-03/) | HR day history → GB HR chart | 002, 006, 026 | closed |
 | [008](./008-workouts-v3-type-04/) | Workout sessions → ActivitySummary | 002 | closed |
-| [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | `ready-for-agent` |
+| [009](./009-swim-v3-type-06/) | Swim sessions v3 type `06` | 002, 008 | closed |
 | [028](./028-auto-health-fetch-on-connect/) | Automatic v3 health fetch on connect | 006, 018 | `ready-for-agent` |
 | [010](./010-device-info-card/) | Full device info card | — | `ready-for-agent` |
 | [011](./011-notifications-msg-verify/) | Verify MSG `05` notifications | 002, 003, 022 | `ready-for-agent` |

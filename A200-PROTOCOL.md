@@ -72,7 +72,7 @@ flowchart LR
 | Write | `0x0AF1` | **Health bulk** — v3 health sync (`0x04`/`0x05`), OTA, watch-face chunks |
 | Notify | `0x0AF2` | **Health bulk** replies |
 
-**Live note (2026-06-19):** Unbound probe session subscribed to both notify chars; `GET 02 05` TX on `0x0AF6` → RX on **`0x0AF2`** (`02 05 00 84 0E 00 09…`). Logcat/VeryFit typically show `0x0AF7` for classic GET — may depend on bind state or dual-notify subscription. See [`packetdumps/live/2026-06-19_gatt-transport.txt`](packetdumps/live/2026-06-19_gatt-transport.txt).
+**Live note (2026-06-19):** Unbound probe: classic GET may RX on **`0x0AF2`**. After **BIND `04 01`** + VeryFit prelude, **short v3** frames (1A, 0F, 06, 04/19 B) TX/RX on **`0x0AF6`/`0x0AF7`**; **v3 `0F`** alarms reply is **chunked** (`33…` + `33 00…` continuations). Large **v3 `05`** (137 B) — probe on `0x0AF1` silent; may need ATT chunk on `0x0AF6` (VeryFit `process_tx_buff` splits at MTU). See [`packetdumps/live/2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json).
 
 ### Top-level command bytes
 
@@ -209,7 +209,7 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 
 | Key | Name | VBUS | Probe | GB | A200 payload (example) |
 |-----|------|------|-------|-----|------------------------|
-| `01` | Bind start | 200 | HUH | ✅ | `04 01 F1 01 01 02 02 01 00` — manual in device settings |
+| `01` | Bind start | 200 | HUH | ✅ | **Live 2026-06-19:** `04 01 F1 01 01 02 02 01 00` → `04 01 00 00` after prelude |
 | `02` | Unbind | 201 | VALID | ✅ | `04 02 F1 01 01 02 02 01 00` |
 | `03` | Auth | 202 | VALID | ❌ | — |
 | `05` | Encrypted auth | 204 | HUH | ❌ | — |
@@ -344,7 +344,7 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 | `06` | Get dial list | VALID | ❌ | List installed faces — `ui_select_watch_face.txt` |
 | `07` | Write dial metadata | VALID | ❌ | JSON/metadata before bulk upload |
 | `08` | Set active dial | VALID | ❌ | Select face already on watch |
-| `09` | HR continuous mode | VALID | ✅ | Interval + on/off — `TooburV3HrPackets` |
+| `09` | HR continuous mode | VALID | ✅ | **Live 2026-06-19** — single 26 B frame on **`0x0AF6`**; see [v3 cmd `09`](#v3-cmd-09--continuous-hr-schedule) |
 | `0E` | Set alarms (+ sport order) | VALID | 🔧 | **355 B**, 10 slots — GB uses legacy SET `03 02` |
 | `0F` | Get alarms | VALID | ❌ | `get_alarm.txt` |
 | `10` | Fast message | VALID | ❌ | — |
@@ -361,11 +361,52 @@ Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 | `02` | Stress / pressure day | `01` | ✅ | ✅ Stress chart |
 | `03` | HR day series | `01` | ✅ | ⚠️ parsed, not stored |
 | `04` | Activity / **workout records** | `00` | ✅ | ✅ |
-| `06` | Swim sessions | `00` | ✅ | ❌ |
+| `06` | Swim sessions | `00` | ✅ | ✅ |
 | `07` | **Sleep** | `00` | ✅ | ❌ — **priority fix** |
 | `08` | Daily sport summary (steps, kcal, distance) | `01` | ✅ | ✅ Activity sample |
 
 **Not present on A200 v3 health sync:** blood sugar, weight, VO2Max, menstrual **data** (reminders are SET `41`/`42`, not sync types).
+
+### v3 cmd `09` — continuous HR schedule
+
+**Purpose:** tell the watch *whether* and *how often* to measure HR continuously. **Does not return HR samples** — use [HR data fetch](#hr-data-how-to-read-measurements) below.
+
+**Wire:** one **26-byte** frame on **`0x0AF6`** (notify ack on **`0x0AF7`**). VBUS evt **5010** (`VBUS_EVT_FUNC_V3_SET_HR_MODE`).
+
+**Payload** (bytes 12–23 after `33 DA AD DA AD 01 17 00 09 00 [seq LE]`):
+
+| Field | Size | OFF example | ON example | Notes |
+|-------|------|-------------|------------|-------|
+| `updateTime` | 4 LE | `0E 3B BD 69` | `11 3B BD 69` | Unix timestamp (seconds) |
+| `state` | 2 | **`AA 00`** | **`CC 00`** | **Not** `99`/`55` — old captures/app toggle were wrong |
+| `timeStartEnd` | 4 | `00 00 00 00` | `00 00 00 00` | All-day / null window in tested config |
+| `measureInterval` | 2 LE | `2C 01` (=300) | `2C 01` | Seconds; see valid set below |
+
+**Valid `measureInterval` (seconds):** `5`, `60`, `180`, `300`, `600`, `900`, `1800`, **`255`** = smart / dynamic HR.  
+**Invalid:** e.g. `10` — watch snaps to another interval (~60 s observed).  
+**RX ack:** `33…09…` inner len `1F 00`; echoes `state` + `interval`; trailing `04 00 00 00` status.
+
+**Example (user live test 2026-03-20):**
+
+```
+TX OFF: 33 DA AD DA AD 01 17 00 09 00 8C 03  0E 3B BD 69  AA 00  00 00 00 00  2C 01  …
+RX OFF: 33 DA AD DA AD 01 1F 00 09 00 8C 03  00 00 00 00  AA 00  00 00 00 00  2C 01  00 00 00 00  04 00 00 00 …
+
+TX ON:  33 DA AD DA AD 01 17 00 09 00 8D 03  11 3B BD 69  CC 00  00 00 00 00  2C 01  …
+RX ON:  … CC 00 … 2C 01 … 04 00 00 00
+```
+
+GB builder: `TooburV3HrPackets.buildHrUnified()` — same layout. Legacy SET `03 25` is redundant on A200.
+
+### HR data — how to read measurements
+
+| Need | Command | Notes |
+|------|---------|-------|
+| **Latest HR bpm** | GET `02 A0` | Live snapshot; byte 18 = `lastKnownHrm` after header |
+| **Day HR history** | v3 `05` (sizes) → v3 `04` **START** type **`03`** → STOP | Time series stored on watch at the `09` interval; **live-verified** after bind ([`2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json)) |
+| **Parse layout** | — | [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md), `TooburV3HrParser`, `htmlapp/toobur-hr-csv.html` |
+
+There is **no** per-beat BLE notify while continuous HR runs — the band records locally, then the phone **pulls** via `02 A0` (spot) or v3 type `03` sync (chart/history). Smart mode (`255`) uses the same fetch paths; only the watch-side sampling policy changes.
 
 ---
 
@@ -373,7 +414,7 @@ Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 
 Systematic joint audit of every capability we believe the A200 has.  
 **Batch live run 2026-06-19:** 72 probes, 54 OK on `0x0AF6` classic path — full log [`packetdumps/live/2026-06-19_batch-audit.json`](packetdumps/live/2026-06-19_batch-audit.json).  
-**v3 bulk (`0x0AF1`→`0x0AF2`):** all silent in unbound session — retry after BIND `04 01` with phone disconnected.
+**Bind + v3 run 2026-06-19:** VeryFit prelude + `BIND 04 01` → **22/23 OK** — [`packetdumps/live/2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json). Short v3 on **`0x0AF6`/`0x0AF7`** after bind; only **v3 `05`** (137 B on `0x0AF1`) still silent.
 
 | # | Feature | Wire | Verified | Evidence | Notes |
 |---|---------|------|----------|----------|-------|
@@ -384,20 +425,20 @@ Systematic joint audit of every capability we believe the A200 has.
 | 5 | Func table (ex) | GET `02 07` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 07 |
 | 6 | Set time | SET `03 01` | ⏸ | `set_time.txt` | not live-tested — changes clock |
 | 7 | MTU / PHY | GET `02 F0` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 F0 MTU=137 |
-| 8 | Bind / unbind | BIND `04 01`/`02` | ⏸ | `reinstall_app_bind_*.txt` | skipped — bind/unbind not sent |
+| 8 | Bind / unbind | BIND `04 01`/`02` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | BIND 04 01 → RX 04 01 00 00 |
 | 9 | Live steps + HR snapshot | GET `02 A0` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 A0 |
-| 10 | Daily sport summary sync | v3 type `08` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 08 — no 0AF2 RX (unbound?) |
-| 11 | HR day history | v3 type `03` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 03 — no 0AF2 RX |
-| 12 | HR continuous schedule | v3 `09` + SET `25` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 25 key ACK; v3 09 not probed |
-| 13 | SpO₂ day sync | v3 type `01` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 01 — no 0AF2 RX |
+| 10 | Daily sport summary sync | v3 type `08` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 08 start/stop after bind |
+| 11 | HR day history | v3 type `03` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 03 start/stop |
+| 12 | HR continuous schedule | v3 `09` + SET `25` | ✅ | user live 2026-03-20 + `TooburV3HrPackets` | CC/AA toggle + intervals 5…1800, 255 smart |
+| 13 | SpO₂ day sync | v3 type `01` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 01 SpO₂ start/stop |
 | 14 | SpO₂ continuous toggle | SET `03 44` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 44 key ACK; 16 B schedule not sent |
-| 15 | Stress day sync | v3 type `02` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 02 — no 0AF2 RX |
+| 15 | Stress day sync | v3 type `02` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 02 stress start/stop |
 | 16 | Stress continuous toggle | SET `03 45` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 45 key ACK; 16 B schedule not sent |
-| 17 | Sleep sync | v3 type `07` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 07 — no 0AF2 RX |
-| 18 | Workout sessions | v3 type `04` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 04 — no 0AF2 RX |
-| 19 | Swim sessions | v3 type `06` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 type 06 — no 0AF2 RX |
-| 20 | Health sync offsets | v3 `05` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 05 — no 0AF2 RX |
-| 21 | Alarms get | v3 `0F` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 0F — no 0AF2 RX |
+| 17 | Sleep sync | v3 type `07` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 07 sleep start/stop |
+| 18 | Workout sessions | v3 type `04` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 04 workouts start/stop |
+| 19 | Swim sessions | v3 type `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 06 swim start/stop |
+| 20 | Health sync offsets | v3 `05` | ⚠️ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 05 on 0AF1 silent — needs 0AF6 chunk or bind+MTU |
+| 21 | Alarms get | v3 `0F` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 0F alarms — chunked RX on 0AF7 |
 | 22 | Alarms set | v3 `0E` | ⏸ | `set_alarms_and_sports.txt` | v3 0E 355 B not sent |
 | 23 | Sport step goal | SET `03 03` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 03 key ACK |
 | 24 | Calorie + distance goals | SET `03 43` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 43 key ACK |
@@ -424,7 +465,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 45 | Drink water reminder | SET `03 60` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 60 key ACK |
 | 46 | Menstruation data + remind | SET `03 41`/`42` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 41/42 key ACK |
 | 47 | Long sit reminder | SET `03 20` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 20 key ACK |
-| 48 | Watch face list | v3 `06` | ⏸ | `packetdumps/live/2026-06-19_batch-audit.json` | v3 06 — no 0AF2 RX |
+| 48 | Watch face list | v3 `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 06 dial list |
 | 49 | Watch face set active | v3 `08` | ⏸ | `ui_select_watch_face.txt` | v3 08 not probed live |
 | 50 | Watch face upload | v3 `07` + bulk | ⏸ | `ui_watch_face_write_json.txt` | v3 07 + bulk not probed |
 | 51 | BLE data-update notify | `07 40` | ⚠️ | `packetdumps/live/2026-06-19_batch-audit.json` | 07 40 seen on SET 29/32; phone ACK not sent |
@@ -438,7 +479,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 59 | Camera shutter (phone) | APP `06 02` | ⏸ | `—` | APP 06 02 not sent |
 | 60 | Conn param tune | SET `03 35` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 35 step 01 ACK |
 
-**Audit progress:** 32 verified · 5 partial · 22 blocked · 1 rejected · [`packetdumps/live/2026-06-19_batch-audit.json`](packetdumps/live/2026-06-19_batch-audit.json)
+**Audit progress:** 43 verified · 4 partial · 12 blocked · 1 rejected
 
 ---
 
