@@ -57,3 +57,5 @@ Registry for the [feature confirmation pipeline](../CONTEXT.md#feature-confirmat
 | `v3-hr-09-schedule` | v3 cmd `0x09` all-day schedule pkt2 (`00:00`–`23:59`) | `gb-wired` | `TooburV3HrPacketsTest` | `packetdumps/logcat/set_hr_cont_state_on.txt` |
 | `set-pressure-03-45` | SET `0x03 0x45` stress continuous (16 B schedule) | `gb-wired` | `TooburHealthSwitchPacketsTest` | `packetdumps/logcat/set_stress_cont_on.txt`, `set_stress_cont_off.txt` |
 | `set-spo2-03-44` | SET `0x03 0x44` SpO₂ continuous (10 B schedule) | `gb-wired` | `TooburHealthSwitchPacketsTest` | vault `Toggle Switches Continuous.md` |
+| `v3-dial-list-06` | v3 cmd `0x06` get installed dial list | `gb-wired` | `TooburV3DialPacketsTest` | `packetdumps/live/2026-06-19_bind-v3.json` |
+| `v3-dial-set-08` | v3 cmd `0x08` set/query active dial (31 B payload) | `gb-wired` | `TooburV3DialPacketsTest` | `ui_select_watch_face.txt`, `ui_watch_face_write_json.txt` |

@@ -340,9 +340,9 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 |-----|------|-------|-----|------|
 | `04` | Health sync | VALID | ✅ | START/STOP per **data type** — see table below |
 | `05` | Health sizes | VALID | ✅ | Offset probe before sync — 7 types in one request |
-| `06` | Get dial list | VALID | ❌ | List installed faces — `ui_select_watch_face.txt` |
-| `07` | Write dial metadata | VALID | ❌ | JSON/metadata before bulk upload |
-| `08` | Set active dial | VALID | ❌ | Select face already on watch |
+| `06` | Get dial list | VALID | ✅ | v3 `06` list + App Manager — `TooburV3DialPacketsTest` |
+| `07` | Write dial metadata | VALID | ❌ | Before bulk upload — see `docs/watch_faces_v3.md` |
+| `08` | Set active dial | VALID | ✅ | v3 `08` select — `TooburV3DialPacketsTest` |
 | `09` | HR continuous mode | VALID | ✅ | **Live 2026-06-19** — single 26 B frame on **`0x0AF6`**; see [v3 cmd `09`](#v3-cmd-09--continuous-hr-schedule) |
 | `0E` | Set alarms (+ sport order) | VALID | 🔧 | **355 B**, 10 slots — GB uses legacy SET `03 02` |
 | `0F` | Get alarms | VALID | ❌ | `get_alarm.txt` |
@@ -469,8 +469,8 @@ Systematic joint audit of every capability we believe the A200 has.
 | 46 | Menstruation data + remind | SET `03 41`/`42` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 41/42 key ACK |
 | 47 | Long sit reminder | SET `03 20` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 20 key ACK |
 | 48 | Watch face list | v3 `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 06 dial list |
-| 49 | Watch face set active | v3 `08` | ⏸ | `ui_select_watch_face.txt` | v3 08 not probed live |
-| 50 | Watch face upload | v3 `07` + bulk | ⏸ | `ui_watch_face_write_json.txt` | v3 07 + bulk not probed |
+| 49 | Watch face set active | v3 `08` | ✅ | `ui_watch_face_write_json.txt` | App Manager activate via v3 08 |
+| 50 | Watch face upload | v3 `07` + bulk | ⏸ | `ui_watch_face_write_json.txt` | blocked — `docs/watch_faces_v3.md` |
 | 51 | BLE data-update notify | `07 40` | ✅ | `packetdumps/logcat/set_dnd_on.txt` | ACK 18 B + GET 02 30/ B1/ B0 by notifyType |
 | 52 | Answer / reject call (watch) | `07` evt 562/563 | ⏸ | `—` | needs incoming call on watch |
 | 53 | Watch music / camera keys | `07` evt 551–561 | ⏸ | `—` | press watch music/camera buttons |
@@ -505,7 +505,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Wrist L/R | SET `22` | ✅ | — |
 | Battery | GET `05` | ✅ | — |
 | Bind | BIND `04 01`/`02` | ✅ | Manual only |
-| Watch face | v3 `06`/`07`/`08` + bulk | ❌ | P3 |
+| Watch face | v3 `06`/`07`/`08` + bulk | list+select ✅; upload ⏸ | P3 — `docs/watch_faces_v3.md` |
 | HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | drink/walk/menstrual/long-sit ✅; stress schedule partial | P2 |
 | Auto sport | SET `49` | ✅ | — |
 | Music | SET `2A` + APP `01` | ✅ / ✅ | — |
