@@ -1,3 +1,6 @@
+# RAW BRUTEFORCE OUTPUT — see A200-PROTOCOL.md for the canonical, cross-checked reference.
+# This file is the probe log; A200-PROTOCOL.md merges it with logcat captures + Gadgetbridge status.
+
     #define PROTOCOL_CMD_OTA                0x01
     #define PROTOCOL_CMD_GET                0x02
     #define PROTOCOL_CMD_SET                0x03

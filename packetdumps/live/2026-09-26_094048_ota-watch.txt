@@ -1,0 +1,46 @@
+# OTA watch F9:24:12:2E:0C:32 cmd='01 01' at 2026-09-26 09:39:15 UTC
+connected /org/bluez/hci0/dev_F9_24_12_2E_0C_32
+TX 01 01 -> 1 notification(s)
+# scan report (30s) at 09:40:33 UTC
+00:7C:2D:FB:15:39  name='[TV] Samsung 7 Series (49)'  rssi=-102 mfg=117:42 04 01 80 60 00 7C 2D FB 15 39 02 7C 2D FB 15 38 01 00 00 00 00 00 00
+    uuids=[]
+1C:D6:BD:F5:8A:AE  name=''  rssi=-94 mfg=26886:BC A0 95 57 DA 01 BD D2 D3 8A 2C 5E 0F BC 1C D6 BD F5 8A AE 09 01 00 64 00
+    uuids=['00001828-0000-1000-8000-00805f9b34fb']
+1C:D6:BD:F5:92:63  name=''  rssi=-100 mfg=26886:BC A0 95 57 DA 01 BD D2 D3 8A 2C 5E 0F BC 1C D6 BD F5 92 63 09 01 00 64 00
+    uuids=['00001828-0000-1000-8000-00805f9b34fb']
+1C:D6:BD:F5:9C:F8  name=''  rssi=-100 mfg=26886:BC A0 95 57 DA 01 BD D2 D3 8A 2C 5E 0F BC 1C D6 BD F5 9C F8 09 01 00 64 00
+    uuids=['00001828-0000-1000-8000-00805f9b34fb']
+37:22:00:0A:F7:30  name='SOUNDPEATS Q30 HD'  rssi=None
+    uuids=['00001101-0000-1000-8000-00805f9b34fb', '00001108-0000-1000-8000-00805f9b34fb', '0000110b-0000-1000-8000-00805f9b34fb', '0000110c-0000-1000-8000-00805f9b34fb', '0000110d-0000-1000-8000-00805f9b34fb', '0000110e-0000-1000-8000-00805f9b34fb', '0000110f-0000-1000-8000-00805f9b34fb', '0000111e-0000-1000-8000-00805f9b34fb', '00001131-0000-1000-8000-00805f9b34fb', '00001200-0000-1000-8000-00805f9b34fb', '00001800-0000-1000-8000-00805f9b34fb', '0000180f-0000-1000-8000-00805f9b34fb']
+54:03:84:66:47:42  name=''  rssi=-90
+    uuids=[]
+5D:DE:C5:5A:DD:7D  name=''  rssi=-88 mfg=76:10 06 3D 1E FB F8 16 0F
+    uuids=[]
+C7:E2:E7:EE:33:04  name='RK61RGB-5.0'  rssi=None
+    uuids=['00001800-0000-1000-8000-00805f9b34fb', '0000180a-0000-1000-8000-00805f9b34fb', '0000180f-0000-1000-8000-00805f9b34fb', '00001812-0000-1000-8000-00805f9b34fb']
+F3:77:EC:E8:DE:B0  name=''  rssi=-90 mfg=76:12 02 00 00
+    uuids=[]
+F9:24:12:2E:0C:32  name='Band 8'  rssi=-72 mfg=532:F9 24 12 2E 0C 32 02 02 11 00 01 00
+    uuids=['00000af0-0000-1000-8000-00805f9b34fb', '00001800-0000-1000-8000-00805f9b34fb', '00001801-0000-1000-8000-00805f9b34fb']
+
+# GATT dump: 9 characteristics in 3 services
+
+SERVICE 00000af0-0000-1000-8000-00805f9b34fb  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service000e
+  CHR 00000af6-0000-1000-8000-00805f9b34fb handle=15 props=read,write-without-response,write value=-
+  CHR 00000af7-0000-1000-8000-00805f9b34fb handle=17 props=read,notify value=01 01
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=19
+  CHR 00000af2-0000-1000-8000-00805f9b34fb handle=20 props=read,notify value=-
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=22
+  CHR 00000af1-0000-1000-8000-00805f9b34fb handle=23 props=read,write-without-response,write value=-
+
+SERVICE 00001801-0000-1000-8000-00805f9b34fb  (Generic Attribute)  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service000a
+  CHR 00002a05-0000-1000-8000-00805f9b34fb handle=11 props=indicate value=-
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=13
+
+SERVICE 00001800-0000-1000-8000-00805f9b34fb  (Generic Access)  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service0001
+  CHR 00002a00-0000-1000-8000-00805f9b34fb handle=2 props=read value=-
+  CHR 00002a01-0000-1000-8000-00805f9b34fb handle=4 props=read value=-
+  CHR 00002aa6-0000-1000-8000-00805f9b34fb handle=6 props=read value=-
+  CHR 00002ac9-0000-1000-8000-00805f9b34fb handle=8 props=read value=-
+
+# No Realtek DFU/OTA service visible in normal mode (expected; needs OTA entry)

@@ -1,0 +1,21 @@
+# GATT dump: 9 characteristics in 3 services
+
+SERVICE 00000af0-0000-1000-8000-00805f9b34fb  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service000e
+  CHR 00000af6-0000-1000-8000-00805f9b34fb handle=15 props=read,write-without-response,write value=-
+  CHR 00000af7-0000-1000-8000-00805f9b34fb handle=17 props=read,notify value=-
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=19
+  CHR 00000af2-0000-1000-8000-00805f9b34fb handle=20 props=read,notify value=-
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=22
+  CHR 00000af1-0000-1000-8000-00805f9b34fb handle=23 props=read,write-without-response,write value=-
+
+SERVICE 00001801-0000-1000-8000-00805f9b34fb  (Generic Attribute)  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service000a
+  CHR 00002a05-0000-1000-8000-00805f9b34fb handle=11 props=indicate value=-
+    DESC 00002902-0000-1000-8000-00805f9b34fb  (CCCD) handle=13
+
+SERVICE 00001800-0000-1000-8000-00805f9b34fb  (Generic Access)  primary=True path=/org/bluez/hci0/dev_F9_24_12_2E_0C_32/service0001
+  CHR 00002a00-0000-1000-8000-00805f9b34fb handle=2 props=read value=-
+  CHR 00002a01-0000-1000-8000-00805f9b34fb handle=4 props=read value=-
+  CHR 00002aa6-0000-1000-8000-00805f9b34fb handle=6 props=read value=-
+  CHR 00002ac9-0000-1000-8000-00805f9b34fb handle=8 props=read value=-
+
+# No Realtek DFU/OTA service visible in normal mode (expected; needs OTA entry)

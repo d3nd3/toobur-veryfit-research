@@ -1,0 +1,15 @@
+# Live BLE probe — GET device info (02 01)
+# Device: Band 8 F9:24:12:2E:0C:32
+# Date: 2026-06-19
+
+# Unsolicited before GET (notice status push):
+RX : 03 30 55 01 00
+
+TX : 02 01
+RX : 02 01 14 02 11 01 03 09 01 01 01 00 28 02 01 03 03
+# Channel: 0AF7 (normal notify)
+
+# Parsed (GB TooburSupport / protocol_device_info):
+#   device_id LE @2-3 = 0x0214 (532)
+#   firmware_version @4 = 0x11 (17)
+# Logcat ref (get_device_info.txt): 02 01 14 02 11 01 00 1A … — same id+version, tail bytes differ (runtime state)

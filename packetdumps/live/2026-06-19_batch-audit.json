@@ -1,0 +1,695 @@
+{
+  "mac": "F9:24:12:2E:0C:32",
+  "ts": "2026-06-19T17:18:48Z",
+  "ok": 54,
+  "fail": 18,
+  "results": [
+    {
+      "name": "GET device info",
+      "wire": "GET 02 01",
+      "status": "ok",
+      "tx": "02 01",
+      "rx": [
+        "02 01 14 02 11 01 03 09 01 01 01 00 28 02 01 03 03"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET func table",
+      "wire": "GET 02 02",
+      "status": "ok",
+      "tx": "02 02",
+      "rx": [
+        "02 02 FB 0A FF 4A 3F 6F E8 15 3F 0A 08 01 02 00 51 CF 0E 7E"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET time",
+      "wire": "GET 02 03",
+      "status": "ok",
+      "tx": "02 03",
+      "rx": [
+        "02 03 EA 07 06 13 12 11 17 04 B3 87 35 6A 30 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET MAC",
+      "wire": "GET 02 04",
+      "status": "ok",
+      "tx": "02 04",
+      "rx": [
+        "02 04 F9 24 12 2E 0C 32"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET battery",
+      "wire": "GET 02 05",
+      "status": "ok",
+      "tx": "02 05",
+      "rx": [
+        "02 05 00 84 0E 00 09 00 00 00 00 00 00 00 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET func ex",
+      "wire": "GET 02 07",
+      "status": "ok",
+      "tx": "02 07",
+      "rx": [
+        "02 07 40 24 40 FF 38 4E D3 FF 0B 08 00 84 95 C7 06 01 00 34"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET notice status",
+      "wire": "GET 02 10",
+      "status": "ok",
+      "tx": "02 10",
+      "rx": [
+        "02 10 AA 00 00 55 00 00 00 00 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET unknown",
+      "wire": "GET 02 11",
+      "status": "ok",
+      "tx": "02 11",
+      "rx": [
+        "02 11 0F 2F 04 1A 21 01 17 01 01 05 04 13 13 0C 00 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET DND",
+      "wire": "GET 02 30",
+      "status": "ok",
+      "tx": "02 30",
+      "rx": [
+        "02 30 55 00 00 00 00 02 3E 55 00 00 E4 FE"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET live data",
+      "wire": "GET 02 A0",
+      "status": "ok",
+      "tx": "02 A0",
+      "rx": [
+        "02 A0 07 00 00 00 1A 00 00 00 04 00 00 00 00 00 00 00 00",
+        "02 A0 07 00 00 00 1A 00 00 00 04 00 00 00 00 00 00 00 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET flash",
+      "wire": "GET 02 A7",
+      "status": "ok",
+      "tx": "02 A7",
+      "rx": [
+        "02 A7 00 01 01 78 56 34 12"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET brightness params",
+      "wire": "GET 02 B0",
+      "status": "ok",
+      "tx": "02 B0",
+      "rx": [
+        "02 B0 0F 01 00 01 00 00 00 00 00 05"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET weather switch",
+      "wire": "GET 02 B1",
+      "status": "ok",
+      "tx": "02 B1",
+      "rx": [
+        "02 B1 AA 05 01 00 00 17 3B"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET unknown B2",
+      "wire": "GET 02 B2",
+      "status": "ok",
+      "tx": "02 B2",
+      "rx": [
+        "02 B2 00 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET unknown B3",
+      "wire": "GET 02 B3",
+      "status": "ok",
+      "tx": "02 B3",
+      "rx": [
+        "02 B3 01 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET MTU",
+      "wire": "GET 02 F0",
+      "status": "ok",
+      "tx": "02 F0",
+      "rx": [
+        "02 F0 00 89 00 89 00 E8 03 8C 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "GET firmware status",
+      "wire": "GET 02 48",
+      "status": "fail",
+      "tx": "02 48",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 health sizes",
+      "wire": "v3 05",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 88 00 05 00 01 02 01 00 00 00 00 02 00 00 00 00 03 00 00 00 00 04 00 00 00 00 06 00 00 00 00 07 00 00 00 00 08 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 75",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 get alarms",
+      "wire": "v3 0F",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 07 00 0F 00 02 02 01 13 22",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 dial list",
+      "wire": "v3 06",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 05 00 06 00 03 95 5D",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 01 start",
+      "wire": "v3 04 type 01",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 04 02 00 01 01 2B A3",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 01 stop",
+      "wire": "v3 04 stop 01",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 05 02 01 01 01 4A 3E",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 02 start",
+      "wire": "v3 04 type 02",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 06 02 00 02 01 FB B2",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 02 stop",
+      "wire": "v3 04 stop 02",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 07 02 01 02 01 9A 2F",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 03 start",
+      "wire": "v3 04 type 03",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 08 02 00 03 01 62 4E",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 03 stop",
+      "wire": "v3 04 stop 03",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 09 02 01 03 01 03 D3",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 04 start",
+      "wire": "v3 04 type 04",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0A 02 00 04 00 57 83",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 04 stop",
+      "wire": "v3 04 stop 04",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0B 02 01 04 00 36 1E",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 06 start",
+      "wire": "v3 04 type 06",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0C 02 00 06 00 B0 28",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 06 stop",
+      "wire": "v3 04 stop 06",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0D 02 01 06 00 D1 B5",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 07 start",
+      "wire": "v3 04 type 07",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0E 02 00 07 00 02 5F",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 07 stop",
+      "wire": "v3 04 stop 07",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 0F 02 01 07 00 63 C2",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 08 start",
+      "wire": "v3 04 type 08",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 10 02 00 08 01 EF 94",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "v3 sync type 08 stop",
+      "wire": "v3 04 stop 08",
+      "status": "fail",
+      "tx": "33 DA AD DA AD 01 09 00 04 00 11 02 01 08 01 8E 09",
+      "rx": [],
+      "note": "no matching RX"
+    },
+    {
+      "name": "SET 03 03",
+      "wire": "SET 03 03",
+      "status": "ok",
+      "tx": "03 03",
+      "rx": [
+        "03 03"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 04",
+      "wire": "SET 03 04",
+      "status": "ok",
+      "tx": "03 04",
+      "rx": [
+        "03 04"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 10",
+      "wire": "SET 03 10",
+      "status": "ok",
+      "tx": "03 10",
+      "rx": [
+        "03 10"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 11",
+      "wire": "SET 03 11",
+      "status": "ok",
+      "tx": "03 11",
+      "rx": [
+        "03 11"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 12",
+      "wire": "SET 03 12",
+      "status": "ok",
+      "tx": "03 12",
+      "rx": [
+        "03 12"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 13",
+      "wire": "SET 03 13",
+      "status": "ok",
+      "tx": "03 13",
+      "rx": [
+        "03 13"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 20",
+      "wire": "SET 03 20",
+      "status": "ok",
+      "tx": "03 20",
+      "rx": [
+        "03 20"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 21",
+      "wire": "SET 03 21",
+      "status": "ok",
+      "tx": "03 21",
+      "rx": [
+        "03 21"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 22",
+      "wire": "SET 03 22",
+      "status": "ok",
+      "tx": "03 22",
+      "rx": [
+        "03 22"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 23",
+      "wire": "SET 03 23",
+      "status": "ok",
+      "tx": "03 23",
+      "rx": [
+        "03 23"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 24",
+      "wire": "SET 03 24",
+      "status": "ok",
+      "tx": "03 24",
+      "rx": [
+        "03 24"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 25",
+      "wire": "SET 03 25",
+      "status": "ok",
+      "tx": "03 25",
+      "rx": [
+        "03 25"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 28",
+      "wire": "SET 03 28",
+      "status": "ok",
+      "tx": "03 28",
+      "rx": [
+        "03 28 02"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 29",
+      "wire": "SET 03 29",
+      "status": "ok",
+      "tx": "03 29",
+      "rx": [
+        "07 40 00 00 10 00 00 00 00 00",
+        "03 29"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 2A",
+      "wire": "SET 03 2A",
+      "status": "ok",
+      "tx": "03 2A 55 55",
+      "rx": [
+        "03 2A"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 2B",
+      "wire": "SET 03 2B",
+      "status": "ok",
+      "tx": "03 2B",
+      "rx": [
+        "03 2B"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 2C",
+      "wire": "SET 03 2C",
+      "status": "ok",
+      "tx": "03 2C",
+      "rx": [
+        "03 2C"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 2D",
+      "wire": "SET 03 2D",
+      "status": "ok",
+      "tx": "03 2D 55 00 00 00",
+      "rx": [
+        "03 2D"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 2E",
+      "wire": "SET 03 2E",
+      "status": "ok",
+      "tx": "03 2E",
+      "rx": [
+        "03 2E"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 31",
+      "wire": "SET 03 31",
+      "status": "ok",
+      "tx": "03 31",
+      "rx": [
+        "03 31"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 32",
+      "wire": "SET 03 32",
+      "status": "ok",
+      "tx": "03 32",
+      "rx": [
+        "07 40 00 00 04 00 00 00 00 00",
+        "03 32"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 33",
+      "wire": "SET 03 33",
+      "status": "ok",
+      "tx": "03 33",
+      "rx": [
+        "03 33"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 35",
+      "wire": "SET 03 35",
+      "status": "ok",
+      "tx": "03 35 01 00 00 00 00 00 00 00 00 00",
+      "rx": [
+        "03 35 02 00"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 40",
+      "wire": "SET 03 40",
+      "status": "ok",
+      "tx": "03 40",
+      "rx": [
+        "03 40"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 41",
+      "wire": "SET 03 41",
+      "status": "ok",
+      "tx": "03 41",
+      "rx": [
+        "03 41"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 42",
+      "wire": "SET 03 42",
+      "status": "ok",
+      "tx": "03 42",
+      "rx": [
+        "03 42"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 43",
+      "wire": "SET 03 43",
+      "status": "ok",
+      "tx": "03 43",
+      "rx": [
+        "03 43"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 44",
+      "wire": "SET 03 44",
+      "status": "ok",
+      "tx": "03 44",
+      "rx": [
+        "03 44"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 45",
+      "wire": "SET 03 45",
+      "status": "ok",
+      "tx": "03 45",
+      "rx": [
+        "03 45"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 47",
+      "wire": "SET 03 47",
+      "status": "ok",
+      "tx": "03 47",
+      "rx": [
+        "03 47"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 49",
+      "wire": "SET 03 49",
+      "status": "ok",
+      "tx": "03 49 00 01 00 00 00 00 00 00 00",
+      "rx": [
+        "03 49"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 60",
+      "wire": "SET 03 60",
+      "status": "ok",
+      "tx": "03 60",
+      "rx": [
+        "03 60"
+      ],
+      "note": ""
+    },
+    {
+      "name": "SET 03 E3",
+      "wire": "SET 03 E3",
+      "status": "ok",
+      "tx": "03 E3",
+      "rx": [
+        "03 E3 01"
+      ],
+      "note": ""
+    },
+    {
+      "name": "MSG call end",
+      "wire": "MSG 05 02",
+      "status": "ok",
+      "tx": "05 02 01",
+      "rx": [
+        "05 02"
+      ],
+      "note": ""
+    },
+    {
+      "name": "APP music pause",
+      "wire": "APP 06 01",
+      "status": "ok",
+      "tx": "06 01 01",
+      "rx": [
+        "06 01"
+      ],
+      "note": ""
+    },
+    {
+      "name": "APP find device start",
+      "wire": "APP 06 04",
+      "status": "ok",
+      "tx": "06 04 00",
+      "rx": [
+        "06 04"
+      ],
+      "note": ""
+    },
+    {
+      "name": "APP find device stop",
+      "wire": "APP 06 04",
+      "status": "ok",
+      "tx": "06 04 01",
+      "rx": [
+        "06 04"
+      ],
+      "note": ""
+    },
+    {
+      "name": "MSG notification",
+      "wire": "MSG 05 03",
+      "status": "ok",
+      "tx": "05 03 01 00 47 42 20 61 75 64 69 74 20 74 65 73 74 21 21 00",
+      "rx": [
+        "05 03 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"
+      ],
+      "note": ""
+    }
+  ]
+}

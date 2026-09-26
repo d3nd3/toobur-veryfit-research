@@ -67,12 +67,14 @@ flowchart LR
 | GATT | UUID suffix | Role |
 |------|-------------|------|
 | Service | `0x0AF0` | Realtek / IDO proprietary — **live verified** 2026-06-19 |
-| Write | `0x0AF6` | **Normal** — GET, SET, BIND, MSG, APP, v3 HR (`0x09`) |
+| Write | `0x0AF6` | **Normal** — GET, SET, BIND, MSG, APP; **short v3** (≤50 B): `1A`, `0F`, `06`, **`04` sync** (19 B), `09` HR |
 | Notify | `0x0AF7` | **Normal** replies + live push |
-| Write | `0x0AF1` | **Health bulk** — v3 health sync (`0x04`/`0x05`), OTA, watch-face chunks |
+| Write | `0x0AF1` | **Health bulk** — **large v3** (`05` sizes 137 B), OTA, watch-face chunks |
 | Notify | `0x0AF2` | **Health bulk** replies |
 
-**Live note (2026-06-19):** Unbound probe: classic GET may RX on **`0x0AF2`**. After **BIND `04 01`** + VeryFit prelude, **short v3** frames (1A, 0F, 06, 04/19 B) TX/RX on **`0x0AF6`/`0x0AF7`**; **v3 `0F`** alarms reply is **chunked** (`33…` + `33 00…` continuations). Large **v3 `05`** (137 B) — probe on `0x0AF1` silent; may need ATT chunk on `0x0AF6` (VeryFit `process_tx_buff` splits at MTU). See [`packetdumps/live/2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json).
+**Channel rule (VeryFit + live 2026-06-19):** frames **>50 B** → write **`0x0AF1`**, notify **`0x0AF2`**; **≤50 B** v3 (incl. **`04` START/STOP**) → **`0x0AF6`/`0x0AF7`**. Do not send 19 B `04` sync on bulk — bind run [`2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json) uses normal for all type start/stop.
+
+**Live note (2026-06-19):** Unbound probe: classic GET may RX on **`0x0AF2`**. After **BIND `04 01`** + prelude, short v3 on **`0x0AF6`/`0x0AF7`**; **v3 `0F`** alarms reply is **chunked** (`33…` + `33 00…`). **v3 `05`** (137 B on **`0x0AF1`**) → **no RX on `0x0AF2`** while watch reports **low power** (`GET 02 01` byte6 `0x03`, ~9% with ~3.7 V). **`04` sync still ACKs on `0x0AF7`** in that state. GB pull-to-refresh: 8 s `05` timeout → skip sizes → `04` on normal ([`TooburV3FetchHealthOperation`](gadgetbridge/app/src/main/java/nodomain/freeyourgadget/gadgetbridge/service/devices/toobur/TooburV3FetchHealthOperation.java)). Smoke: [`scripts/toobur_sync_smoke.py`](scripts/toobur_sync_smoke.py) `--fallback`.
 
 ### Top-level command bytes
 
@@ -100,11 +102,11 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 
 | Key | Name | VBUS evt | Probe | GB | Capture |
 |-----|------|----------|-------|-----|---------|
-| `01` | Device info | 301 GET_DEVICE_INFO | VALID | ✅ | `get_device_info.txt`, `app_fresh_launch.txt`; **live** `packetdumps/live/2026-06-19_get-device-info.txt` |
+| `01` | Device info | 301 GET_DEVICE_INFO | VALID | ✅ | `02 01` — see [battery / low-power](#get-02-01--02-05-battery--low-power); **live** `packetdumps/live/2026-06-19_get-device-info.txt` |
 | `02` | Func table | 302 GET_FUNC_TABLE | VALID | ✅ | Parsed on connect — `TooburFuncTableCapabilities`; UI gating issue [024](./issues/024-func-table-ui-gating/) closed |
 | `03` | Time | — | VALID | ⚠️ | Rarely needed; GB sets time via SET `03 01` |
 | `04` | MAC address | 300 GET_MAC | VALID | ✅ | `app_fresh_launch.txt` — RX `02 04 F9 24…` |
-| `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → level %, voltage mV, charge state |
+| `05` | Battery | 321 GET_BATT_INFO | VALID | ✅ | `02 05` → type, voltage mV (LE), status, level % — see [battery / low-power](#get-02-01--02-05-battery--low-power) |
 | `07` | Func table ex | 311 GET_FUNC_TABLE_EX | VALID | ✅ | Extended bits parsed — UI gating issue [024](./issues/024-func-table-ui-gating/) closed |
 | `10` | Notice status | 306 | VALID | ✅ | Readback for SET `03 30` — `TooburNoticeAlertPackets.parseGetNoticeStatus` |
 | `11` | Unknown | — | VALID | ❌ | — |
@@ -127,6 +129,34 @@ Read requests: TX is typically **`02 [key]`** (2 bytes). Reply on **`0x0AF7`**.
 | `B1` | Weather switch state | 317 area | VALID | ❌ | `set_dnd_on.txt` RX `02 B1 55…` |
 | `B2`–`B3` | Unknown | — | VALID | ❌ | — |
 | `F0` | MTU / PHY | 317 GET_MTU_INFO | VALID | ✅ | `02 F0` on connect |
+
+### GET `02 01` / `02 05` — battery & low-power
+
+Two reads; fields can **disagree** when fuel-gauge is wrong (live 2026-06-19: **9%** at **~3700 mV**).
+
+**`GET 02 01`** reply (min 8 B after header) — IDO `protocol_device_info` / htmlapp `info_layout`:
+
+| Offset | Field | Values |
+|--------|-------|--------|
+| 2–3 | `device_id` | LE u16 (e.g. `0x0214`) |
+| 4 | `firmware_version` | u8 (e.g. `17`) |
+| 5 | `mode` | device mode |
+| **6** | **`batt_status`** | **`0x00` normal · `0x01` charging · `0x02` full · `0x03` low power** (firmware lockdown) |
+| **7** | **`level_pct`** | **0–100** |
+
+**`GET 02 05`** reply (min 7 B after header) — `protocol_device_batt_info`:
+
+| Offset | Field | Values |
+|--------|-------|--------|
+| 2 | `type` | usually `0x00` |
+| 3–4 | `voltage_mv` | LE u16 |
+| 5 | `status` | `0` normal · `1` charging · `2` full (GB maps `3` → low if present) |
+| 6 | `level_pct` | 0–100 |
+| 7+ | padding / timestamps | extended on some firmware |
+
+**Low-power lockdown (`batt_status=0x03`):** watch limits UI; **bulk `0x0AF1`/`0x0AF2` silent** for v3 **`05`** sizes probe. **No SET** command to change threshold (not in VBUS map / bruteforce). Exit by charging or recalibrating gauge. **v3 `04` per-type sync** still works on **`0x0AF6`** — GB must not wait forever on bulk `05` (see [V3 health sync](#v3-health-sync-data-types-0x04--0x05)).
+
+Probe: `python3 scripts/toobur_ble_probe.py --mac … battery` · full pull-to-refresh mimic: `python3 scripts/toobur_sync_smoke.py --fallback`.
 
 ---
 
@@ -173,7 +203,22 @@ Settings: **`03 [key] [payload…]`** on **`0x0AF6`**. Payload lengths are **A20
 | `24` | HR interval (legacy) | 112 | VALID | — | Superseded by v3 `09` on A200 |
 | `25` | HR mode (legacy) | 113 | VALID | ⚠️ | GB still sends for compat; **v3 `09` is primary** |
 | `44` | SpO₂ continuous | 162 | VALID | ✅ | **10 B** schedule: onOff, window, lowOnOff, lowValue, notifyFlag — `TooburHealthSwitchPacketsTest` |
-| `45` | Stress / pressure | 163 | VALID | ✅ | Full **16 B** schedule + remind/interval/thresholds — `set_stress_cont_*.txt`, `TooburHealthSwitchPacketsTest` |
+| `45` | Stress / pressure | 163 | VALID | ✅ | **16 B** `03 45` + v3 `09` companion — see below |
+
+**SET `03 45` stress continuous** (`set_stress_cont_on.txt`):  
+`03 45 AA 09 00 12 00 55 3F 3C 00 50 00 01 00 1E` then v3 cmd `09` schedule frame.
+
+| Field | Bytes | Capture | Notes |
+|-------|-------|---------|-------|
+| onOff | 1 | `AA`/`55` | |
+| schedule | 4 | `09 00 12 00` | 09:00–18:00 |
+| remindOnOff | 1 | `55` | off in capture |
+| repeat | 1 | `3F` | Mon–Sat |
+| remindInterval | u16 LE | `3C 00` = 60 min | reminder spacing, not measure rate |
+| highThreshold | u16 LE | `50 00` = 80 | |
+| notifyFlag | u16 LE | `01 00` | |
+| **measureInterval** | u8 | **`1E` = 30 min** | VeryFit UI: 10 / 20 / 30 (`0x0A` / `0x14` / `0x1E`) |
+
 | `49` | Auto sport detect | 167 | VALID | ✅ | `03 49 01 01 00…` (11 B) — `set_auto_sport_detect_*.txt` |
 
 ### Reminders
@@ -330,7 +375,9 @@ ACK reply echoes `notify_switch` + `status_code` + `err_code`. GET readback: **`
 ## V3 protocol (`0x33`)
 
 Framed packets: **`33 DA AD DA AD 01 [len LE] [cmd LE] [seq LE] [payload…] [CRC16]`**.  
-Large payloads chunk on **`0x0AF1`** → notify **`0x0AF2`**. Continuation headers: `33 00 00…`.
+**Routing:** ≤50 B → **`0x0AF6`** / **`0x0AF7`**; >50 B (chunked) → **`0x0AF1`** / **`0x0AF2`**. Continuation headers: `33 00 00…`.
+
+**`len` = `len(frame) − 3`** (every byte after the leading `0x33`, before the 2-byte CRC) — **live-verified 2026-09-26.** It is *not* `4 + len(payload)`; a wrong value gets **silence** from the watch, not an error. CRC16-CCITT over bytes `[1, len-2]`, appended LE. `scripts/toobur_gatt_dump.py:v3()` reproduces the official app's frames byte for byte (`0x07` → `…01 0B 00 07 00 50 01 82 A3`, `0x1A` → `…01 0B 00 1A 00 02 00 5F F9`). Re-test any command previously marked silent.
 
 Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 
@@ -338,8 +385,8 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 
 | Cmd | Name | Probe | GB | Role |
 |-----|------|-------|-----|------|
-| `04` | Health sync | VALID | ✅ | START/STOP per **data type** — see table below |
-| `05` | Health sizes | VALID | ✅ | Offset probe before sync — 7 types in one request |
+| `04` | Health sync | VALID | ✅ | START/STOP per **data type** (19 B) — **`0x0AF6`/`0x0AF7`** |
+| `05` | Health sizes | VALID | ✅ | Offset probe before sync (137 B) — **`0x0AF1`/`0x0AF2`**; **silent in low-power** — GB skips after 8 s |
 | `06` | Get dial list | VALID | ✅ | v3 `06` list + App Manager — `TooburV3DialPacketsTest` |
 | `07` | Write dial metadata | VALID | ❌ | Before bulk upload — see `docs/watch_faces_v3.md` |
 | `08` | Set active dial | VALID | ✅ | v3 `08` select — `TooburV3DialPacketsTest` |
@@ -351,6 +398,8 @@ Spec detail: [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md).
 | `12`–`14`, `31` | Misc / sport | VALID | ❌ | — |
 
 ### V3 health sync data types (`0x04` / `0x05`)
+
+**Pull-to-refresh / Gadgetbridge:** `TooburV3FetchHealthOperation` — optional v3 **`05`** on bulk (efficient-sync total); then per-type **`04` START/STOP on normal**. If **`05`** has no reply within **8 s** (typical when `batt_status=0x03`), **skip sizes** and run **`04`** anyway. Listen on **both** `0x0AF7` and `0x0AF2`.
 
 Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 
@@ -365,6 +414,31 @@ Order used by VeryFit and GB (`TooburV3HealthSync.V3_HEALTH_SYNC_DATA_TYPES`):
 | `08` | Daily sport summary (steps, kcal, distance) | `01` | ✅ | ✅ Activity sample |
 
 **Not present on A200 v3 health sync:** blood sugar, weight, VO2Max, menstrual **data** (reminders are SET `41`/`42`, not sync types).
+
+### Stress / pressure — v3 type `02`
+
+IDO/VeryFit name **pressure** on the wire; the app UI labels it **Stress**. Samples are HRV-derived scores **for reference only** (not medical). Continuous on/off is SET **`03 45`** + v3 **`09`** companion — see stress captures under `packetdumps/logcat/set_stress_cont_*.txt`.
+
+**Score zones** (VeryFit app — same scale GB should use):
+
+| Zone | Score | Notes |
+|------|-------|--------|
+| **Relax** | 1–29 | e.g. synced sample **16** (`0x10`) in [`sync_pressure_16_example.txt`](packetdumps/logcat/sync_pressure_16_example.txt) |
+| **Low** | 30–59 | |
+| **Medium** | 60–79 | |
+| **High** | 80–99 | `03 45` highThreshold default `50 00` = notify at 80 |
+
+**VeryFit day UI:** time-series **graph** plus summary **Average** and **Range** (min–max over the day). GB stress chart should expose the same aggregates from synced samples.
+
+**v3 `04` RX layout** (day pull, `head_size` ≈ 13):
+
+| Field | Size | Example (nseq `D7`) |
+|-------|------|---------------------|
+| `date` | y/u8, m/u8, d/u8 | `EA 07 06 16` → 2026-06-22 |
+| `start_min` | u32 LE | `A9 03 00 00` → 937 (15:37) |
+| samples | u8 + u8 × N | `0A 10` → +10 min, value **16** |
+
+Parser: `scripts/toobur_v3_sync.py` (`parse_pressure_04`, `stress_zone`, `pressure_day_stats`). Fixture: [`sync_pressure_d7_2026-06-22.txt`](packetdumps/logcat/sync_pressure_d7_2026-06-22.txt).
 
 ### v3 cmd `09` — continuous HR schedule
 
@@ -406,7 +480,7 @@ GB builder: `TooburV3HrPackets.buildHrApplySequence()` — 2–3 frames per togg
 | Need | Command | Notes |
 |------|---------|-------|
 | **Latest HR bpm** | GET `02 A0` | Live snapshot; byte 18 = `lastKnownHrm` after header |
-| **Day HR history** | v3 `05` (sizes) → v3 `04` **START** type **`03`** → STOP | Time series stored on watch at the `09` interval; **live-verified** after bind ([`2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json)) |
+| **Day HR history** | v3 `05` (bulk, optional) → v3 `04` **START** type **`03`** → STOP on **`0x0AF6`** | If `05` skipped (low power), `04` alone still works — [`2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json) |
 | **Parse layout** | — | [`LATEST_SYNC_PARSING.md`](LATEST_SYNC_PARSING.md), `TooburV3HrParser`, `htmlapp/toobur-hr-csv.html` |
 
 There is **no** per-beat BLE notify while continuous HR runs — the band records locally, then the phone **pulls** via `02 A0` (spot) or v3 type `03` sync (chart/history). Smart mode (`255`) uses the same fetch paths; only the watch-side sampling policy changes.
@@ -417,13 +491,13 @@ There is **no** per-beat BLE notify while continuous HR runs — the band record
 
 Systematic joint audit of every capability we believe the A200 has.  
 **Batch live run 2026-06-19:** 72 probes, 54 OK on `0x0AF6` classic path — full log [`packetdumps/live/2026-06-19_batch-audit.json`](packetdumps/live/2026-06-19_batch-audit.json).  
-**Bind + v3 run 2026-06-19:** VeryFit prelude + `BIND 04 01` → **22/23 OK** — [`packetdumps/live/2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json). Short v3 on **`0x0AF6`/`0x0AF7`** after bind; only **v3 `05`** (137 B on `0x0AF1`) still silent.
+**Bind + v3 run 2026-06-19:** VeryFit prelude + `BIND 04 01` → **22/23 OK** — [`packetdumps/live/2026-06-19_bind-v3.json`](packetdumps/live/2026-06-19_bind-v3.json). All **v3 `04`** start/stop on **`0x0AF6`/`0x0AF7`**; only **v3 `05`** on **`0x0AF1`** silent (low-power watch).
 
 | # | Feature | Wire | Verified | Evidence | Notes |
 |---|---------|------|----------|----------|-------|
 | 1 | GATT transport | `0x0AF0` svc, `0x0AF6`/`0x0AF7`, `0x0AF1`/`0x0AF2` | ✅ | `packetdumps/live/2026-06-19_gatt-transport.txt` | GATT + smoke GET 02 05 |
 | 2 | Device info | GET `02 01` | ✅ | `packetdumps/live/2026-06-19_get-device-info.txt` | deviceId=532 fw=17 |
-| 3 | Battery | GET `02 05` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 05 ACK |
+| 3 | Battery | GET `02 05` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json`, sync smoke 2026-06-19 | level % + mV; can disagree with `02 01` `batt_status` |
 | 4 | Func table (base) | GET `02 02` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 02 |
 | 5 | Func table (ex) | GET `02 07` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | GET 02 07 |
 | 6 | Set time | SET `03 01` | ⏸ | `set_time.txt` | not live-tested — changes clock |
@@ -440,7 +514,7 @@ Systematic joint audit of every capability we believe the A200 has.
 | 17 | Sleep sync | v3 type `07` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 07 sleep start/stop |
 | 18 | Workout sessions | v3 type `04` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 04 workouts start/stop |
 | 19 | Swim sessions | v3 type `06` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 type 06 swim start/stop |
-| 20 | Health sync offsets | v3 `05` | ⚠️ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 05 on 0AF1 silent — needs 0AF6 chunk or bind+MTU |
+| 20 | Health sync offsets | v3 `05` | ⚠️ | `packetdumps/live/2026-06-19_bind-v3.json`, `toobur_sync_smoke.py` | Bulk `05` silent when `batt_status=0x03`; GB skips + `04` on normal |
 | 21 | Alarms get | v3 `0F` | ✅ | `packetdumps/live/2026-06-19_bind-v3.json` | v3 0F alarms — chunked RX on 0AF7 |
 | 22 | Alarms set | v3 `0E` | ⏸ | `set_alarms_and_sports.txt` | v3 0E 355 B not sent |
 | 23 | Sport step goal | SET `03 03` | ✅ | `packetdumps/live/2026-06-19_batch-audit.json` | SET 03 03 key ACK |
@@ -503,7 +577,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Message center | MSG `05 03` | ✅ | Same wire as notify — issue [011](./issues/011-notifications-msg-verify/) |
 | Calls + dismiss | MSG `05 01`/`02` | ✅ | TX fixtures issue [011](./issues/011-notifications-msg-verify/); answer/reject watch `07` — ❌ [017](./issues/017-watch-ble-events-07/) |
 | Wrist L/R | SET `22` | ✅ | — |
-| Battery | GET `05` | ✅ | — |
+| Battery | GET `05` | ✅ | Low-power: `02 01` byte6 `0x03`; no SET threshold |
 | Bind | BIND `04 01`/`02` | ✅ | Manual only |
 | Watch face | v3 `06`/`07`/`08` + bulk | list+select ✅; upload ⏸ | P3 — `docs/watch_faces_v3.md` |
 | HR / stress / drink / walk / menstrual toggles | SET `45`/`44`/`60`/`47`/`41`/`42` | drink/walk/menstrual/long-sit ✅; stress schedule partial | P2 |
@@ -518,7 +592,7 @@ Your Gadgetbridge wish list mapped to this reference:
 | Time / restart | SET `01` / `F0 01` | ✅ | — |
 | Firmware update | OTA `01` + bulk | ❌ | P3 |
 | Device info full | GET `01`/`04`/`A7`/`48`/`F0` | partial | P1 |
-| Health sync offsets | v3 `05` per-type u32 | ✅ | Connect auto-fetch when v3 `1A` auto-sync bit set (issue 028) |
+| Health sync offsets | v3 `05` bulk (optional) | ✅ | GB: 8 s timeout → skip; `04` on `0x0AF6`; see [battery / low-power](#get-02-01--02-05-battery--low-power) |
 
 ---
 
@@ -590,4 +664,4 @@ Example device info: `deviceId=532`, `firmwareVersion=17`, `gps_platform=0`.
 
 ---
 
-*Last consolidated: 2026-06-19 — sources: `bruteforce_results.txt`, `packetdumps/logcat/`, Gadgetbridge Toobur driver, hive vault.*
+*Last consolidated: 2026-06-19 — sources: `bruteforce_results.txt`, `packetdumps/logcat/`, `packetdumps/live/` (bind-v3, sync smoke), Gadgetbridge Toobur driver, hive vault.*

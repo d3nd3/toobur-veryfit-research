@@ -1,0 +1,6 @@
+# VeryFit manual sync — pressure/stress nseq D7 (2026-06-22 15:49:31)
+# TX START offset 4 (resume after 4 prior samples)
+TX : 33 DA AD DA AD 01 10 00 04 00 D7 00 00 02 01 04 00 6A B7
+# RX 1 new sample: start_min=937 (15:37), delta=10 min, value=0x10 (16)
+RX : 33 DA AD DA AD 01 28 00 04 00 D7 00 00 02 01 04 00 01 00 0D 00 02 00 00 00 00 EA 07 06 16 A9 03 00 00 00 02 00 00 00 0A 10
+TX : 33 DA AD DA AD 01 10 00 04 00 D8 00 01 02 01 00 00 16 5B

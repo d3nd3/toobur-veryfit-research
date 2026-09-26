@@ -1,0 +1,17 @@
+# Live BLE probe — GATT transport verification
+# Device: Band 8 F9:24:12:2E:0C:32 (random)
+# Host: dinda-workhorse via BlueZ D-Bus (scripts/toobur_ble_probe.py)
+# Date: 2026-06-19
+
+# GATT primary service
+# attr handle 0x000e-0x0018 uuid 00000af0-0000-1000-8000-00805f9b34fb
+
+# Characteristics discovered:
+# 0AF6 write (read, write, write-without-response)
+# 0AF7 notify (read, notify)
+# 0AF1 write bulk (read, write, write-without-response)
+# 0AF2 notify bulk (read, notify)
+
+TX : 02 05
+RX : 02 05 00 84 0E 00 09 00 00 00 00 00 00 00 00
+# Note: reply arrived on notify char 0AF2 (both 0AF7 and 0AF2 subscribed)

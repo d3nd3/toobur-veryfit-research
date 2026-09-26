@@ -49,7 +49,30 @@ IDO GitBook (high level, no raw bytes): **Set / Get v3 heart rate mode** / **`ID
 | `highHeartMode`, `lowHeartMode`, `highHeartValue`, `lowHeartValue` | no clear field in captured `0x09` HR packets | Low | May be omitted on this watch, encoded elsewhere, or only used in another 5010 shape. |
 | `getSecondMode`, `hrModeTypes` | no direct wire match | Low | Probably returned logically to SDK, not present in these set-style packets. |
 
-## Continuous ON — two TX packets (A200 capture)
+## Continuous ON — unified single packet (A200, confirmed 2026-03-20)
+
+One **26-byte** frame on **`0x0AF6`** (no second “time range” packet required for basic on/off + interval):
+
+```
+33 DA AD DA AD 01 17 00 09 00  [seq LE]  [updateTime u32 LE]  [state u16]  [timeRange u32]  [interval u16 LE]  [CRC LE]
+```
+
+| Field | Size | Values |
+|-------|------|--------|
+| `updateTime` | 4 | Unix seconds |
+| `state` | 2 | **OFF `AA 00`** · **ON `CC 00`** (not `99`; not `55`) |
+| `timeStartEnd` | 4 | `00 00 00 00` = all-day in tested config |
+| `measureInterval` | 2 LE | `5, 60, 180, 300, 600, 900, 1800` or **`255`** smart |
+
+**Invalid intervals** (e.g. 10 s) snap to nearest supported value (~60 s observed).
+
+### Fetching HR *data* (separate from cmd `09`)
+
+- **Spot:** GET `02 A0` → last HR bpm (byte 18).
+- **History:** v3 `05` then v3 `04` START/STOP **data type `03`** — samples recorded at the `09` interval.
+- **No live stream** of each beat over BLE; band buffers, phone syncs.
+
+## Continuous ON — two TX packets (legacy capture notes)
 
 Source: [`packetdumps/logcat/set_hr_cont_state_on.txt`](../packetdumps/logcat/set_hr_cont_state_on.txt).
 

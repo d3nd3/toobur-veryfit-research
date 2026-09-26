@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TOOBUR A200 — SpO₂ continuous lab</title>
+<style>
+:root { --bg:#eff2f7; --panel:#fff; --text:#101828; --muted:#5f6c84; --line:#e2e8f0; --accent:#4f46e5; --ok:#047857; --warn:#b45309; }
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.4 "Segoe UI",system-ui,sans-serif}
+main{max-width:920px;margin:0 auto;padding:1rem}
+h1{margin:0 0 .25rem;font-size:1.35rem}
+.lead{margin:0 0 1rem;color:var(--muted);font-size:.92rem}
+.status{font-weight:700;margin:.5rem 0}
+.status.on{color:var(--ok)} .status.off{color:var(--warn)}
+.section{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:.8rem;margin-bottom:.75rem}
+.section h2{margin:0 0 .5rem;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#334155}
+.note{margin:0 0 .55rem;font-size:.82rem;color:var(--muted)}
+.btns{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:.4rem}
+button{border:1px solid #c7d2fe;background:#fff;border-radius:6px;padding:.38rem .65rem;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+button:hover:not(:disabled){border-color:var(--accent)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);color:#fff;border-color:var(--accent)}
+label{font-size:.8rem;display:inline-flex;align-items:center;gap:.25rem}
+input,select{border:1px solid #d0d7e6;border-radius:5px;padding:.25rem .35rem;font:inherit}
+.row{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:center;margin-bottom:.45rem}
+#log{font-family:ui-monospace,Menlo,monospace;font-size:.75rem;background:#0f172a;color:#e2e8f0;border-radius:6px;padding:.55rem;height:220px;overflow:auto;white-space:pre-wrap}
+.tag{display:inline-block;font-size:.68rem;padding:.1rem .35rem;border-radius:4px;margin-right:.25rem}
+.tag.tx{background:#1e3a5f;color:#bfdbfe}.tag.rx{background:#14532d;color:#bbf7d0}.tag.info{background:#334155;color:#cbd5e1}
+code{font-size:.85em}
+</style>
+</head>
+<body>
+<main>
+<h1>SpO₂ continuous lab</h1>
+<p class="lead">Connect to the watch over Web Bluetooth (Chrome, HTTPS or localhost). Try SET <code>03 44</code> payloads and related guesses from <a href="../bruteforce_results.txt">bruteforce_results.txt</a> / <a href="../A200-PROTOCOL.md">A200-PROTOCOL.md</a>. Watch the watch UI and RX log for ACKs.</p>
+<p class="status off" id="status">Disconnected</p>
+<div class="btns">
+  <button class="primary" id="btnConnect">Connect (0x0AF0)</button>
+  <button id="btnClearLog">Clear log</button>
+</div>
+
+<div class="section">
+  <h2>Confirmed SET 03 44 (SpO₂)</h2>
+  <p class="note">Vault / Gadgetbridge capture — 11 B: onOff, schedule, lowOnOff, lowValue u16, notifyFlag. Switch bytes: <code>AA</code>=on, <code>55</code>=off.</p>
+  <div class="btns">
+    <button data-tx="03 44 AA 09 00 12 00 01 00 00 01" disabled>ON — 09:00–18:00 (vault)</button>
+    <button data-tx="03 44 55 09 00 12 00 01 00 00 01" disabled>OFF — 09:00–18:00</button>
+    <button data-tx="03 44 AA 00 00 17 3B 01 5A 00 01" disabled>ON — all day 00:00–23:59</button>
+    <button data-tx="03 44 55 00 00 17 3B 01 5A 00 01" disabled>OFF — all day</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Minimal / header-only guesses</h2>
+  <p class="note">Bruteforce accepted <code>03 44</code> (2 B) with echo ACK — may not actually enable monitoring. Also try toggle-only shapes like legacy HR <code>03 25</code>.</p>
+  <div class="btns">
+    <button data-tx="03 44" disabled>Header only 03 44</button>
+    <button data-tx="03 44 AA" disabled>03 44 AA (3 B)</button>
+    <button data-tx="03 44 55" disabled>03 44 55 (3 B)</button>
+    <button data-tx="03 44 AA 01" disabled>03 44 AA 01</button>
+    <button data-tx="03 44 AA 00 00 00 00" disabled>03 44 + zero schedule (7 B)</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Related SET keys (bruteforce / VBUS)</h2>
+  <p class="note">Nearby health toggles — useful to see if SpO₂ is wired under a different key or needs a companion write (stress uses <code>03 45</code> + v3 <code>09</code>).</p>
+  <div class="btns">
+    <button data-tx="03 45 AA 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" disabled>Stress ON (03 45)</button>
+    <button data-tx="03 45 55 09 00 12 00 55 3F 3C 00 50 00 01 00 1E" disabled>Stress OFF (03 45)</button>
+    <button data-tx="03 25 AA" disabled>HR mode legacy ON (03 25)</button>
+    <button data-tx="03 25 55" disabled>HR mode legacy OFF (03 25)</button>
+    <button data-tx="03 48 AA" disabled>SET_BREATHE_TRAIN 03 48 AA</button>
+    <button data-tx="03 EC AA" disabled>SET_STRESS_CAL 03 EC AA</button>
+    <button data-tx="03 52 01" disabled>Real-time sensor 03 52 01</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>v3 cmd 09 — unified continuous (Mar 2026 capture)</h2>
+  <p class="note">Layout after 12-byte header: <code>{UpdateTime u32}{State u16}{TimeStartEnd u32}{MeasureInterval u16}</code>. OFF=<code>AA 00</code>, ON=<code>CC 00</code>, interval <code>2C 01</code>=300&nbsp;s. RX echoes State at bytes 16–17.</p>
+  <div class="btns">
+    <button data-v3="33 DA AD DA AD 01 17 00 09 00 8C 03 0E 3B BD 69 AA 00 00 00 00 00 2C 01 47 66" disabled>v3 09 OFF (capture 8C 03)</button>
+    <button data-v3="33 DA AD DA AD 01 17 00 09 00 8D 03 11 3B BD 69 CC 00 00 00 00 00 2C 01 E6 34" disabled>v3 09 ON (capture 8D 03)</button>
+    <button data-v3-build="FF,00,off" disabled>v3 09 OFF — State FF 00 (now)</button>
+    <button data-v3-build="FF,00,on" disabled>v3 09 ON — State FF 00 (now)</button>
+    <button data-v3-build="FF,FF,off" disabled>v3 09 OFF — State FF FF (now)</button>
+    <button data-v3-build="FF,FF,on" disabled>v3 09 ON — State FF FF (now)</button>
+  </div>
+  <div class="row">
+    <label>State b0 <input id="v3s0" value="CC" maxlength="2" style="width:2.2rem;font-family:monospace"></label>
+    <label>State b1 <input id="v3s1" value="00" maxlength="2" style="width:2.2rem;font-family:monospace"></label>
+    <label>Interval s <input id="v3int" type="number" value="300" style="width:3.5rem"></label>
+    <label>Time range <input id="v3range" value="00 00 00 00" style="width:7rem;font-family:monospace"></label>
+    <label>nseq <input id="v3seq" type="number" value="908" style="width:3.5rem" title="decimal; capture used 0x038C/0x038D"></label>
+  </div>
+  <div class="row"><code id="v3builtHex">—</code></div>
+  <div class="btns">
+    <button id="btnV3Built" disabled>Send built v3 09</button>
+    <button data-seq='["03 44 55 09 00 12 00 01 00 00 01","33 DA AD DA AD 01 17 00 09 00 8C 03 0E 3B BD 69 AA 00 00 00 00 00 2C 01 47 66"]' disabled>Seq: SpO₂ OFF + v3 09 OFF</button>
+    <button data-seq='["03 44 AA 09 00 12 00 01 00 00 01","33 DA AD DA AD 01 17 00 09 00 8D 03 11 3B BD 69 CC 00 00 00 00 00 2C 01 E6 34"]' disabled>Seq: SpO₂ ON + v3 09 ON</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>v3 cmd 09 — older stress / HR captures</h2>
+  <p class="note">Earlier logcat shapes (different nseq / state encoding). Compare against Mar 2026 unified layout above.</p>
+  <div class="btns">
+    <button data-v3="33 DA AD DA AD 01 17 00 09 00 1C 01 00 00 00 00 00 01 00 00 17 3B 00 00 40 30" disabled>v3 09 — stress capture</button>
+    <button data-v3="33 DA AD DA AD 01 17 00 09 00 1C 01 00 00 00 00 CC 00 00 00 00 00 2C 01 B3 BE" disabled>v3 09 — HR ON guess (CC 00)</button>
+    <button data-seq='["03 44 AA 09 00 12 00 01 00 00 01","33 DA AD DA AD 01 17 00 09 00 1C 01 00 00 00 00 00 01 00 00 17 3B 00 00 40 30"]' disabled>Seq: SpO₂ ON + v3 09 stress</button>
+    <button data-seq='["03 44 AA 09 00 12 00 01 00 00 01","33 DA AD DA AD 01 17 00 09 00 1C 01 00 00 00 00 CC 00 00 00 00 00 2C 01 B3 BE"]' disabled>Seq: SpO₂ ON + v3 09 HR ON</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>GET readback guesses</h2>
+  <p class="note">After toggling, read state back. <code>02 46</code> = GET_OTHER_SWITCH_STATE (VBUS 343). <code>02 A0</code> = live snapshot.</p>
+  <div class="btns">
+    <button data-tx="02 46" disabled>GET other switches (02 46)</button>
+    <button data-tx="02 08" disabled>GET 02 08 (health state?)</button>
+    <button data-tx="02 A0" disabled>GET live data (02 A0)</button>
+    <button data-tx="02 05" disabled>GET battery (02 05)</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Build SET 03 44</h2>
+  <div class="row">
+    <label>On <select id="bOn"><option value="AA">AA on</option><option value="55">55 off</option></select></label>
+    <label>Start <input id="bSh" type="number" min="0" max="23" value="9" style="width:3rem">:<input id="bSm" type="number" min="0" max="59" value="0" style="width:3rem"></label>
+    <label>End <input id="bEh" type="number" min="0" max="23" value="18" style="width:3rem">:<input id="bEm" type="number" min="0" max="59" value="0" style="width:3rem"></label>
+    <label>Low alert <select id="bLowOn"><option value="01">on</option><option value="00">off</option></select></label>
+    <label>Low % <input id="bLow" type="number" min="0" max="100" value="90" style="width:3rem"></label>
+    <label>Notify <input id="bNotify" type="number" min="0" max="255" value="1" style="width:3rem"></label>
+  </div>
+  <div class="row"><code id="builtHex">03 44 AA 09 00 12 00 01 5A 00 01</code></div>
+  <div class="btns"><button id="btnBuilt" disabled>Send built 03 44</button></div>
+</div>
+
+<div class="section">
+  <h2>Raw hex</h2>
+  <div class="row">
+    <input id="rawHex" style="flex:1;min-width:14rem;font-family:monospace" placeholder="03 44 AA … or v3 33 DA AD …" value="03 44 AA 09 00 12 00 01 00 00 01">
+    <button id="btnRaw" disabled>Send raw</button>
+  </div>
+</div>
+
+<div class="section">
+  <h2>Log</h2>
+  <div id="log"></div>
+</div>
+</main>
+<script>
+(function () {
+  const SVC = 0x0AF0, TX = 0x0AF6, RX = 0x0AF7;
+  let sendChar = null, rxChar = null;
+  const statusEl = document.getElementById('status');
+  const logEl = document.getElementById('log');
+  let v3Seq = 0x0390;
+  const txBtns = () => document.querySelectorAll('[data-tx],[data-v3],[data-v3-build],[data-seq],#btnBuilt,#btnRaw,#btnV3Built');
+
+  function crc16(buf, off, ln) {
+    let c = 0xFFFF;
+    for (let i = off; i < off + ln; i++) {
+      c ^= buf[i] << 8;
+      for (let j = 0; j < 8; j++) c = ((c & 0x8000) ? ((c << 1) ^ 0x1021) : (c << 1)) & 0xFFFF;
+    }
+    return c;
+  }
+
+  function buildV309(state0, state1, interval, rangeHex, seq) {
+    const range = hexBytes(rangeHex);
+    while (range.length < 4) range.push(0);
+    const ts = Math.floor(Date.now() / 1000);
+    const p = new Uint8Array(26);
+    p.set([0x33, 0xDA, 0xAD, 0xDA, 0xAD, 0x01, 0x17, 0x00, 0x09, 0x00]);
+    p[10] = seq & 0xFF; p[11] = (seq >> 8) & 0xFF;
+    p[12] = ts & 0xFF; p[13] = (ts >> 8) & 0xFF; p[14] = (ts >> 16) & 0xFF; p[15] = (ts >> 24) & 0xFF;
+    p[16] = state0 & 0xFF; p[17] = state1 & 0xFF;
+    p[18] = range[0]; p[19] = range[1]; p[20] = range[2]; p[21] = range[3];
+    p[22] = interval & 0xFF; p[23] = (interval >> 8) & 0xFF;
+    const c = crc16(p, 1, 23);
+    p[24] = c & 0xFF; p[25] = (c >> 8) & 0xFF;
+    return p;
+  }
+
+  function parseHexByte(s) {
+    const n = parseInt(String(s).trim(), 16);
+    return Number.isFinite(n) ? (n & 0xFF) : 0;
+  }
+
+  function log(msg, kind) {
+    const line = document.createElement('div');
+    const tag = kind ? '<span class="tag ' + kind + '">' + kind.toUpperCase() + '</span>' : '';
+    line.innerHTML = tag + msg;
+    logEl.appendChild(line);
+    logEl.scrollTop = logEl.scrollHeight;
+    console.log((kind || 'log') + ': ' + msg.replace(/<[^>]+>/g, ''));
+  }
+
+  function hexBytes(s) {
+    return s.trim().split(/\s+/).filter(Boolean).map(h => parseInt(h, 16));
+  }
+
+  function toHex(arr) {
+    return Array.from(arr).map(b => ('0' + b.toString(16)).slice(-2)).join(' ').toUpperCase();
+  }
+
+  function setConn(ok) {
+    statusEl.textContent = ok ? 'Connected' : 'Disconnected';
+    statusEl.className = 'status ' + (ok ? 'on' : 'off');
+    document.getElementById('btnConnect').textContent = ok ? 'Disconnect' : 'Connect (0x0AF0)';
+    txBtns().forEach(b => b.disabled = !ok);
+  }
+
+  function parseRx(arr) {
+    if (arr.length >= 2 && arr[0] === 0x03 && arr[1] === 0x44) {
+      const st = arr.length >= 3 ? arr[2] : null;
+      log('SET SpO₂ ACK key=0x44 status=' + (st != null ? '0x' + st.toString(16) : 'echo only') +
+        (arr.length > 3 ? ' extra=' + toHex(arr.slice(3)) : ''), 'rx');
+      return;
+    }
+    if (arr.length >= 2 && arr[0] === 0x03) {
+      log('SET ACK key=0x' + arr[1].toString(16) + (arr.length >= 3 ? ' b2=0x' + arr[2].toString(16) : ''), 'rx');
+      return;
+    }
+    if (arr.length >= 5 && arr[0] === 0x33 && arr[1] === 0xDA) {
+      const cmd = arr[8] | (arr[9] << 8);
+      let extra = '';
+      if (cmd === 9 && arr.length >= 24) {
+        const st = ('0' + arr[16].toString(16)).slice(-2) + ' ' + ('0' + arr[17].toString(16)).slice(-2);
+        const iv = arr[22] | (arr[23] << 8);
+        extra = ' | State=' + st.toUpperCase() + ' interval=' + iv + 's';
+      }
+      log('v3 reply cmd=0x' + cmd.toString(16) + ' len=' + arr.length + extra + ' | ' + toHex(arr).slice(0, 80), 'rx');
+      return;
+    }
+    if (arr.length >= 2 && arr[0] === 0x02) {
+      log('GET 0x' + arr[1].toString(16) + ' reply ' + arr.length + ' B', 'rx');
+      return;
+    }
+    log(arr.length + ' B: ' + toHex(arr), 'rx');
+  }
+
+  function sendBytes(bytes, label) {
+    if (!sendChar) { log('Not connected', 'info'); return Promise.resolve(); }
+    const u = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    log((label || 'TX') + ' (' + u.length + ' B) ' + toHex(u), 'tx');
+    return sendChar.writeValue(u).catch(e => log('Write error: ' + e.message, 'info'));
+  }
+
+  function sendHex(hex, label) {
+    return sendBytes(hexBytes(hex), label);
+  }
+
+  function sendSeq(hexList, label) {
+    let p = Promise.resolve();
+    hexList.forEach((h, i) => {
+      p = p.then(() => new Promise(r => setTimeout(r, 400)))
+           .then(() => sendHex(h, (label || 'seq') + ' #' + (i + 1)));
+    });
+    return p;
+  }
+
+  function updateBuilt() {
+    const on = document.getElementById('bOn').value;
+    const sh = +document.getElementById('bSh').value || 0;
+    const sm = +document.getElementById('bSm').value || 0;
+    const eh = +document.getElementById('bEh').value || 0;
+    const em = +document.getElementById('bEm').value || 0;
+    const lowOn = document.getElementById('bLowOn').value;
+    const low = Math.max(0, Math.min(100, +document.getElementById('bLow').value || 0));
+    const nf = (+document.getElementById('bNotify').value || 0) & 0xFF;
+    const parts = ['03', '44', on,
+      ('0' + sh.toString(16)).slice(-2), ('0' + sm.toString(16)).slice(-2),
+      ('0' + eh.toString(16)).slice(-2), ('0' + em.toString(16)).slice(-2),
+      lowOn, ('0' + (low & 0xFF).toString(16)).slice(-2), ('0' + ((low >> 8) & 0xFF).toString(16)).slice(-2),
+      ('0' + nf.toString(16)).slice(-2)];
+    document.getElementById('builtHex').textContent = parts.join(' ').toUpperCase();
+  }
+  function updateV3Built() {
+    const s0 = parseHexByte(document.getElementById('v3s0').value);
+    const s1 = parseHexByte(document.getElementById('v3s1').value);
+    const iv = Math.max(0, Math.min(65535, +document.getElementById('v3int').value || 300));
+    const seq = Math.max(0, Math.min(65535, +document.getElementById('v3seq').value || 0x390));
+    const pkt = buildV309(s0, s1, iv, document.getElementById('v3range').value, seq);
+    document.getElementById('v3builtHex').textContent = toHex(pkt);
+  }
+  ['bOn','bSh','bSm','bEh','bEm','bLowOn','bLow','bNotify'].forEach(id =>
+    document.getElementById(id).addEventListener('input', updateBuilt));
+  ['v3s0','v3s1','v3int','v3range','v3seq'].forEach(id =>
+    document.getElementById(id).addEventListener('input', updateV3Built));
+  updateBuilt();
+  updateV3Built();
+
+  document.getElementById('btnConnect').onclick = function () {
+    if (sendChar) {
+      sendChar.service.device.gatt.disconnect();
+      sendChar = null; rxChar = null; setConn(false); log('Disconnected', 'info'); return;
+    }
+    if (!navigator.bluetooth) { log('Web Bluetooth unavailable — use Chrome over HTTPS/localhost', 'info'); return; }
+    navigator.bluetooth.requestDevice({ filters: [{ services: [SVC] }] })
+      .then(d => d.gatt.connect())
+      .then(g => g.getPrimaryService(SVC))
+      .then(s => Promise.all([s.getCharacteristic(TX), s.getCharacteristic(RX)]))
+      .then(([tx, rx]) => {
+        sendChar = tx; rxChar = rx;
+        rxChar.addEventListener('characteristicvaluechanged', e => parseRx(new Uint8Array(e.target.value.buffer)));
+        return rxChar.startNotifications();
+      })
+      .then(() => { setConn(true); log('Connected — notify 0x0AF7 active', 'info'); })
+      .catch(e => { log('Connect error: ' + e.message, 'info'); setConn(false); });
+  };
+
+  document.querySelectorAll('[data-tx]').forEach(btn => {
+    btn.onclick = () => sendHex(btn.dataset.tx, btn.textContent.trim());
+  });
+  document.querySelectorAll('[data-v3]').forEach(btn => {
+    btn.onclick = () => sendHex(btn.dataset.v3, btn.textContent.trim());
+  });
+  document.querySelectorAll('[data-v3-build]').forEach(btn => {
+    btn.onclick = () => {
+      const [a, b, mode] = btn.dataset.v3Build.split(',');
+      const preset = { off: [0xAA, 0x00], on: [0xCC, 0x00] };
+      const base = preset[mode] || [0xCC, 0x00];
+      const pkt = buildV309(parseHexByte(a) || base[0], parseHexByte(b), 300, '00 00 00 00', v3Seq++);
+      sendBytes(pkt, btn.textContent.trim());
+      updateV3Built();
+    };
+  });
+  document.querySelectorAll('[data-seq]').forEach(btn => {
+    btn.onclick = () => sendSeq(JSON.parse(btn.dataset.seq), btn.textContent.trim());
+  });
+  document.getElementById('btnBuilt').onclick = () =>
+    sendHex(document.getElementById('builtHex').textContent, 'built 03 44');
+  document.getElementById('btnV3Built').onclick = () => {
+    const hex = document.getElementById('v3builtHex').textContent;
+    sendHex(hex, 'built v3 09');
+    v3Seq = (Math.max(0, Math.min(65535, +document.getElementById('v3seq').value || 0x390)) + 1) & 0xFFFF;
+    document.getElementById('v3seq').value = v3Seq;
+    updateV3Built();
+  };
+  document.getElementById('btnRaw').onclick = () =>
+    sendHex(document.getElementById('rawHex').value, 'raw');
+  document.getElementById('btnClearLog').onclick = () => { logEl.innerHTML = ''; };
+})();
+</script>
+</body>
+</html>

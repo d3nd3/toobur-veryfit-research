@@ -33,9 +33,24 @@ Fixture: `gadgetbridge/app/src/test/resources/toobur/fixtures/firmware_status_sy
 ### Blockers for full OTA in GB
 
 1. GET `02 48` RX layout unconfirmed on reference A200.
-2. No `.zip` / image format mapping for Toobur A200 in repo (IDO cloud DFU is server-side).
+2. ~~No `.zip` / image format mapping~~ — **resolved 2026-09-26.** The `.zip` holds
+   Realtek "bin" images with a 12-byte little-endian header; see
+   [`custom_firmware.md`](custom_firmware.md) §5 and the `h/a.java`–`h/c.java`
+   parsers in `IDoBLELib-Custom-2.46.4.jar`.
 3. `01 02` / `01 03` + bulk ACK sequence needs a full VeryFit OTA btsnoop capture.
+   **Partial 2026-09-26:** live probing shows `01 01` acks `err=0` but never
+   reboots the watch, and `01 02`/`01 03`/`01 04`–`01 07` are all silent.
 4. High brick risk — gate behind Developer + confirm dialog + battery check.
+
+### Security posture — no signature (2026-09-26)
+
+The vendor SDK bundles Realtek's official `com.realsil.sdk.dfu` stack, and it
+contains **no firmware signature check**. Its "auth" (`01 03` / VBUS 407) is a
+16-bit version number read from the firmware file's own header, and AES-256 image
+encryption is a bit the device advertises rather than a hard requirement. So a
+patched image is not cryptographically blocked — the blocker on A200 is that the
+BLE OTA entry point is stubbed, not that the image is signed. Details and the
+recommended UART/ROM route: [`custom_firmware.md`](custom_firmware.md).
 
 ## Related
 
