@@ -12,6 +12,13 @@ Related: [`docs/iwf_format.md`](docs/iwf_format.md) (container deep-dive),
 
 ---
 
+> **⚠️ 2026-09-26 — the uploader below wedged the watch.** A patched upload stalled
+> mid-transfer and the `D1 03` finish never landed, leaving an open transfer session and
+> a truncated dial. The watch is now in a boot loop with dead BLE. **Do not run
+> `toobur_d1_replay.py` / `toobur_silly_face.py` again** until the abort/escrow/safe-dial
+> guards are added. Full record: [`docs/recovery_incident.md`](docs/recovery_incident.md).
+> The protocol findings below remain correct — they were verified before the failure.
+
 ## TL;DR
 
 | Operation | v3 cmd | Status |

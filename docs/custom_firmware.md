@@ -3,10 +3,15 @@
 Answers "can I flash custom firmware onto this watch?" — live-probe evidence plus
 the Realtek DFU stack recovered from the vendor's own Android SDK.
 
-**Verdict:** the *protocol* has no firmware-signature check, so a modified Realtek
-image is flashable in principle. On **this** A200 firmware the OTA entry point is
-stubbed out, so BLE-only flashing is currently a dead end. The realistic route is
-the **Realtek UART/ROM bootloader on the PCB**, which bypasses BLE entirely.
+**Verdict:** the *protocol* has no firmware-signature check, so a modified image
+is flashable in principle. On **this** A200 firmware the OTA entry point is stubbed
+out, so BLE-only firmware flashing is a dead end.
+
+> **Updated 2026-09-26:** the "Realtek UART/ROM bootloader" route below is **wrong
+> for this watch** — the SoC is a **Goodix GR5515I0NDA**, not Realtek. See §7.1 and
+> [`recovery_incident.md`](recovery_incident.md). The signature/auth analysis in §4
+> and the container format in §5 remain valid as app-level findings. The dial
+> sideload path in [`DIAL.md`](../DIAL.md) **does** work and is unaffected.
 
 Live session: 2026-09-26, `F9:24:12:2E:0C:32` "Band 8", fw 17, battery 32 %.
 
@@ -18,17 +23,25 @@ Live session: 2026-09-26, `F9:24:12:2E:0C:32` "Band 8", fw 17, battery 32 %.
 |---|---|---|
 | Advertised name | `Band 8` | live scan |
 | MAC | `F9:24:12:2E:0C:32` | live |
-| Manufacturer ID | `0x0214` (532) | ad `ManufacturerData` |
-| Services | `0x0AF0` (IDO/Realtek), `0x1800`, `0x1801` | live GATT |
+| Services | `0x0AF0` (IDO), `0x1800`, `0x1801` | live GATT |
 | `device_id` | `532` | `GET 02 01`, vault `GetDeviceInfo.md` |
 | `firmware_version` | `17` (`0x11`) | `GET 02 01` byte 4 + ad `02 02 11` |
 | `platform` | `40` | vault `GetDeviceInfo.md` |
 | `bootload_version` | `0` | vault |
 | MTU | `137` (`0x89`) | `GET 02 F0` |
 
-SoC is a **Realtek BLE part** (RTL8762 class per the vault's hardware note), and
-the vendor stack is Realtek's, not Nordic's — the `0x0AF0` service is Realtek's
-IDI BLE service.
+| **SoC** | **Goodix GR5515I0NDA** | chip marking read off the board 2026-09-26 |
+| **Flash** | **external SPI NOR on QSPI** (GPIO_18–23) | Goodix selection guide v1.2 |
+
+**SoC is a Goodix GR5515I0NDA** — ARM Cortex-M4F, BLE 5.1 single-mode, brand-marked
+**CODIX** (which is Goodix's brand, not a separate vendor). Firmware lives in an
+**external SPI NOR flash**, not on-chip. This corrects an earlier assumption in this
+document that the SoC was Realtek; see §7.1 and
+[`recovery_incident.md`](recovery_incident.md) §4b.
+
+The `0x0AF0` service is IDO's own application protocol, not a silicon vendor's — which
+is why the entire dial/sideload research in [`DIAL.md`](../DIAL.md) is independent of
+the SoC.
 
 ## 2. GATT in normal mode
 
@@ -180,12 +193,18 @@ safe. Do not send `04 02` from a host.
 
 ## 7. Paths forward, best first
 
-1. **UART/ROM bootloader (recommended).** Realtek RTL8762 parts boot from a serial
-   ROM/ISP path on test pads. Open the case, find the TX/RX/EN pads, and flash with
-   a 3.3 V USB-TTL adapter. This bypasses the stubbed BLE path entirely and is the
-   standard way these watches get custom firmware. *No BLE OTA needed.* Expect to
-   lose the BLE-only niceties unless the image is a full Realtek app build.
-   See §7.1 for what the eFuse security model means for this.
+1. **External SPI NOR flash — the practical route.** The SoC is a Goodix
+   **GR5515I0NDA** and the firmware sits in an **external SPI NOR** on QSPI
+   (GPIO_18–23; see §7.1). That is a commodity 8-pin part:
+   - **read it** with a ~$3 CH341A USB programmer + SOP8/OPI clip, non-destructively,
+     while still soldered — the fastest way to find out what is actually wrong
+   - **rewrite in place** if the corruption is confined to a region
+   - **desolder, reprogram, replace** as a guaranteed fallback
+
+   This is a far better position than a custom-SoC ISP, and it is the route to
+   actually recovering the watch. *Voltage caveat:* the `A` suffix supports both
+   3.3 V and **1.8 V** flash — confirm the part marking and rail before driving
+   3.3 V logic at those pins.
 2. **Recover a stock image, then patch it.** Capture `firmware.zip` from the VeryFit
    cloud (or dump flash over UART). With the header layout in §5 and no signature
    (§4), repacking a modified image is tractable.
@@ -203,6 +222,24 @@ safe. Do not send `04 02` from a host.
   watch data**. Bind/unbind asymmetry, not worth it for a firmware experiment.
 
 ### 7.1 What the RTL8762CKF playbook does and does not give us
+
+> **⚠️ WRONG FOR THIS WATCH.** The SoC is a **Goodix GR5515I0NDA** (chip marking
+> `CODIX / 6952-5 / P01 2443 / P01M 2617108`, read off the board 2026-09-26). It is
+> **not** a Realtek RTL87xx, so **do not** attempt a Realtek UART/ROM ISP flash, the
+> Realtek MP Tool, SWD, or the eFuse password attack described below. Wrong vendor,
+> wrong part, real risk of damage.
+>
+> **The Realtek analysis below is retained only as a record of the wrong turn.** The
+> replacement facts are better: firmware lives in an **external SPI NOR flash** on
+> QSPI (GPIO_18 = CS_N, 19 = IO_3, 20 = CLK, 21 = IO_2, 22 = IO_1, 23 = IO_0), using
+> bog-standard SPI NOR commands. That means a commodity 8-pin part that can be read,
+> rewritten in place, or desoldered and replaced with cheap tools — no vendor
+> tooling required. See [`recovery_incident.md`](recovery_incident.md) §4b.
+>
+> The Realtek DFU findings in §4–§5 remain valid as *app-library* facts (the vendor
+> app bundles `com.realsil.sdk.dfu` for other models in its catalogue), and all the
+> **wire-level** dial results in [`DIAL.md`](../DIAL.md) are vendor-independent —
+> they were measured on this device. Only the *silicon* assumption was wrong.
 
 `chipolino/The_Playbook/Realtek.md` documents a power-glitch attack that unlocks
 SWD on an **RTL8762CKF**, bypassing the bootrom's password check
