@@ -1,0 +1,67 @@
+# toobur-veryfit-research — system overview
+# A protocol lab notebook: captures in, notes and test fixtures out.
+# Zones run left to right: entry points -> core -> state -> external.
+
+title: |md
+  # toobur-veryfit-research
+  Reverse-engineering workspace for IDO / VeryFit watches sold as TOOBUR: three ways to capture BLE bytes, one canonical command map, and a test-fixture pipeline that feeds the Gadgetbridge driver.
+| {near: top-center}
+
+direction: right
+grid-columns: 2
+grid-rows: 2
+horizontal-gap: 120
+vertical-gap: 80
+
+entry: Entry points {
+  direction: down
+
+  readme: `README.md` · the map: protocol reference first, then build and install, then probe usage
+  live: `scripts/toobur_*.py` · live probe, v3 sync smoke, bind, dial, OTA, recover, bulk and bruteforce sweeps
+  html: `htmlapp/*.html` · standalone Web Bluetooth panels, `confirmed-only.html` alone is 258 KB
+  gb: `gadgetbridge/` · nested checkout of the working fork, 62 dirty files, its commits never leave that folder
+}
+
+core: Core {
+  direction: down
+
+  canon: `A200-PROTOCOL.md` · canonical wire command map, bruteforce and logcat backed, supersedes the scattered tables in `TOOBUR.md`
+  parsing: `LATEST_SYNC_PARSING.md` · the v3 `0x05` then `0x04` route, save offsets, field layouts
+  docs: `docs/*.md` · 14 topic notes: watch faces, OTA, dial commands, screen payloads, a recovery incident
+  v3lib: `scripts/toobur_v3_sync.py` · pure builders and parsers: 137-byte `0x05`, per-type `0x04`, CRC16, channel guessed above 50 bytes
+  pipeline: feature confirmation · logcat or probe hex becomes a fixture, a JUnit test, a `@ConfirmedFeature`, then a registry row
+}
+
+state: State {
+  direction: down
+
+  dumps: `packetdumps/` · logcat, live, synthetic, btsnoop and extracted captures {shape: cylinder}
+  registry: `docs/confirmed-features.md` plus issues 001-020 and `bruteforce_results.txt` {shape: cylinder}
+  functables: `func-tables/function_table.json` · capability bits lifted out of firmware {shape: cylinder}
+  agent: `session-ses_f230.md` at 335 KB, `skills-lock.json`, `ralph/` · agent-run artifacts, not protocol truth
+}
+
+ext: External {
+  direction: down
+
+  watch: TOOBUR A200 over BLE · BlueZ D-Bus on Linux, Bleak when installed, the MAC defaults to the test unit
+  phone: Android phone · adb logcat of VeryFit, or of the Gadgetbridge build under test
+  chrome: Chrome Web Bluetooth · where the `htmlapp` experiments run
+  fork: `d3nd3/gadgetbridge-veryfit` · where the driver, fixtures and migrations land
+}
+
+entry -> core: captures and questions
+core -> state: notes, fixtures, registry rows
+core -> ext: BLE + logcat
+
+classes: {
+  entry: {style: {stroke: "#2f6fbf"}}
+  core: {style: {stroke: "#2f8f5f"}}
+  state: {style: {stroke: "#a86a12"; stroke-dash: 3}}
+  ext: {style: {stroke: "#8a4fbf"; stroke-dash: 5}}
+}
+
+entry.class: entry
+core.class: core
+state.class: state
+ext.class: ext

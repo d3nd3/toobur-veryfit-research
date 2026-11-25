@@ -1,5 +1,7 @@
 # Toobur / VeryFit protocol workspace
 
+Prefer pictures? Start with **[HUMANS.md](HUMANS.md)**.
+
 A **GadgetBridge** implementation for Toobur and other IDO/angelfit-like smartwatches (Realtek 0x0AF0 protocol), plus related protocol notes and tooling.
 
 The same Toobur watch hardware is sold under multiple names, including **TOOBUR A200** and **TOOBUR BAND 8** (this repo uses both interchangeably).
